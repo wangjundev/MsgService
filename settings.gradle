@@ -1,0 +1,5 @@
+include ':imagepicker'
+include ':emojilibrary'
+include ':EasyRxRetrofitlib'
+include ':app'
+rootProject.name = "msgservice"
