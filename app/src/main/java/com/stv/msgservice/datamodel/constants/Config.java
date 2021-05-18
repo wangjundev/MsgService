@@ -1,7 +1,5 @@
 package com.stv.msgservice.datamodel.constants;
 
-import android.os.Environment;
-
 public class Config {
 
     /**
@@ -58,9 +56,9 @@ public class Config {
 //    public static String AUDIO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/audio";
 //    public static String PHOTO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/photo";
 //    public static String FILE_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/wfc/file";
-    public static String VIDEO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/msg/video";
-    public static String AUDIO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/msg/audio";
-    public static String PHOTO_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/msg/photo";
-    public static String FILE_SAVE_DIR = Environment.getExternalStorageDirectory().getPath() + "/msg/file";
+    public static String VIDEO_SAVE_DIR = "/msg/video";
+    public static String AUDIO_SAVE_DIR = "/msg/audio";
+    public static String PHOTO_SAVE_DIR = "/msg/photo";
+    public static String FILE_SAVE_DIR = "/msg/file";
 
 }

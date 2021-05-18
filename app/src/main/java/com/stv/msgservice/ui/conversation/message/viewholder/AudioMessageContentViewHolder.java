@@ -1,6 +1,7 @@
 package com.stv.msgservice.ui.conversation.message.viewholder;
 
 import android.graphics.drawable.AnimationDrawable;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
@@ -44,10 +45,24 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
     private Fragment mFragment;
     private Message toPlayAudioMessage;
     private boolean isPlaying;
+    AnimationDrawable animation;
 
     public AudioMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
         mFragment = fragment;
+    }
+
+    public int getAudioDuration(String audioPath){
+        int duration;
+        try{
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+            mmr.setDataSource(audioPath);
+            duration = Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))/1000;
+        }catch (Exception e){
+            duration = 0;
+        }
+        Log.i("Junwang", "getAudioDuration="+duration);
+        return duration;
     }
 
     @Override
@@ -58,6 +73,12 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
 //        int increment = UIUtils.getDisplayWidth(fragment.getContext()) / 3 / Config.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND * voiceMessage.getDuration();
 
 //        durationTextView.setText(voiceMessage.getDuration() + "''");
+        int duration = getAudioDuration(message.getAttachmentPath());
+        if(duration <= 0){
+            durationTextView.setVisibility(View.GONE);
+        }else{
+            durationTextView.setText(duration+"''");
+        }
         ViewGroup.LayoutParams params = contentLayout.getLayoutParams();
         params.width = UIUtils.dip2Px(65) /*+ increment*/;
         contentLayout.setLayoutParams(params);
@@ -69,23 +90,21 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
 //            }
             playStatusIndicator.setVisibility(View.VISIBLE);
         }
-
-        AnimationDrawable animation;
-        if (/*message.isPlaying*/false) {
-            animation = (AnimationDrawable) ivAudio.getBackground();
-            if (!animation.isRunning()) {
-                animation.start();
-            }
-        } else {
-            // TODO 不知道怎么回事，动画开始了，就停不下来, 所以采用这种方式
-            ivAudio.setBackground(null);
-            if (message.getDirection() == MessageConstants.DIRECTION_OUT) {
-                ivAudio.setBackgroundResource(R.drawable.audio_animation_right_list);
-            } else {
-                ivAudio.setBackgroundResource(R.drawable.audio_animation_left_list);
-            }
-        }
-
+//        if (/*message.isPlaying*/false) {
+//            animation = (AnimationDrawable) ivAudio.getBackground();
+//            if (!animation.isRunning()) {
+//                animation.start();
+//            }
+//        } else {
+//            // TODO 不知道怎么回事，动画开始了，就停不下来, 所以采用这种方式
+//            ivAudio.setBackground(null);
+//            if (message.getDirection() == MessageConstants.DIRECTION_OUT) {
+//                ivAudio.setBackgroundResource(R.drawable.audio_animation_right_list);
+//            } else {
+//                ivAudio.setBackgroundResource(R.drawable.audio_animation_left_list);
+//            }
+//        }
+        animation = (AnimationDrawable) ivAudio.getBackground();
         // 下载完成，开始播放
 //        if (message.progress == 100) {
 //            message.progress = 0;
@@ -163,7 +182,15 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
 //                    message.isPlaying = false;
                     isPlaying = false;
                     toPlayAudioMessage = null;
-                    postMessageUpdate(message);
+//                    postMessageUpdate(message);
+                    if(animation != null){
+                        animation.stop();
+                    }
+                    if (message.getDirection() == MessageConstants.DIRECTION_OUT) {
+                        ivAudio.setBackgroundResource(R.drawable.audio_animation_right_list);
+                    } else {
+                        ivAudio.setBackgroundResource(R.drawable.audio_animation_left_list);
+                    }
                 }
             }
 
@@ -176,7 +203,16 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
 //                    message.isPlaying = false;
                     isPlaying = false;
                     toPlayAudioMessage = null;
-                    postMessageUpdate(message);
+                    animation = (AnimationDrawable) ivAudio.getBackground();
+                    if(animation != null){
+                        animation.stop();
+                    }
+                    if (message.getDirection() == MessageConstants.DIRECTION_OUT) {
+                        ivAudio.setBackgroundResource(R.drawable.audio_animation_right_list);
+                    } else {
+                        ivAudio.setBackgroundResource(R.drawable.audio_animation_left_list);
+                    }
+//                    postMessageUpdate(message);
                 }
             }
         });

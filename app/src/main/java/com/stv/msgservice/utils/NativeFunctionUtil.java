@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.stv.msgservice.datamodel.constants.MessageConstants;
+import com.stv.msgservice.ui.WebViewNewsActivity;
 
 import java.util.List;
 
@@ -66,13 +67,13 @@ public class NativeFunctionUtil {
 //        context.startActivity(intent);
 //    }
 //
-//    public static void loadUrl(Context context, String url, String title) {
-//        Intent intent = new Intent(context, WebViewNewsActivity.class);
-//        intent.putExtra(URL, url);
-//        intent.putExtra(TITLE, title);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        context.startActivity(intent);
-//    }
+    public static void loadUrl(Context context, String url, String title) {
+        Intent intent = new Intent(context, WebViewNewsActivity.class);
+        intent.putExtra(URL, url);
+        intent.putExtra(TITLE, title);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
 
     public static void copyText(Context context, String text){
         if((text == null) || text.length() == 0){

@@ -30,6 +30,7 @@ public class MessageViewModel extends AndroidViewModel {
     private MutableLiveData<Map<String, String>> mediaUploadedLiveData;
     private MutableLiveData<Object> clearMessageLiveData;
     private MutableLiveData<Map<String, Long>> messageDeliverLiveData;
+    private LiveData<List<MessageEntity>>  messageUnReadLiveData;
 //    private MutableLiveData<List<ReadEntry>> messageReadLiveData;
 
     private LiveData<List<MessageEntity>> mObservableMessages;
@@ -56,16 +57,33 @@ public class MessageViewModel extends AndroidViewModel {
         return mObservableMessages;
     }
 
+    public LiveData<List<MessageEntity>> getUnReadMessages(final long conversationId) {
+        messageUnReadLiveData = mRepository.getUnReadMessages(conversationId);
+        return messageUnReadLiveData;
+    }
+
+    public void updateMessagesReadStatus(List<MessageEntity> list){
+        mRepository.updateMessagesReadStatus(list);
+    }
+
     public LiveData<List<MessageEntity>> getMessages() {
         mObservableMessages = mRepository.getMessages(mConversationId);
         return mObservableMessages;
     }
 
-    public void deleteMessage(long messageId){
-        mRepository.deleteMessage(messageId);
-    }
+//    public void deleteMessage(long messageId){
+//        mRepository.deleteMessage(messageId);
+//    }
 
     public void deleteMessage(MessageEntity me){mRepository.deleteMessage(me);}
+
+    public void deleteMessages(List<MessageEntity> messageEntityList){
+        mRepository.deleteMessages(messageEntityList);
+    }
+
+    public void deleteMessages(long conversationId){
+
+    }
 
     //need to implement
     public void resendMessage(Message message){

@@ -45,19 +45,24 @@ public class MyApp extends BaseApp {
     }
 
     private void setupMsgDirs() {
-        File file = new File(Config.VIDEO_SAVE_DIR);
+        String videoPath = this.getFilesDir().toString()+Config.VIDEO_SAVE_DIR;
+        String audioPath = this.getFilesDir().toString()+Config.AUDIO_SAVE_DIR;
+        String photoPath = this.getFilesDir().toString()+Config.PHOTO_SAVE_DIR;
+        String filePath = this.getFilesDir().toString()+Config.FILE_SAVE_DIR;
+
+        File file = new File(videoPath);
         if (!file.exists()) {
             file.mkdirs();
         }
-        file = new File(Config.AUDIO_SAVE_DIR);
+        file = new File(audioPath);
         if (!file.exists()) {
             file.mkdirs();
         }
-        file = new File(Config.FILE_SAVE_DIR);
+        file = new File(photoPath);
         if (!file.exists()) {
             file.mkdirs();
         }
-        file = new File(Config.PHOTO_SAVE_DIR);
+        file = new File(filePath);
         if (!file.exists()) {
             file.mkdirs();
         }

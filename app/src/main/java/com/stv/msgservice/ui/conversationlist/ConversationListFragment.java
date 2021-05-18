@@ -1,14 +1,24 @@
 package com.stv.msgservice.ui.conversationlist;
 
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.cjt2325.cameralibrary.util.LogUtil;
 import com.stv.msgservice.MainActivity;
 import com.stv.msgservice.R;
+import com.stv.msgservice.datamodel.database.entity.ConversationEntity;
 import com.stv.msgservice.datamodel.database.entity.UserInfoEntity;
 import com.stv.msgservice.datamodel.viewmodel.ConversationListViewModel;
 import com.stv.msgservice.datamodel.viewmodel.UserInfoViewModel;
 import com.stv.msgservice.ui.widget.ProgressFragment;
+import com.yanzhenjie.recyclerview.OnItemMenuClickListener;
+import com.yanzhenjie.recyclerview.SwipeMenu;
+import com.yanzhenjie.recyclerview.SwipeMenuBridge;
+import com.yanzhenjie.recyclerview.SwipeMenuCreator;
+import com.yanzhenjie.recyclerview.SwipeMenuItem;
+import com.yanzhenjie.recyclerview.SwipeRecyclerView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,12 +26,15 @@ import java.util.List;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 public class ConversationListFragment extends ProgressFragment {
-    private RecyclerView recyclerView;
+    private SwipeRecyclerView mRecyclerView;
     private ConversationListAdapter adapter;
+    private SwipeMenuCreator swipeMenuCreator;
+    private OnItemMenuClickListener mMenuItemClickListener;
+    private List<ConversationEntity> conversations;
+
 //    private static final List<Conversation.ConversationType> types = Arrays.asList(Conversation.ConversationType.Single,
 //            Conversation.ConversationType.Group,
 //            Conversation.ConversationType.Channel);
@@ -38,7 +51,7 @@ public class ConversationListFragment extends ProgressFragment {
 
     @Override
     protected void afterViews(View view) {
-        recyclerView = view.findViewById(R.id.recyclerView);
+        mRecyclerView = view.findViewById(R.id.recyclerView);
         ImageView simulate_btn = view.findViewById(R.id.simulate_btn);
         simulate_btn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -77,13 +90,63 @@ public class ConversationListFragment extends ProgressFragment {
         conversationListViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
         conversationListViewModel.getConversations().observe(this, conversationInfos -> {
             showContent();
+            conversations = conversationInfos;
             adapter.setConversationInfos(conversationInfos);
         });
-        layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
 
-        recyclerView.setAdapter(adapter);
-        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+        /**
+         * 菜单创建器，在Item要创建菜单的时候调用。
+         */
+        swipeMenuCreator = new SwipeMenuCreator() {
+            @Override
+            public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int position) {
+                int height = ViewGroup.LayoutParams.MATCH_PARENT;
+                SwipeMenuItem deleteItem = new SwipeMenuItem(getContext())
+                        .setText("删除")
+                        .setTextSize(16)
+                        .setBackgroundColor(getResources().getColor(R.color.red0))
+                        .setWidth(36*5)
+                        .setHeight(height);
+//                SwipeMenuItem topItem = new SwipeMenuItem(getContext())
+//                        .setText("置顶")
+//                        .setHeight(height)
+//                        .setWidth(36*5)
+//                        .setBackgroundColor(getResources().getColor(R.color.green1));
+                swipeRightMenu.addMenuItem(deleteItem);// 添加菜单到右侧。
+//                swipeRightMenu.addMenuItem(topItem);
+            }
+        };
+
+        /**
+         * RecyclerView的Item的Menu点击监听。
+         */
+        mMenuItemClickListener = new OnItemMenuClickListener() {
+            @Override
+            public void onItemClick(SwipeMenuBridge menuBridge, int position) {
+                LogUtil.i("Junwang", "ChatbotFavoriteActivity OnItemMenuClickListener position "+ position+" clicked.");
+                menuBridge.closeMenu();
+
+                int direction = menuBridge.getDirection();
+                int menuPosition = menuBridge.getPosition();
+
+                if (direction == SwipeRecyclerView.RIGHT_DIRECTION) {
+                    if(menuPosition == 0){
+                        Log.i("Junwang", "选中删除第"+position+"条会话.");
+                        ((MainActivity)getActivity()).deleteConversation(conversations.get(position));
+                    }else if(menuPosition == 1){
+                        //置顶
+                    }
+                }
+            }
+        };
+
+        mRecyclerView.setSwipeMenuCreator(swipeMenuCreator);
+        mRecyclerView.setOnItemMenuClickListener(mMenuItemClickListener);
+        layoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(layoutManager);
+
+        mRecyclerView.setAdapter(adapter);
+        ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
 //        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 //        userViewModel.userInfoLiveData().observe(this, new Observer<List<UserInfo>>() {

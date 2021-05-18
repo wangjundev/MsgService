@@ -171,6 +171,7 @@ public class ConversationListViewModel extends AndroidViewModel {
             getJson(content, me);
             me.setDirection(MessageConstants.DIRECTION_IN);
             me.setReceivedTimeStamp(time);
+            me.setRead(1);
         }else {
             if(content != null){
                 me.setContent(content);
@@ -178,6 +179,7 @@ public class ConversationListViewModel extends AndroidViewModel {
             me.setDirection(MessageConstants.DIRECTION_OUT);
             me.setSentTimestamp(time);
             me.setMessageType(messageType);
+            me.setRead(0);
         }
         if(attachmentpath != null){
             me.setAttachmentPath(attachmentpath);
@@ -206,14 +208,17 @@ public class ConversationListViewModel extends AndroidViewModel {
         }
         me.setMessageStatus(isReceived ? MessageConstants.BUGLE_STATUS_INCOMING_COMPLETE : MessageConstants.BUGLE_STATUS_OUTGOING_SENDING);
         long messageId = mRepository.insertMessage(me);
-
+        Log.i("Junwang", "insert messageId="+messageId);
         ce.setLatestMessageId(messageId);
         ce.setSnippetText(me.generateSnippetText());
+        if(isReceived) {
+            ce.setUnreadCount(getUnreadCount(convId));
+        }
         updateConversation(ce);
         if(isReceived){
             UserInfoEntity userInfoEntity = new UserInfoEntity();
             userInfoEntity.setUri(destination);
-//        userInfoEntity.setName("中国移动");
+//            userInfoEntity.setName("中国移动");
             userInfoEntity.setName("新华社");
             String menu = "{\n" +
                     "\"menu\":{\"entries\":[{\n" +
@@ -306,9 +311,14 @@ public class ConversationListViewModel extends AndroidViewModel {
     }
 
     //need to implement
-    public int getUnreadCount(){
-        return 0;
+    public int getUnreadCount(final long conversationId){
+        return mRepository.getUnreadCount(conversationId);
     }
+
+    public void updateMessageReadStatus(){
+
+    }
+
     public LiveData<MessageEntity> getLastMessage(final long conversationId){
         return mRepository.getLastMessage(conversationId);
     }

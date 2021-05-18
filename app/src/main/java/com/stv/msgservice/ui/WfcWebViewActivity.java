@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.TextView;
 
 import com.stv.msgservice.R;
 import com.stv.msgservice.R2;
@@ -17,6 +18,9 @@ public class WfcWebViewActivity extends WfcBaseActivity {
 
     @BindView(R2.id.webview)
     WebView webView;
+
+    @BindView(R2.id.toolbar_title)
+    TextView toolbarTitle;
 
     public static void loadUrl(Context context, String title, String url) {
         Intent intent = new Intent(context, WfcWebViewActivity.class);
@@ -49,7 +53,9 @@ public class WfcWebViewActivity extends WfcBaseActivity {
 
         String title = getIntent().getStringExtra("title");
         if (!TextUtils.isEmpty(title)) {
-            setTitle(title);
+//            setTitle(title);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            toolbarTitle.setText(title);
         }
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);

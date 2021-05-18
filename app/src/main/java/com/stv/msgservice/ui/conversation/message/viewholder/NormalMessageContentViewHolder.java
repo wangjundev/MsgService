@@ -94,7 +94,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     protected abstract void onBind(Message message);
 
     /**
-     * when animation finish, do not forget to set {@link Message#isFocus} to {@code true}
+     * when animation finish, do not forget to set  Message#isFocus to {@code true}
      *
      * @param itemView the item view
      * @param message  the message to highlight

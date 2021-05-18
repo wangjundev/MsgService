@@ -15,9 +15,11 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.GsonBuilder;
 import com.stv.msgservice.R;
 import com.stv.msgservice.R2;
@@ -31,6 +33,9 @@ import com.stv.msgservice.datamodel.viewmodel.UserInfoViewModel;
 import com.stv.msgservice.ui.conversation.ext.core.ConversationExtension;
 import com.stv.msgservice.ui.conversation.menu.ThreeButtonPopupMenuView;
 import com.stv.msgservice.ui.conversation.menu.TwoButtonPopupMenuView;
+import com.stv.msgservice.ui.conversation.message.UiMessage;
+import com.stv.msgservice.ui.conversation.message.multimsg.MultiMessageAction;
+import com.stv.msgservice.ui.conversation.message.multimsg.MultiMessageActionManager;
 import com.stv.msgservice.ui.widget.InputAwareLayout;
 import com.stv.msgservice.ui.widget.KeyboardAwareLinearLayout;
 import com.stv.msgservice.utils.UIUtils;
@@ -81,7 +86,11 @@ public class ConversationFragment extends Fragment implements
     RecyclerView recyclerView;
 
     @BindView(R2.id.inputPanelFrameLayout)
+    FrameLayout inputPanelFrameLayout;
+    @BindView(R2.id.inputPanel)
     ConversationInputPanel inputPanel;
+
+
 
     @BindView(R2.id.multiMessageActionContainerLinearLayout)
     LinearLayout multiMessageActionContainerLinearLayout;
@@ -384,6 +393,7 @@ public class ConversationFragment extends Fragment implements
                 animatorSet.setDuration(100);
                 animatorSet.start();
                 swithchIn.setVisibility(View.VISIBLE);
+                swithchOut.setVisibility(View.GONE);
             }
 
             @Override
@@ -424,7 +434,7 @@ public class ConversationFragment extends Fragment implements
                         @Override
                         public void onClick(final View clickView) {
                             Log.i("junwang", "switch button onClicked.");
-                            inputPanel.setVisibility(View.GONE);
+//                            inputPanel.setVisibility(View.GONE);
                             Log.i("Junwang", "menuNumber=" + menuNumber);
                             if (menuNumber == 2) {
                                 startMenuSwitchAnimation(inputPanel, mTwoButtonMenu);
@@ -447,7 +457,7 @@ public class ConversationFragment extends Fragment implements
                                 Log.i("junwang", "mTwoBtnSwitchButton onClicked.");
                                 mTwoButtonMenu.closeMenu();
                                 startMenuSwitchAnimation(mTwoButtonMenu, inputPanel);
-                                mTwoButtonMenu.setVisibility(View.GONE);
+//                                mTwoButtonMenu.setVisibility(View.GONE);
                             }
                         });
                         inputPanel.setVisibility(View.GONE);
@@ -464,7 +474,7 @@ public class ConversationFragment extends Fragment implements
                                 Log.i("junwang", "mThreeBtnSwitchButton onClicked.");
                                 mThreeButtonMenu.closeMenu();
                                 startMenuSwitchAnimation(mThreeButtonMenu, inputPanel);
-                                mThreeButtonMenu.setVisibility(View.GONE);
+//                                mThreeButtonMenu.setVisibility(View.GONE);
                             }
                         });
                         inputPanel.setVisibility(View.GONE);
@@ -816,6 +826,11 @@ public class ConversationFragment extends Fragment implements
 //        }
         Log.i("Junwang", "inputPanel.closeConversationInputPanel");
         inputPanel.closeConversationInputPanel();
+        if(mThreeButtonMenu != null){
+            mThreeButtonMenu.closeMenu();
+        }else if(mTwoButtonMenu != null){
+            mTwoButtonMenu.closeMenu();
+        }
         return false;
     }
 
@@ -1051,7 +1066,8 @@ public class ConversationFragment extends Fragment implements
     }
 
     public void toggleMultiMessageMode(Message message) {
-        inputPanel.setVisibility(View.GONE);
+//        inputPanel.setVisibility(View.GONE);
+        inputPanelFrameLayout.setVisibility(View.GONE);
 //        message.isChecked = true;
         adapter.setMode(ConversationMessageAdapter.MODE_CHECKABLE);
         adapter.notifyDataSetChanged();
@@ -1060,10 +1076,11 @@ public class ConversationFragment extends Fragment implements
     }
 
     public void toggleConversationMode() {
-        inputPanel.setVisibility(View.VISIBLE);
+//        inputPanel.setVisibility(View.VISIBLE);
+        inputPanelFrameLayout.setVisibility(View.VISIBLE);
         multiMessageActionContainerLinearLayout.setVisibility(View.GONE);
         adapter.setMode(ConversationMessageAdapter.MODE_NORMAL);
-//        adapter.clearMessageCheckStatus();
+        adapter.clearMessageCheckStatus();
         adapter.notifyDataSetChanged();
     }
 
@@ -1072,41 +1089,41 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void setupMultiMessageAction() {
-//        multiMessageActionContainerLinearLayout.removeAllViews();
-//        List<MultiMessageAction> actions = MultiMessageActionManager.getInstance().getConversationActions(conversation);
-//        int width = getResources().getDisplayMetrics().widthPixels;
-//
-//        for (MultiMessageAction action : actions) {
-//            action.onBind(this, conversation);
-//            ImageView imageView = new ImageView(getActivity());
-//            imageView.setImageResource(action.iconResId());
-//
-//
-//            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width / actions.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
-//            multiMessageActionContainerLinearLayout.addView(imageView, layoutParams);
-//            ViewGroup.LayoutParams p = imageView.getLayoutParams();
-//            p.height = 70;
-//            imageView.requestLayout();
-//
-//            imageView.setOnClickListener(v -> {
-//                List<Message> checkedMessages = adapter.getCheckedMessages();
-//                if (action.confirm()) {
-//                    new MaterialDialog.Builder(getActivity()).content(action.confirmPrompt())
-//                            .negativeText("取消")
-//                            .positiveText("确认")
-//                            .onPositive((dialog, which) -> {
-//                                action.onClick(checkedMessages);
-//                                toggleConversationMode();
-//                            })
-//                            .build()
-//                            .show();
-//
-//                } else {
-//                    action.onClick(checkedMessages);
-//                    toggleConversationMode();
-//                }
-//            });
-//        }
+        multiMessageActionContainerLinearLayout.removeAllViews();
+        List<MultiMessageAction> actions = MultiMessageActionManager.getInstance().getConversationActions(conversation);
+        int width = getResources().getDisplayMetrics().widthPixels;
+
+        for (MultiMessageAction action : actions) {
+            action.onBind(this, conversation);
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setImageResource(action.iconResId());
+
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width / actions.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
+            multiMessageActionContainerLinearLayout.addView(imageView, layoutParams);
+            ViewGroup.LayoutParams p = imageView.getLayoutParams();
+            p.height = 70;
+            imageView.requestLayout();
+
+            imageView.setOnClickListener(v -> {
+                List<UiMessage> checkedMessages = adapter.getCheckedMessages();
+                if (action.confirm()) {
+                    new MaterialDialog.Builder(getActivity()).content(action.confirmPrompt())
+                            .negativeText("取消")
+                            .positiveText("确认")
+                            .onPositive((dialog, which) -> {
+                                action.onClick(checkedMessages);
+                                toggleConversationMode();
+                            })
+                            .build()
+                            .show();
+
+                } else {
+                    action.onClick(checkedMessages);
+                    toggleConversationMode();
+                }
+            });
+        }
     }
 
     @Override

@@ -18,6 +18,7 @@ import com.stv.msgservice.datamodel.database.entity.MessageEntity;
 import com.stv.msgservice.datamodel.model.Message;
 import com.stv.msgservice.datamodel.model.UserInfo;
 import com.stv.msgservice.ui.conversation.message.MessageItemView;
+import com.stv.msgservice.ui.conversation.message.UiMessage;
 import com.stv.msgservice.ui.conversation.message.viewholder.LoadingViewHolder;
 import com.stv.msgservice.ui.conversation.message.viewholder.MessageContentViewHolder;
 import com.stv.msgservice.ui.conversation.message.viewholder.MessageViewHolderManager;
@@ -45,6 +46,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     // check or normal
     private int mode;
     private List<MessageEntity> messages = new ArrayList<>();
+    private List<UiMessage> uiMessages = new ArrayList<>();
     private Map<String, Long> deliveries;
     private Map<String, Long> readEntries;
     private OnPortraitClickListener onPortraitClickListener;
@@ -65,26 +67,31 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         this.mode = mode;
     }
 
-//    public void clearMessageCheckStatus() {
-//        if (messages == null) {
-//            return;
-//        }
-//        for (Message message : messages) {
-//            message.isChecked = false;
-//        }
-//    }
+    public void clearMessageCheckStatus() {
+        if (uiMessages == null) {
+            return;
+        }
+        for (UiMessage message : uiMessages) {
+            message.isChecked = false;
+        }
+    }
 
-//    public List<Message> getCheckedMessages() {
-//        List<Message> checkedMessages = new ArrayList<>();
-//        if (this.messages != null) {
-//            for (Message msg : this.messages) {
-//                if (msg.isChecked) {
-//                    checkedMessages.add(msg);
-//                }
-//            }
-//        }
-//        return checkedMessages;
-//    }
+    public List<UiMessage> getCheckedMessages() {
+        List<UiMessage> checkedMessages = new ArrayList<>();
+        if (this.messages != null) {
+            for (UiMessage msg : uiMessages) {
+                if (msg.isChecked) {
+                    checkedMessages.add(msg);
+                }
+            }
+        }
+        if(checkedMessages != null){
+            Log.i("Junwang", "checked message count="+checkedMessages.size());
+        }else{
+            Log.i("Junwang", "no msg checked.");
+        }
+        return checkedMessages;
+    }
 
     public List<MessageEntity> getMessages() {
         return messages;
@@ -94,6 +101,14 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         this.messages = messages;
         if (this.messages == null) {
             this.messages = new ArrayList<>();
+        }
+        uiMessages.clear();
+        if(messages != null && messages.size() > 0){
+            for(MessageEntity me : messages){
+                Log.i("Junwang", "setMessages");
+                uiMessages.add(new UiMessage(false, me));
+            }
+            ((ConversationActivity)fragment.getActivity()).updateConversationLastMsgId(messages.get(messages.size()-1).getId());
         }
     }
 
@@ -142,6 +157,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             return;
         }
         messages.add(message);
+        uiMessages.add(new UiMessage(false, message));
+        Log.i("Junwang", "addNewMessage");
         notifyItemInserted(messages.size() - 1);
     }
 
@@ -150,6 +167,14 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             return;
         }
         this.messages.addAll(0, newMessages);
+
+        List<UiMessage> uiml = new ArrayList<>();
+        for(MessageEntity me : newMessages){
+            uiml.add(new UiMessage(false, me));
+        }
+        uiMessages.addAll(0, uiml);
+        Log.i("Junwang", "addMessagesAtHead");
+
         notifyItemRangeInserted(0, newMessages.size());
     }
 
@@ -159,6 +184,14 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         int insertStartPosition = this.messages.size();
         this.messages.addAll(newMessages);
+
+        List<UiMessage> uiml = new ArrayList<>();
+        for(MessageEntity me : newMessages){
+            uiml.add(new UiMessage(false, me));
+        }
+        uiMessages.addAll(uiml);
+        Log.i("Junwang", "addMessagesAtTail");
+
         notifyItemRangeInserted(insertStartPosition, newMessages.size());
     }
 
@@ -218,6 +251,15 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
             if(msg.getId() == message.getId()){
                 messages.remove(msg);
+                position = i;
+                break;
+            }
+        }
+        for (int i = 0; i < uiMessages.size(); i++) {
+            Log.i("Junwang", "removeMessage");
+            UiMessage uiMsg = uiMessages.get(i);
+            if(uiMsg.message.getId() == message.getId()){
+                uiMessages.remove(uiMsg);
                 position = i;
                 break;
             }
@@ -349,6 +391,11 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 //                if (onMessageCheckListener != null) {
 //                    onMessageCheckListener.onMessageCheck(message, message.isChecked);
 //                }
+
+                UiMessage uiMessage = uiMessages.get(position);
+                uiMessage.isChecked = !uiMessage.isChecked;
+                CheckBox checkBox = itemView.findViewById(R.id.checkbox);
+                checkBox.setChecked(uiMessage.isChecked);
                 notifyItemChanged(position);
             }
         });
@@ -483,8 +530,9 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             itemView.setCheckable(getMode() == MODE_CHECKABLE);
             if (getMode() == MODE_CHECKABLE) {
                 checkBox.setVisibility(View.VISIBLE);
-                Message message = getItem(position);
-//                checkBox.setChecked(message.isChecked);
+//                Message message = getItem(position);
+                UiMessage uiMessage = uiMessages.get(position);
+                checkBox.setChecked(/*message.isChecked*/uiMessage.isChecked);
             } else {
                 checkBox.setVisibility(View.GONE);
             }
@@ -531,6 +579,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
 
         messages.add(null);
+        uiMessages.add(null);
+        Log.i("Junwang", "showLoadingNewMessageProgressBar");
         notifyItemInserted(messages.size() - 1);
     }
 
@@ -540,6 +590,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         int position = messages.size() - 1;
         messages.remove(position);
+        uiMessages.remove(position);
+        Log.i("Junwang", "dismissLoadingNewMessageProgressBar");
         notifyItemRemoved(position);
     }
 

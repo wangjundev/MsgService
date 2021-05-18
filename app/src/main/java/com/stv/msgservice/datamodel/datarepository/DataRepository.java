@@ -65,6 +65,14 @@ public class DataRepository {
         return mDatabase.messageDao().getMessages(conversationId);
     }
 
+    public LiveData<List<MessageEntity>> getUnReadMessages(final long conversationId) {
+        return mDatabase.messageDao().getUnReadMessages(conversationId);
+    }
+
+    public void updateMessagesReadStatus(List<MessageEntity> list){
+        mDatabase.messageDao().updateMessagesReadStatus(list);
+    }
+
 //    public DataSource.Factory<Integer, MessageEntity> getMessagesForPaging(final long conversationId){
 //        return mDatabase.messageDao().getPageMessages(conversationId);
 //    }
@@ -111,6 +119,14 @@ public class DataRepository {
         return mDatabase.userInfoDao().getUser(uri);
     }
 
+    public int getUnreadCount(long conversationId){
+        return mDatabase.messageDao().getUnreadCount(conversationId);
+    }
+
+    public void updateMessageReadStatus(long conversationId){
+//        mDatabase.conversationDao().updateMessageReadStatus(conversationId);
+    }
+
     public LiveData<MessageEntity> getLastMessage(long conversationId){
         return mDatabase.messageDao().getLastMessage(conversationId);
     }
@@ -121,6 +137,10 @@ public class DataRepository {
 
     public void deleteMessage(MessageEntity me){
         mDatabase.messageDao().deleteMessage(me);
+    }
+
+    public void deleteMessages(List<MessageEntity> messageEntityList){
+        mDatabase.messageDao().deleteMessages(messageEntityList);
     }
 
     public LiveData<UserInfoEntity> getUserInfoByConversationId(final long conversationId){

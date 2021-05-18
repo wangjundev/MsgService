@@ -37,6 +37,8 @@ public class ConversationEntity  implements Conversation, Parcelable {
     @ColumnInfo(name = "participant_normalized_destination")
     private String normalizedDestination;
 
+    private int unreadCount;
+
     public long getId() {
         return id;
     }
@@ -91,6 +93,14 @@ public class ConversationEntity  implements Conversation, Parcelable {
 
     public void setLatestMessageStatus(int latestMessageStatus) {
         this.latestMessageStatus = latestMessageStatus;
+    }
+
+    public int getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(int unreadCount) {
+        this.unreadCount = unreadCount;
     }
 
     public static final Parcelable.Creator<ConversationEntity> CREATOR = new Parcelable.Creator<ConversationEntity>() {

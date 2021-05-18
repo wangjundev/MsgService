@@ -170,13 +170,13 @@ public class MMPreviewActivity extends Activity {
                 btn.setVisibility(View.GONE);
                 if (TextUtils.isEmpty(entry.getMediaLocalPath())) {
                     String name = DownloadManager.md5(entry.getMediaUrl());
-                    File videoFile = new File(Config.VIDEO_SAVE_DIR, name);
+                    File videoFile = new File(getFilesDir().toString()+Config.VIDEO_SAVE_DIR, name);
                     if (!videoFile.exists()) {
                         view.setTag(name);
                         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
                         loadingProgressBar.setVisibility(View.VISIBLE);
                         final WeakReference<View> viewWeakReference = new WeakReference<>(view);
-                        DownloadManager.download(entry.getMediaUrl(), Config.VIDEO_SAVE_DIR, name, new DownloadManager.OnDownloadListener() {
+                        DownloadManager.download(entry.getMediaUrl(), getFilesDir().toString()+Config.VIDEO_SAVE_DIR, name, new DownloadManager.OnDownloadListener() {
                             @Override
                             public void onSuccess(File file) {
                                 UIUtils.postTaskSafely(() -> {
@@ -250,14 +250,14 @@ public class MMPreviewActivity extends Activity {
         String mediaUrl = entry.getMediaUrl();
         if (TextUtils.isEmpty(entry.getMediaLocalPath()) && !TextUtils.isEmpty(mediaUrl)) {
             String imageFileName = DownloadManager.md5(mediaUrl) + mediaUrl.substring(mediaUrl.lastIndexOf('.'));
-            File file = new File(Config.PHOTO_SAVE_DIR, imageFileName);
+            File file = new File(getFilesDir().toString()+Config.PHOTO_SAVE_DIR, imageFileName);
             if (file.exists()) {
                 saveImageView.setVisibility(View.GONE);
             } else {
                 saveImageView.setVisibility(View.VISIBLE);
                 saveImageView.setOnClickListener(v -> {
                     saveImageView.setVisibility(View.GONE);
-                    DownloadManager.download(entry.getMediaUrl(), Config.PHOTO_SAVE_DIR, imageFileName, new DownloadManager.SimpleOnDownloadListener() {
+                    DownloadManager.download(entry.getMediaUrl(), getFilesDir().toString()+Config.PHOTO_SAVE_DIR, imageFileName, new DownloadManager.SimpleOnDownloadListener() {
                         @Override
                         public void onUiSuccess(File file1) {
                             if (isFinishing()) {

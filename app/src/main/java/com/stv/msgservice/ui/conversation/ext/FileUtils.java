@@ -37,7 +37,7 @@ import okhttp3.ResponseBody;
 public class FileUtils {
     public static final String DOCUMENTS_DIR = "documents";
     // configured android:authorities in AndroidManifest (https://developer.android.com/reference/android/support/v4/content/FileProvider)
-    public static final String AUTHORITY = "com.stv.msgservice.provider";//BuildConfig.LIBRARY_PACKAGE_NAME + ".provider";
+    public static final String AUTHORITY = "com.stv.msgservice.provider"+ ".provider";//BuildConfig.LIBRARY_PACKAGE_NAME + ".provider";
     public static final String HIDDEN_PREFIX = ".";
     /**
      * TAG for log messages.

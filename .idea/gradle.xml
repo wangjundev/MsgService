@@ -13,6 +13,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/EasyRxRetrofitlib" />
+            <option value="$PROJECT_DIR$/SwipeRecyclerView" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/emojilibrary" />
             <option value="$PROJECT_DIR$/imagepicker" />

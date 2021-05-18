@@ -185,6 +185,7 @@ public class AudioPlayManager implements SensorEventListener {
                 this._mediaPlayer = new MediaPlayer();
                 this._mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     public void onCompletion(MediaPlayer mp) {
+                        Log.i("Junwang", "audio play completed.");
                         if (AudioPlayManager.this._playListener != null) {
                             AudioPlayManager.this._playListener.onComplete(AudioPlayManager.this._playingUri);
                             AudioPlayManager.this._playListener = null;

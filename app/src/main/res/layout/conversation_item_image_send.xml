@@ -8,7 +8,7 @@
     android:maxWidth="200dp"
     android:maxHeight="200dp"
     android:scaleType="centerCrop"
-    app:bubble_angle="10dp"
+    app:bubble_angle="6dp"
     app:bubble_arrowHeight="10dp"
     app:bubble_arrowLocation="right"
     app:bubble_arrowOffset="-5dp"

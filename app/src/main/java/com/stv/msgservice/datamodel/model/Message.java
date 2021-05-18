@@ -10,4 +10,5 @@ public interface Message {
     String getAttachmentPath();
     String getContent();
     long getConversationId();
+    int getRead();
 }

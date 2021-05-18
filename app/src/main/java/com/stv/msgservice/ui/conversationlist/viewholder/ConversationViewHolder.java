@@ -107,9 +107,11 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
 //                unreadCountTextView.setVisibility(View.GONE);
 //            }
 //        }
-        if (conversationListViewModel.getUnreadCount() > 0) {
+//        int count = conversationListViewModel.getUnreadCount(conversationInfo.getId());
+        int count = conversationInfo.getUnreadCount();
+        if (count > 0) {
             unreadCountTextView.setVisibility(View.VISIBLE);
-            unreadCountTextView.setText(conversationListViewModel.getUnreadCount() > 99 ? "99+" : conversationListViewModel.getUnreadCount() + "");
+            unreadCountTextView.setText(count > 99 ? "99+" : count + "");
         } else {
             unreadCountTextView.setVisibility(View.GONE);
         }

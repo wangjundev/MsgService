@@ -27,7 +27,7 @@ public class BubbleImageView extends ImageView {
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
     private static final int COLORDRAWABLE_DIMENSION = 1;
 
-    private int mAngle = dp2px(10);
+    private int mAngle = dp2px(6);
     private int mArrowTop = dp2px(40);
     private int mArrowWidth = dp2px(20);
     private int mArrowHeight = dp2px(20);

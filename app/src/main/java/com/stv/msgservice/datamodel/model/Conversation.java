@@ -7,4 +7,7 @@ public interface Conversation{
     String getNormalizedDestination();
     int getLatestMessageStatus();
     long getLatestMessageId();
+    int getUnreadCount();
+    void setUnreadCount(int unreadCount);
+    void setLatestMessageId(long latestMessageId);
 }

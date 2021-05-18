@@ -32,10 +32,11 @@
 
             <View style="@style/Line" />
             <FrameLayout
+                android:id="@+id/inputPanelFrameLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <com.stv.msgservice.ui.conversation.ConversationInputPanel
-                    android:id="@+id/inputPanelFrameLayout"
+                    android:id="@+id/inputPanel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     />

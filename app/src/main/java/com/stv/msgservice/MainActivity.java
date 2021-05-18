@@ -7,9 +7,11 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Telephony;
+import android.widget.TextView;
 
 import com.stv.msgservice.datamodel.database.entity.ConversationEntity;
 import com.stv.msgservice.datamodel.viewmodel.ConversationListViewModel;
+import com.stv.msgservice.datamodel.viewmodel.MessageViewModel;
 import com.stv.msgservice.receiver.MmsWapPushReceiver;
 import com.stv.msgservice.receiver.SmsReceiver;
 import com.stv.msgservice.ui.WfcBaseActivity;
@@ -17,10 +19,13 @@ import com.stv.msgservice.ui.conversationlist.ConversationListFragment;
 import com.stv.msgservice.utils.PermissionUtils;
 
 import androidx.lifecycle.ViewModelProvider;
+import butterknife.BindView;
 
 public class MainActivity extends WfcBaseActivity {
     MmsWapPushReceiver mmsWapPushReceiver;
     private AppExecutors mAppExecutors;
+    @BindView(R2.id.toolbar_title)
+    TextView toolbarTitle;
 
     private final String[] BASIC_PERMISSIONS = new String[]{
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -48,6 +53,8 @@ public class MainActivity extends WfcBaseActivity {
 //        RetrofitManager
 //                .init(new MsgRetrofitBuilder());
         initPermission();
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbarTitle.setText("msgservice");
         final PackageManager packageManager = this.getPackageManager();
         packageManager.setComponentEnabledSetting(
                 new ComponentName(this, SmsReceiver.class),
@@ -116,10 +123,16 @@ public class MainActivity extends WfcBaseActivity {
     }
 
     public void deleteConversation(ConversationEntity ce){
-        mAppExecutors.diskIO().execute(() -> {
-            ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
-            mViewModel.deleteConversation(ce);
-
+        MessageViewModel.Factory factory = new MessageViewModel.Factory(
+                getApplication(), 0);
+        MessageViewModel messageViewModel = new ViewModelProvider(this, factory)
+                .get(MessageViewModel.class);
+        messageViewModel.getMessages(ce.getId()).observe(this, messageEntityList -> {
+            mAppExecutors.diskIO().execute(() -> {
+                ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
+                mViewModel.deleteConversation(ce);
+                messageViewModel.deleteMessages(messageEntityList);
+            });
         });
     }
 

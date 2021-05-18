@@ -42,20 +42,20 @@ public class TakePhotoActivity extends AppCompatActivity {
         mJCameraView.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath());
         //(0.0.8+)设置手动/自动对焦，默认为自动对焦
         //设置小视频保存路径
-        File file = new File(Config.VIDEO_SAVE_DIR);
+        File file = new File(this.getFilesDir().toString()+Config.VIDEO_SAVE_DIR);
         if (!file.exists()) {
             file.mkdirs();
         }
 
         int mode = getIntent().getIntExtra(MODE, MODE_CAPTURE_AND_RECORDER);
         mJCameraView.setFeatures(mode);
-        mJCameraView.setSaveVideoPath(Config.VIDEO_SAVE_DIR);
+        mJCameraView.setSaveVideoPath(this.getFilesDir().toString()+Config.VIDEO_SAVE_DIR);
         mJCameraView.setJCameraLisenter(new JCameraListener() {
 
             @Override
             public void captureSuccess(Bitmap bitmap) {
                 //获取到拍照成功后返回的Bitmap
-                String path = saveBitmap(bitmap, Config.PHOTO_SAVE_DIR);
+                String path = saveBitmap(bitmap, getFilesDir().toString()+Config.PHOTO_SAVE_DIR);
                 Intent data = new Intent();
                 data.putExtra("take_photo", true);
                 data.putExtra("path", path);

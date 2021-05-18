@@ -18,6 +18,7 @@ import com.stv.msgservice.R;
 import com.stv.msgservice.datamodel.network.chatbot.ChatbotMenuEntity;
 import com.stv.msgservice.datamodel.network.chatbot.ChatbotMenuItem;
 import com.stv.msgservice.datamodel.network.chatbot.SuggestionActionWrapper;
+import com.stv.msgservice.utils.NativeFunctionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,42 +52,42 @@ public class ThreeButtonPopupMenuView extends LinearLayout {
         mContext = context;
     }
 
-//    private void onMenuItemClick(ButtonMenu.BusnMenuItem bmi, View targetView){
-//        if(bmi != null){
-//            int actionType = bmi.getAction_type();
-//            String actionUrl = bmi.getAction_url();
-//            int actionLocalFunc = bmi.getAction_native_function();
-//            switch (actionType){
-//                case 1:
-//                    //load url
-//                    Log.i("Junwang", "action type == 1"+", menu item name="+bmi.getItem_name());
-//                    NativeFunctionUtil.loadUrl(getContext(), actionUrl, bmi.getItem_name());
-//                    break;
-//                case 2:
-//                    //call native function
-//                    Log.i("Junwang", "action type == 2");
-////                    if(actionLocalFunc == 1){
-////                        NativeFunctionUtil.copyText(getContext(), "复制");
-////                    }else if(actionLocalFunc == 2){
-////                        NativeFunctionUtil.callNumber(ConversationMessageView.getActivityFromView(this), targetView, "10086");
-////                    }
-//                    NativeFunctionUtil.callNativeFunction(actionLocalFunc, ConversationMessageView.getActivityFromView(this), null, targetView, bmi.getAction_url());
-//                    break;
-//                case 3:
-//                    //jump to app
-//                    Log.i("Junwang", "action type == 3");
-//                    NativeFunctionUtil.launchAPK(getContext(), actionUrl);
-//                    break;
-//                case 4:
-//                    //call alipay
-//                    Log.i("Junwang", "action type == 4");
+    private void onMenuItemClick(ButtonMenu.BusnMenuItem bmi, View targetView){
+        if(bmi != null){
+            int actionType = bmi.getAction_type();
+            String actionUrl = bmi.getAction_url();
+            int actionLocalFunc = bmi.getAction_native_function();
+            switch (actionType){
+                case 1:
+                    //load url
+                    Log.i("Junwang", "action type == 1"+", menu item name="+bmi.getItem_name());
+                    NativeFunctionUtil.loadUrl(getContext(), actionUrl, bmi.getItem_name());
+                    break;
+                case 2:
+                    //call native function
+                    Log.i("Junwang", "action type == 2");
+//                    if(actionLocalFunc == 1){
+//                        NativeFunctionUtil.copyText(getContext(), "复制");
+//                    }else if(actionLocalFunc == 2){
+//                        NativeFunctionUtil.callNumber(ConversationMessageView.getActivityFromView(this), targetView, "10086");
+//                    }
+                    NativeFunctionUtil.callNativeFunction(actionLocalFunc, getContext(), null, targetView, bmi.getAction_url());
+                    break;
+                case 3:
+                    //jump to app
+                    Log.i("Junwang", "action type == 3");
+                    NativeFunctionUtil.launchAPK(getContext(), actionUrl);
+                    break;
+                case 4:
+                    //call alipay
+                    Log.i("Junwang", "action type == 4");
 //                    NativeFunctionUtil.callAlipay(ConversationMessageView.getActivityFromView(this), actionUrl, null);
-//                    break;
-//                default:
-//                    break;
-//            }
-//        }
-//    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
     @Override
     protected void onFinishInflate() {
@@ -390,7 +391,7 @@ public class ThreeButtonPopupMenuView extends LinearLayout {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.i("Junwang", "showCustomDialog onItemClick position="+position);
-//                onMenuItemClick(mBusnMenuItem[buttonNo].get(position), view);
+                onMenuItemClick(mBusnMenuItem[buttonNo].get(position), view);
 //                Toast.makeText(getContext(), /*names.get(position)*/mBusnMenuItem[buttonNo].get(position).getAction_url(), Toast.LENGTH_SHORT).show();
             }
         }, names);

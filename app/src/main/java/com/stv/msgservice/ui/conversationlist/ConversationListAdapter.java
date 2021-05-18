@@ -89,7 +89,7 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
         itemView = LayoutInflater.from(fragment.getContext()).inflate(R.layout.conversationlist_item_conversation, parent, false);
         SingleConversationViewHolder viewHolder = new SingleConversationViewHolder(fragment, this, itemView);
         processConversationClick(viewHolder, itemView);
-        processConversationLongClick(SingleConversationViewHolder.class, viewHolder, itemView);
+//        processConversationLongClick(SingleConversationViewHolder.class, viewHolder, itemView);
         return viewHolder;
     }
 

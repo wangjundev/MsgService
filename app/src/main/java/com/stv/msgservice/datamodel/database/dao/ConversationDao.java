@@ -37,4 +37,7 @@ public interface ConversationDao {
 
     @Delete
     void deleteConversation(ConversationEntity ce);
+
+//    @Update(onConflict = OnConflictStrategy.REPLACE)
+//    void updateMessageReadStatus(long conversationId);
 }

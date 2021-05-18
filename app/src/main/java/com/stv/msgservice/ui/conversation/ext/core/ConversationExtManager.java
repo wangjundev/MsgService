@@ -4,6 +4,7 @@ import com.stv.msgservice.datamodel.model.Conversation;
 import com.stv.msgservice.ui.conversation.ext.ExampleAudioInputExt;
 import com.stv.msgservice.ui.conversation.ext.FileExt;
 import com.stv.msgservice.ui.conversation.ext.ImageExt;
+import com.stv.msgservice.ui.conversation.ext.LocationExt;
 import com.stv.msgservice.ui.conversation.ext.ShootExt;
 
 import java.lang.reflect.Constructor;
@@ -31,7 +32,7 @@ public class ConversationExtManager {
 //        registerExt(VoipExt.class);
         registerExt(ShootExt.class);
         registerExt(FileExt.class);
-//        registerExt(LocationExt.class);
+        registerExt(LocationExt.class);
         registerExt(ExampleAudioInputExt.class);
 //        registerExt(UserCardExt.class);
     }
