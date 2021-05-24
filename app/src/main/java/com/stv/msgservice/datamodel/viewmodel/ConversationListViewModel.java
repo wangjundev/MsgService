@@ -145,14 +145,24 @@ public class ConversationListViewModel extends AndroidViewModel {
                         }
                     }
                 }
+            }, new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable throwable) throws Exception {
+                    Log.i("Junwang", "getJson exception "+throwable.toString());
+                    me.setMessageType(MessageConstants.CONTENT_TYPE_TEXT);
+                    me.setContent(null);
+                    throwable.printStackTrace();
+                }
             });
         }catch(Exception e){
+            me.setMessageType(MessageConstants.CONTENT_TYPE_TEXT);
+            me.setContent(null);
             Log.i("Junwang", "getJson exception "+e.toString());
         }
         return null;
     }
 
-    public void saveMsg(Context context, String content, String destination, boolean isReceived, String attachmentpath, int messageType){
+    public MessageEntity saveMsg(Context context, String content, String destination, boolean isReceived, String attachmentpath, int messageType){
         long convId = DataRepository.getInstance(AppDatabase.getInstance(context)).getConversationId(destination);
         Log.i("Junwang", "addMessage query conversation Id = "+ convId);
 
@@ -209,6 +219,7 @@ public class ConversationListViewModel extends AndroidViewModel {
         me.setMessageStatus(isReceived ? MessageConstants.BUGLE_STATUS_INCOMING_COMPLETE : MessageConstants.BUGLE_STATUS_OUTGOING_SENDING);
         long messageId = mRepository.insertMessage(me);
         Log.i("Junwang", "insert messageId="+messageId);
+        me.setId(messageId);
         ce.setLatestMessageId(messageId);
         ce.setSnippetText(me.generateSnippetText());
         if(isReceived) {
@@ -307,7 +318,8 @@ public class ConversationListViewModel extends AndroidViewModel {
             userInfoEntity.setPortrait("http://sms-agent.oss-cn-hangzhou.aliyuncs.com/sms_agent_temp/51/xhs.png");
             mRepository.insertUserInfo(userInfoEntity);
         }
-        loadConversations();
+//        loadConversations();
+        return me;
     }
 
     //need to implement

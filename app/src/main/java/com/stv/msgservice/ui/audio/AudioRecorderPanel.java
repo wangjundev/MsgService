@@ -177,7 +177,7 @@ public class AudioRecorderPanel implements View.OnTouchListener {
             recorder.stopRecord();
         }
         if (recordListener != null) {
-            recordListener.onRecordFail("user canceled");
+            recordListener.onRecordFail("取消发送");
         }
         hideRecording();
 

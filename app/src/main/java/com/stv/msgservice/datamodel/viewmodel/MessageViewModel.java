@@ -2,16 +2,24 @@ package com.stv.msgservice.datamodel.viewmodel;
 
 import android.app.Application;
 import android.net.Uri;
+import android.util.Log;
 
+import com.google.gson.Gson;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import com.stv.msgservice.datamodel.constants.MessageConstants;
 import com.stv.msgservice.datamodel.database.AppDatabase;
 import com.stv.msgservice.datamodel.database.entity.MessageEntity;
 import com.stv.msgservice.datamodel.datarepository.DataRepository;
 import com.stv.msgservice.datamodel.model.Conversation;
 import com.stv.msgservice.datamodel.model.Message;
+import com.stv.msgservice.datamodel.network.ApiService;
+import com.stv.msgservice.datamodel.network.BaseResult;
+import com.stv.msgservice.datamodel.network.SendCallback;
 import com.stv.msgservice.ui.conversation.message.ImageMessageContent;
 import com.stv.msgservice.ui.conversation.message.TextMessageContent;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +29,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import okhttp3.RequestBody;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MessageViewModel extends AndroidViewModel {
     private final long mConversationId;
@@ -66,6 +79,10 @@ public class MessageViewModel extends AndroidViewModel {
         mRepository.updateMessagesReadStatus(list);
     }
 
+    public void updateMessageSendStatus(MessageEntity me){
+        mRepository.updateMessageSendStatus(me);
+    }
+
     public LiveData<List<MessageEntity>> getMessages() {
         mObservableMessages = mRepository.getMessages(mConversationId);
         return mObservableMessages;
@@ -75,7 +92,13 @@ public class MessageViewModel extends AndroidViewModel {
 //        mRepository.deleteMessage(messageId);
 //    }
 
-    public void deleteMessage(MessageEntity me){mRepository.deleteMessage(me);}
+    public void deleteMessage(MessageEntity me){
+        if (messageRemovedLiveData != null) {
+            Log.i("Junwang", "update delete Message");
+            messageRemovedLiveData.setValue(me);
+        }
+        mRepository.deleteMessage(me);
+    }
 
     public void deleteMessages(List<MessageEntity> messageEntityList){
         mRepository.deleteMessages(messageEntityList);
@@ -86,8 +109,8 @@ public class MessageViewModel extends AndroidViewModel {
     }
 
     //need to implement
-    public void resendMessage(Message message){
-
+    public void resendMessage(MessageEntity message){
+        deleteMessage(message);
     }
 
     public void sendTextMsg(Conversation conversation, TextMessageContent txtContent) {
@@ -177,6 +200,7 @@ public class MessageViewModel extends AndroidViewModel {
         if (messageUpdateLiveData == null) {
             messageUpdateLiveData = new MutableLiveData<>();
         }
+        Log.i("Junwang", "get messageUpdateLiveData");
         return messageUpdateLiveData;
     }
 
@@ -206,6 +230,124 @@ public class MessageViewModel extends AndroidViewModel {
             messageDeliverLiveData = new MutableLiveData<>();
         }
         return messageDeliverLiveData;
+    }
+
+    public void sendFilemsg(MessageEntity msg, String filePath, SendCallback callback){
+        try{
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(MessageConstants.BASE_URL)
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            ApiService service = retrofit.create(ApiService.class);
+            Gson gson=new Gson();
+            HashMap<String,String> paramsMap=new HashMap<>();
+            paramsMap.put("filepath",filePath);
+            String strEntity = gson.toJson(paramsMap);
+            RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json;charset=UTF-8"),strEntity);
+            Observable<BaseResult<MessageEntity>> response = service.createCommit(body);
+            try{
+                response
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(AndroidSchedulers.mainThread()/*Schedulers.io()*/)
+                        .subscribe(new Consumer<BaseResult<MessageEntity>>() {
+                            @Override
+                            public void accept(BaseResult<MessageEntity> messageEntityBaseResult) throws Exception {
+                                if(messageEntityBaseResult != null){
+                                    msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_COMPLETE);
+                                    messageUpdateLiveData.setValue(msg);
+                                    if(callback != null){
+                                        callback.onSuccess();
+                                    }
+                                }
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                Log.e("Junwang",  "accept exception "+throwable.toString()+"," + Thread.currentThread().getName());
+                                msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_FAILED);
+                                if(messageUpdateLiveData != null){
+                                    Log.i("Junwang",  "update msgid="+msg.getId()+" status to send fail.");
+                                    messageUpdateLiveData.setValue(msg);
+                                }
+                                throwable.printStackTrace();
+                            }
+                        });
+            }catch (Exception e){
+                Log.e("Junwang",  "sendTextmsg exception "+e.toString());
+                msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_FAILED);
+                if(messageUpdateLiveData != null){
+                    messageUpdateLiveData.setValue(msg);
+                }
+            }
+        }catch (Exception e){
+            Log.e("Junwang",  "retrofit sendTextmsg exception "+e.toString()+"," + Thread.currentThread().getName());
+            msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_FAILED);
+            if(messageUpdateLiveData != null){
+                Log.i("Junwang",  "update msgid="+msg.getId()+" status to send fail.");
+                messageUpdateLiveData.setValue(msg);
+            }
+        }
+    }
+
+    public void sendTextmsg(MessageEntity msg, String text, SendCallback callback){
+        try{
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(MessageConstants.BASE_URL)
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            ApiService service = retrofit.create(ApiService.class);
+            Gson gson=new Gson();
+            HashMap<String,String> paramsMap=new HashMap<>();
+            paramsMap.put("content",text);
+            String strEntity = gson.toJson(paramsMap);
+            RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json;charset=UTF-8"),strEntity);
+            Observable<BaseResult<MessageEntity>> response = service.createCommit(body);
+            try{
+                response
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(AndroidSchedulers.mainThread()/*Schedulers.io()*/)
+                        .subscribe(new Consumer<BaseResult<MessageEntity>>() {
+                    @Override
+                    public void accept(BaseResult<MessageEntity> messageEntityBaseResult) throws Exception {
+                        if(messageEntityBaseResult != null){
+                            msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_COMPLETE);
+                            messageUpdateLiveData.setValue(msg);
+                            if(callback != null){
+                                callback.onSuccess();
+                            }
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.e("Junwang",  "accept exception "+throwable.toString()+"," + Thread.currentThread().getName());
+                        msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_FAILED);
+                        if(messageUpdateLiveData != null){
+                            Log.i("Junwang",  "update msgid="+msg.getId()+" status to send fail.");
+                            messageUpdateLiveData.setValue(msg);
+                        }
+                        throwable.printStackTrace();
+                    }
+                });
+            }catch (Exception e){
+                Log.e("Junwang",  "sendTextmsg exception "+e.toString());
+                msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_FAILED);
+                if(messageUpdateLiveData != null){
+                    messageUpdateLiveData.setValue(msg);
+                }
+            }
+        }catch (Exception e){
+            Log.e("Junwang",  "retrofit sendTextmsg exception "+e.toString()+"," + Thread.currentThread().getName());
+            msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_FAILED);
+            if(messageUpdateLiveData != null){
+                Log.i("Junwang",  "update msgid="+msg.getId()+" status to send fail.");
+                messageUpdateLiveData.setValue(msg);
+            }
+        }
     }
 
 //    public LiveData<PagedList<MessageEntity>> getPageMessages(){

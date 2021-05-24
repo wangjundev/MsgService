@@ -21,7 +21,7 @@ public interface ApiService {
 //        @GET("right_pic_news")    //plain text
 //    @GET("xinhua99_news")     //picture
 //    @GET("video")             //video
-    @GET("three_pic_news")    //multi card
-//    @GET("xinhua_news")         //single card
+//    @GET("three_pic_news")    //multi card
+    @GET("xinhua_news")         //single card
     Observable<ChatbotMultiCard> getMessageContent();
 }

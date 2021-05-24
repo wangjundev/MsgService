@@ -5,7 +5,6 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -14,6 +13,7 @@ import com.stv.msgservice.R;
 import com.stv.msgservice.R2;
 import com.stv.msgservice.annotation.EnableContextMenu;
 import com.stv.msgservice.annotation.MessageContentType;
+import com.stv.msgservice.datamodel.constants.Config;
 import com.stv.msgservice.datamodel.constants.MessageConstants;
 import com.stv.msgservice.datamodel.model.Message;
 import com.stv.msgservice.ui.audio.AudioPlayManager;
@@ -66,12 +66,16 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
     }
 
     @Override
-    public void onBind(Message message) {
-        Log.i("Junwang", "audio onBind");
-        super.onBind(message);
-//        SoundMessageContent voiceMessage = (SoundMessageContent) message.message.content;
-//        int increment = UIUtils.getDisplayWidth(fragment.getContext()) / 3 / Config.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND * voiceMessage.getDuration();
+    protected void setSendStatus(Message item) {
+        super.setSendStatus(item);
+    }
 
+    @Override
+    public void onBind(Message message) {
+//        super.onBind(message);
+//        SoundMessageContent voiceMessage = (SoundMessageContent) message.message.content;
+        int increment = UIUtils.getDisplayWidth(fragment.getContext()) / 3 / Config.DEFAULT_MAX_AUDIO_RECORD_TIME_SECOND * getAudioDuration(message.getAttachmentPath());
+        Log.i("Junwang", "audio onBind increment="+increment);
 //        durationTextView.setText(voiceMessage.getDuration() + "''");
         int duration = getAudioDuration(message.getAttachmentPath());
         if(duration <= 0){
@@ -79,9 +83,9 @@ public class AudioMessageContentViewHolder extends MediaMessageContentViewHolder
         }else{
             durationTextView.setText(duration+"''");
         }
-        ViewGroup.LayoutParams params = contentLayout.getLayoutParams();
-        params.width = UIUtils.dip2Px(65) /*+ increment*/;
-        contentLayout.setLayoutParams(params);
+//        ViewGroup.LayoutParams params = contentLayout.getLayoutParams();
+//        params.width = UIUtils.dip2Px(65) + increment;
+//        contentLayout.setLayoutParams(params);
         if (message.getDirection() == MessageConstants.DIRECTION_IN) {
 //            if (message.message.status != MessageStatus.Played) {
 //                playStatusIndicator.setVisibility(View.VISIBLE);

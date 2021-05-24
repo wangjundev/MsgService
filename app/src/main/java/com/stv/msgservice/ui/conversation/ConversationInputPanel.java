@@ -209,6 +209,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
             @Override
             public void onRecordFail(String reason) {
                 Log.i("Junwang", "onRecordFail");
+//                Snackbar.make(null, reason, 2000).show();
                 Toast.makeText(activity, reason, Toast.LENGTH_SHORT).show();
             }
 

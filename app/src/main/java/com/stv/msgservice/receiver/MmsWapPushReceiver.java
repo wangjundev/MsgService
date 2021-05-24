@@ -125,19 +125,4 @@ public class MmsWapPushReceiver extends BroadcastReceiver {
         }
         return null;
     }
-
-    public static void postJson(String text){
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl(MessageConstants.BASE_URL)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//
-//        ApiService service = retrofit.create(ApiService.class);
-//        Gson gson=new Gson();
-//        HashMap<String,String> paramsMap=new HashMap<>();
-//        paramsMap.put("content",text);
-//        String strEntity = gson.toJson(paramsMap);
-//        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json;charset=UTF-8"),strEntity);
-//        Observable<BaseResult<MessageEntity>> response = service.createCommit(body);
-    }
 }

@@ -13,6 +13,7 @@ import com.stv.msgservice.datamodel.database.entity.ConversationEntity;
 import com.stv.msgservice.datamodel.database.entity.MessageEntity;
 import com.stv.msgservice.datamodel.model.Conversation;
 import com.stv.msgservice.datamodel.model.Message;
+import com.stv.msgservice.datamodel.network.SendCallback;
 import com.stv.msgservice.datamodel.viewmodel.ConversationListViewModel;
 import com.stv.msgservice.datamodel.viewmodel.MessageViewModel;
 import com.stv.msgservice.ui.WfcBaseActivity;
@@ -27,6 +28,7 @@ public class ConversationActivity extends WfcBaseActivity {
     private ConversationFragment conversationFragment;
     private Conversation conversation;
     private AppExecutors mAppExecutors;
+    private SendCallback sendCallback;
     @BindView(R2.id.toolbar_title)
     TextView toolbarTitle;
 
@@ -96,7 +98,45 @@ public class ConversationActivity extends WfcBaseActivity {
     public void saveMsg(Context context, String content, String destination, boolean isReceived, String attachmentpath, int messageType){
         mAppExecutors.diskIO().execute(() -> {
             ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
-            mViewModel.saveMsg(context, content, destination, isReceived,  attachmentpath,messageType);
+            MessageEntity me = mViewModel.saveMsg(context, content, destination, isReceived,  attachmentpath,messageType);
+            MessageViewModel.Factory factory = new MessageViewModel.Factory(
+                    this.getApplication(), 0);
+            MessageViewModel messageViewModel = new ViewModelProvider(this, factory)
+                    .get(MessageViewModel.class);
+            if(content != null && content.length() > 0){
+                messageViewModel.sendTextmsg(me, content, null);
+                Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
+                messageViewModel.updateMessageSendStatus(me);
+            }else if(attachmentpath != null){
+                messageViewModel.sendFilemsg(me, attachmentpath, null);
+                Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
+                messageViewModel.updateMessageSendStatus(me);
+            }
+            conversationFragment.setInitialFocusedMessageId(-1);
+        });
+    }
+
+    public void resendMsg(MessageEntity messageEntity){
+        deleteMsg(messageEntity);
+        mAppExecutors.diskIO().execute(() -> {
+            ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
+            String content = messageEntity.getContent();
+            String attachmentpath = messageEntity.getAttachmentPath();
+            MessageEntity me = mViewModel.saveMsg(this, content, conversation.getNormalizedDestination(), false,  attachmentpath,messageEntity.getMessageType());
+            MessageViewModel.Factory factory = new MessageViewModel.Factory(
+                    this.getApplication(), 0);
+            MessageViewModel messageViewModel = new ViewModelProvider(this, factory)
+                    .get(MessageViewModel.class);
+            if(content != null && content.length() > 0){
+                messageViewModel.sendTextmsg(me, content, null);
+                Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
+                messageViewModel.updateMessageSendStatus(me);
+            }else if(attachmentpath != null){
+                messageViewModel.sendFilemsg(me, attachmentpath, null);
+                Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
+                messageViewModel.updateMessageSendStatus(me);
+            }
+            conversationFragment.setInitialFocusedMessageId(-1);
         });
     }
 
@@ -122,6 +162,7 @@ public class ConversationActivity extends WfcBaseActivity {
     }
 
     public void deleteMsgs(List<MessageEntity> messageList){
+        conversationFragment.setInitialFocusedMessageId(0);
         MessageViewModel.Factory factory = new MessageViewModel.Factory(
                 getApplication(), 0);
         MessageViewModel mViewModel = new ViewModelProvider(this, factory)
@@ -172,6 +213,7 @@ public class ConversationActivity extends WfcBaseActivity {
         }
     }
     public void deleteMsg( Message message){
+        conversationFragment.setInitialFocusedMessageId(0);
         MessageViewModel.Factory factory = new MessageViewModel.Factory(
                 getApplication(), 0);
         MessageViewModel mViewModel = new ViewModelProvider(this, factory)

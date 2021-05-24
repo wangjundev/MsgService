@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -46,7 +47,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     // check or normal
     private int mode;
     private List<MessageEntity> messages = new ArrayList<>();
-    private List<UiMessage> uiMessages = new ArrayList<>();
+    private List<UiMessage> uiMessages;// = new ArrayList<>();
     private Map<String, Long> deliveries;
     private Map<String, Long> readEntries;
     private OnPortraitClickListener onPortraitClickListener;
@@ -57,6 +58,81 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     public ConversationMessageAdapter(ConversationFragment fragment) {
         super();
         this.fragment = fragment;
+    }
+
+    public void setMessageList(final List<MessageEntity> messageList) {
+        messages = messageList;
+
+        List<UiMessage> uiMessageList = new ArrayList<>();
+        for(MessageEntity me : messageList){
+            uiMessageList.add(new UiMessage(false, me));
+        }
+
+        if (uiMessages == null) {
+            uiMessages = uiMessageList;
+            notifyItemRangeInserted(0, uiMessageList.size());
+        } else {
+            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                @Override
+                public int getOldListSize() {
+                    return uiMessages.size();
+                }
+
+                @Override
+                public int getNewListSize() {
+                    return uiMessageList.size();
+                }
+
+                @Override
+                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                    return uiMessages.get(oldItemPosition).message.getId() ==
+                            uiMessageList.get(newItemPosition).message.getId();
+                }
+
+                @Override
+                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                    MessageEntity newMessage = uiMessageList.get(newItemPosition).message;
+                    MessageEntity oldMessage = uiMessages.get(oldItemPosition).message;
+                    return newMessage.getId() == oldMessage.getId()
+                            && newMessage.getContent() == oldMessage.getContent()
+                            && newMessage.getMessageStatus() == oldMessage.getMessageStatus();
+                }
+            });
+            uiMessages = uiMessageList;
+            result.dispatchUpdatesTo(this);
+        }
+
+//        if (messages == null) {
+//            messages = messageList;
+//            notifyItemRangeInserted(0, messageList.size());
+//        } else {
+//            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+//                @Override
+//                public int getOldListSize() {
+//                    return messages.size();
+//                }
+//
+//                @Override
+//                public int getNewListSize() {
+//                    return messageList.size();
+//                }
+//
+//                @Override
+//                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+//                    return messages.get(oldItemPosition).getId() ==
+//                            messageList.get(newItemPosition).getId();
+//                }
+//
+//                @Override
+//                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+//                    MessageEntity newMessage = messageList.get(newItemPosition);
+//                    MessageEntity oldMessage = messages.get(oldItemPosition);
+//                    return newMessage.getId() == oldMessage.getId();
+//                }
+//            });
+//            messages = messageList;
+//            result.dispatchUpdatesTo(this);
+//        }
     }
 
     public int getMode() {
@@ -104,10 +180,13 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         uiMessages.clear();
         if(messages != null && messages.size() > 0){
-            for(MessageEntity me : messages){
-                Log.i("Junwang", "setMessages");
-                uiMessages.add(new UiMessage(false, me));
+            for(int i=0; i<messages.size(); i++){
+                uiMessages.add(new UiMessage(false, messages.get(i)));
             }
+//            for(MessageEntity me : messages){
+//                Log.i("Junwang", "setMessages");
+//                uiMessages.add(new UiMessage(false, me));
+//            }
             ((ConversationActivity)fragment.getActivity()).updateConversationLastMsgId(messages.get(messages.size()-1).getId());
         }
     }
@@ -323,6 +402,9 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
 
         try {
+            if(viewHolderClazz == null){
+                return null;
+            }
             Constructor constructor = viewHolderClazz.getConstructor(ConversationFragment.class, RecyclerView.Adapter.class, View.class);
             MessageContentViewHolder viewHolder = (MessageContentViewHolder) constructor.newInstance(fragment, this, itemView);
             /*if (viewHolder instanceof NotificationMessageContentViewHolder) {

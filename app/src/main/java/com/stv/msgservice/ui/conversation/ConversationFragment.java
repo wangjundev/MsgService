@@ -71,7 +71,7 @@ public class ConversationFragment extends Fragment implements
     public static final int REQUEST_CODE_GROUP_VIDEO_CHAT = 101;
     public static final int REQUEST_CODE_GROUP_AUDIO_CHAT = 102;
 
-    private Conversation conversation;
+    public Conversation conversation;
     private boolean loadingNewMessage;
     private boolean shouldContinueLoadNewMessage = false;
 
@@ -553,7 +553,7 @@ public class ConversationFragment extends Fragment implements
         }
 
         messageViewModel.messageLiveData().observeForever(messageLiveDataObserver);
-        messageViewModel.messageLiveData().observeForever(messageLiveDataObserver);
+//        messageViewModel.messageLiveData().observeForever(messageLiveDataObserver);
         messageViewModel.messageUpdateLiveData().observeForever(messageUpdateLiveDatObserver);
         messageViewModel.messageRemovedLiveData().observeForever(messageRemovedLiveDataObserver);
         messageViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
@@ -632,6 +632,10 @@ public class ConversationFragment extends Fragment implements
         setTitle();
     }
 
+    public void setInitialFocusedMessageId(long initialFocusedMessageId){
+        this.initialFocusedMessageId = initialFocusedMessageId;
+    }
+
     private void loadMessage(long focusMessageId) {
 
         LiveData<List<MessageEntity>> messages;
@@ -656,22 +660,31 @@ public class ConversationFragment extends Fragment implements
 //        adapter.setReadEntries(ChatManager.Instance().getConversationRead(conversation));
         messages.observe(getViewLifecycleOwner(), uiMessages -> {
             swipeRefreshLayout.setRefreshing(false);
-            adapter.setMessages(uiMessages);
-            adapter.notifyDataSetChanged();
-
-            if (adapter.getItemCount() > 1) {
-                int initialMessagePosition;
-                if (focusMessageId != -1) {
-                    initialMessagePosition = adapter.getMessagePosition(focusMessageId);
-                    if (initialMessagePosition != -1) {
-                        recyclerView.scrollToPosition(initialMessagePosition);
-                        adapter.highlightFocusMessage(initialMessagePosition);
-                    }
-                } else {
+            Log.i("Junwang", "update messages size="+uiMessages.size());
+            adapter.setMessageList(uiMessages);
+            if (adapter.getItemCount() > 1){
+                if (initialFocusedMessageId == -1){
                     moveToBottom = true;
                     recyclerView.scrollToPosition(adapter.getItemCount() - 1);
                 }
             }
+            ((ConversationActivity)getActivity()).updateConversationLastMsgId(uiMessages.get(uiMessages.size()-1).getId());
+
+//            adapter.setMessages(uiMessages);
+//            adapter.notifyDataSetChanged();
+//            if (adapter.getItemCount() > 1) {
+//                int initialMessagePosition;
+//                if (focusMessageId != -1) {
+//                    initialMessagePosition = adapter.getMessagePosition(focusMessageId);
+//                    if (initialMessagePosition != -1) {
+//                        recyclerView.scrollToPosition(initialMessagePosition);
+//                        adapter.highlightFocusMessage(initialMessagePosition);
+//                    }
+//                } else {
+//                    moveToBottom = true;
+//                    recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+//                }
+//            }
         });
     }
 
@@ -980,6 +993,7 @@ public class ConversationFragment extends Fragment implements
 //        });
         messageViewModel.getMessages(conversation.getId()).observe(getViewLifecycleOwner(), messages -> {
             adapter.setMessages(messages);
+            Log.i("Junwang", "reloadMessage setMessages");
             adapter.notifyDataSetChanged();
         });
     }

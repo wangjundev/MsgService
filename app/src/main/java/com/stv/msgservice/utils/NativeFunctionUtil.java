@@ -1,6 +1,7 @@
 package com.stv.msgservice.utils;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ComponentName;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.stv.msgservice.datamodel.constants.MessageConstants;
+import com.stv.msgservice.third.utils.OpenLocalMapUtil;
 import com.stv.msgservice.ui.WebViewNewsActivity;
 
 import java.util.List;
@@ -49,7 +51,105 @@ public class NativeFunctionUtil {
         }
     }
 
+    /**
+     * 打开百度地图
+     */
+    /**
+     *
+     * @param slat 纬度
+     * @param slon 经度
+     * @param content 内容
+     */
+    private static void openBaiduMap(double slat, double slon, String content, Context context, boolean mIsMapOpened) {
+        if (OpenLocalMapUtil.isBaiduMapInstalled()) {
+            try {
+                String uri = OpenLocalMapUtil.getBaiduMapUri(String.valueOf(slat), String.valueOf(slon), content);
+                Intent intent = new Intent();
+                intent.setData(Uri.parse(uri));
+                context.startActivity(intent); //启动调用
+                mIsMapOpened = true;
+            } catch (Exception e) {
+                mIsMapOpened = false;
+                e.printStackTrace();
+            }
+        } else {
+            mIsMapOpened = false;
+        }
+    }
+
+    /**
+     * 打开高德地图
+     */
+    /**
+     *
+     * @param dlat 纬度
+     * @param dlon 纬度
+     * @param content 终点
+     */
+    private static void openGaoDeMap(double dlat, double dlon, String content, Context context, boolean mIsMapOpened) {
+        if (OpenLocalMapUtil.isGdMapInstalled()) {
+            try {
+                //百度地图定位坐标转换成高德地图可识别坐标
+                double[] loca = new double[2];
+                //loca = OpenLocalMapUtil.gcj02_To_Bd09(dlat, dlon);
+                loca = OpenLocalMapUtil.bd09_To_Gcj02(dlat, dlon);
+                String uri = OpenLocalMapUtil.getGdMapUri(/*APP_NAME*/"com.stv.msgservice",
+                        String.valueOf(loca[0]), String.valueOf(loca[1]), content);
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                intent.setPackage("com.autonavi.minimap");
+                intent.setData(Uri.parse(uri));
+                context.startActivity(intent); //启动调用
+                mIsMapOpened = true;
+
+            } catch (Exception e) {
+                mIsMapOpened = false;
+                e.printStackTrace();
+            }
+        } else {
+            mIsMapOpened = false;
+        }
+    }
+
+    /**
+     * 打开浏览器进行百度地图导航
+     */
+    /**
+     *
+     * @param dlat 纬度
+     * @param dlon 经度
+     * @param dname 终点
+     * @param content 地点内容
+     */
+    private static void openWebMap(double dlat, double dlon, String dname, String content, Context context) {
+        Uri mapUri = Uri.parse(OpenLocalMapUtil.getWebBaiduMapUri(
+                String.valueOf(dlat), String.valueOf(dlon),
+                dname, content, /*APP_NAME*/"com.stv.msgservice"));
+        Intent loction = new Intent(Intent.ACTION_VIEW, mapUri);
+        context.startActivity(loction);
+    }
+
     public static void openLocation(String addrName, double latitude, double longtitude, Context context){
+        boolean mIsBaiduMapInstalled = OpenLocalMapUtil.isBaiduMapInstalled();
+        boolean mIsGaodeMapInstalled = OpenLocalMapUtil.isGdMapInstalled();
+        boolean mIsMapOpened = false;
+        if(mIsBaiduMapInstalled && mIsGaodeMapInstalled){
+            try {
+                Dialog dialog = new Dialog(context);
+                dialog.setTitle("请选择");
+                dialog.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else if(mIsBaiduMapInstalled){
+            openBaiduMap(latitude,longtitude, addrName, context, mIsMapOpened);
+        }else if(mIsGaodeMapInstalled)
+        {
+            openGaoDeMap(latitude,longtitude, addrName, context, mIsMapOpened);
+        }else{
+            openWebMap(latitude,longtitude, "终点", addrName, context);
+        }
 //        Bundle bundle = new Bundle();
 //        bundle.putString("Addr", addrName);
 //        bundle.putDouble("Latitude", latitude);

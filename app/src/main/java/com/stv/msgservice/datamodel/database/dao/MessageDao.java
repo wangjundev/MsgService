@@ -55,4 +55,7 @@ public interface MessageDao {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     public void updateMessagesReadStatus(List<MessageEntity> list);
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    public void updateMessageSendStatus(MessageEntity me);
 }

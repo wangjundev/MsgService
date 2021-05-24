@@ -39,7 +39,8 @@ public class DataRepository {
         mObservableConversations.addSource(mDatabase.conversationDao().getConversations(),
                 ConversationEntities -> {
                     if (mDatabase.getDatabaseCreated().getValue() != null) {
-                        mObservableConversations.postValue(ConversationEntities);
+                        Log.i("Junwang", "mObservableConversations postValue.");
+//                        mObservableConversations.postValue(ConversationEntities);
                     }
                 });
     }
@@ -71,6 +72,10 @@ public class DataRepository {
 
     public void updateMessagesReadStatus(List<MessageEntity> list){
         mDatabase.messageDao().updateMessagesReadStatus(list);
+    }
+
+    public void updateMessageSendStatus(MessageEntity me){
+        mDatabase.messageDao().updateMessageSendStatus(me);
     }
 
 //    public DataSource.Factory<Integer, MessageEntity> getMessagesForPaging(final long conversationId){

@@ -1,6 +1,7 @@
 package com.stv.msgservice.ui.conversation.message.viewholder;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -17,6 +18,7 @@ import com.stv.msgservice.R;
 import com.stv.msgservice.R2;
 import com.stv.msgservice.annotation.MessageContextMenuItem;
 import com.stv.msgservice.datamodel.constants.MessageConstants;
+import com.stv.msgservice.datamodel.database.entity.MessageEntity;
 import com.stv.msgservice.datamodel.model.Message;
 import com.stv.msgservice.datamodel.viewmodel.UserInfoViewModel;
 import com.stv.msgservice.ui.GlideApp;
@@ -136,7 +138,9 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 .content("重新发送?")
                 .negativeText("取消")
                 .positiveText("重发")
-                .onPositive((dialog, which) -> messageViewModel.resendMessage(message))
+                .onPositive((dialog, which) -> {
+                    ((ConversationActivity)(fragment.getActivity())).resendMsg((MessageEntity) message);
+                })
                 .build()
                 .show();
     }
@@ -217,24 +221,24 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     public String contextMenuTitle(Context context, String tag) {
         String title = "未设置";
         switch (tag) {
-            case MessageContextMenuItemTags.TAG_RECALL:
-                title = "撤回";
-                break;
+//            case MessageContextMenuItemTags.TAG_RECALL:
+//                title = "撤回";
+//                break;
             case MessageContextMenuItemTags.TAG_DELETE:
                 title = "删除";
                 break;
             case MessageContextMenuItemTags.TAG_FORWARD:
                 title = "转发";
                 break;
-            case MessageContextMenuItemTags.TAG_QUOTE:
-                title = "引用";
-                break;
+//            case MessageContextMenuItemTags.TAG_QUOTE:
+//                title = "引用";
+//                break;
             case MessageContextMenuItemTags.TAG_MULTI_CHECK:
                 title = "多选";
                 break;
-            case MessageContextMenuItemTags.TAG_CHANEL_PRIVATE_CHAT:
-                title = "私聊";
-                break;
+//            case MessageContextMenuItemTags.TAG_CHANEL_PRIVATE_CHAT:
+//                title = "私聊";
+//                break;
             case MessageContextMenuItemTags.TAG_FAV:
                 title = "收藏";
                 break;
@@ -403,6 +407,7 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             return;
         }
         if (sentStatus == MessageConstants.BUGLE_STATUS_OUTGOING_SENDING) {
+            Log.i("Junwang", "setSendStatus sending");
             progressBar.setVisibility(View.VISIBLE);
             errorLinearLayout.setVisibility(View.GONE);
             return;

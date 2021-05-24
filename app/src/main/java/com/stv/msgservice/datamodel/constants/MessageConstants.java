@@ -35,7 +35,7 @@ public class MessageConstants {
     public static final int CONTENT_TYPE_MULTI_CARD             = 209;
     public static final int CONTENT_TYPE_UNKNOWN                = 210;
 
-    public static final String BASE_URL = "http://192.168.5.127:3000";
+    public static final String BASE_URL = "http://192.168.5.127:3000/";
     public static final String UPLOAD_URL = "/upload/file";    //上传单文件
     public static final String UPLOADS_URL = "/upload/files";
 

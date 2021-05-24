@@ -92,6 +92,7 @@ public class FileExt extends ConversationExt {
 //                    messageViewModel.sendFileMsg(conversation, file);
                     break;
             }
+            ((ConversationActivity)activity).getConversationFragment().getConversationInputPanel().closeConversationInputPanel();
         }
     }
 
