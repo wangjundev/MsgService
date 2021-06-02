@@ -382,6 +382,13 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         if (TextUtils.isEmpty(content)) {
             return;
         }
+//        messageViewModel.searchMessages(content.toString().trim()).observe(fragment, messageEntityList -> {
+//            if(messageEntityList != null && messageEntityList.size() > 0){
+//                for(int i=0; i<messageEntityList.size(); i++){
+//                    Log.i("Junwang", "matched messageid="+messageEntityList.get(i).getId()+", content="+messageEntityList.get(i).getContent());
+//                }
+//            }
+//        });
         ((ConversationActivity)(fragment.getActivity())).saveMsg(fragment.getContext(), content.toString().trim(), conversation.getNormalizedDestination(), false, null, MessageConstants.CONTENT_TYPE_TEXT);
         ((ConversationFragment)fragment).getConversationInputPanel().closeConversationInputPanel();
 //        TextMessageContent txtContent = new TextMessageContent(content.toString().trim());

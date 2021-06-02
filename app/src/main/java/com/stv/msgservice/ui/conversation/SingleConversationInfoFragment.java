@@ -1,19 +1,25 @@
 package com.stv.msgservice.ui.conversation;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.kyleduo.switchbutton.SwitchButton;
+import com.stv.msgservice.AppExecutors;
 import com.stv.msgservice.R;
 import com.stv.msgservice.R2;
 import com.stv.msgservice.datamodel.database.entity.ConversationEntity;
 import com.stv.msgservice.datamodel.model.Conversation;
 import com.stv.msgservice.datamodel.model.UserInfo;
+import com.stv.msgservice.datamodel.viewmodel.ConversationListViewModel;
+import com.stv.msgservice.datamodel.viewmodel.MessageViewModel;
 import com.stv.msgservice.datamodel.viewmodel.UserInfoViewModel;
-import com.stv.msgservice.ui.widget.OptionItemView;
+import com.stv.msgservice.ui.conversation.message.search.SearchMessageActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,8 +45,8 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     @BindView(R2.id.silentSwitchButton)
     SwitchButton silentSwitchButton;
 
-    @BindView(R2.id.fileRecordOptionItemView)
-    OptionItemView fileRecordOptionItem;
+//    @BindView(R2.id.fileRecordOptionItemView)
+//    OptionItemView fileRecordOptionItem;
 
     private Conversation conversationInfo;
     private ConversationMemberAdapter conversationMemberAdapter;
@@ -77,13 +83,14 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     private void init() {
 //        conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
 //        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        Log.i("Junwang", "SingleConversationInfoFragment init");
         UserInfoViewModel.Factory factory1 = new UserInfoViewModel.Factory(
                 this.getActivity().getApplication(), null);
 
         userViewModel = new ViewModelProvider(this, factory1)
                 .get(UserInfoViewModel.class);
         String userId = conversationInfo.getNormalizedDestination();
-        conversationMemberAdapter = new ConversationMemberAdapter(conversationInfo, true, false);
+        conversationMemberAdapter = new ConversationMemberAdapter(conversationInfo, false, false);
         List<UserInfo> members = new ArrayList<>();//Collections.singletonList(userViewModel.getUserInfo(userId));
         userViewModel.getUserInfo(userId).observe(getViewLifecycleOwner(), userInfoEntity -> {
             members.add(userInfoEntity);
@@ -120,36 +127,51 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
         });
     }
 
+    public void RemoveConversation(ConversationEntity ce){
+        AppExecutors mAppExecutors = new AppExecutors();
+        MessageViewModel.Factory factory = new MessageViewModel.Factory(
+                getActivity().getApplication(), 0);
+        MessageViewModel messageViewModel = new ViewModelProvider(this, factory)
+                .get(MessageViewModel.class);
+        messageViewModel.getMessages(ce.getId()).observe(this, messageEntityList -> {
+            mAppExecutors.diskIO().execute(() -> {
+                ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
+                mViewModel.deleteConversation(ce);
+                messageViewModel.deleteMessages(messageEntityList);
+            });
+        });
+    }
+
     @OnClick(R2.id.clearMessagesOptionItemView)
     void clearMessage() {
-//        new MaterialDialog.Builder(getActivity())
-//                .items("清空本地会话", "清空远程会话")
-//                .itemsCallback(new MaterialDialog.ListCallback() {
-//                    @Override
-//                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
-//                        if (position == 0) {
-//                            conversationViewModel.clearConversationMessage(conversationInfo.conversation);
-//                        } else {
-//                            conversationViewModel.clearRemoteConversationMessage(conversationInfo.conversation);
-//                        }
-//                    }
-//                })
-//                .show();
+        new MaterialDialog.Builder(getActivity())
+                .items("确认删除", "取消")
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                        if (position == 0) {
+                            RemoveConversation((ConversationEntity) conversationInfo);
+                        } else {
+
+                        }
+                    }
+                })
+                .show();
     }
 
     @OnClick(R2.id.searchMessageOptionItemView)
     void searchGroupMessage() {
-//        Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
-//        intent.putExtra("conversation", conversationInfo);
-//        startActivity(intent);
+        Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
+        intent.putExtra("conversation", (ConversationEntity)conversationInfo);
+        startActivity(intent);
     }
 
-    @OnClick(R2.id.fileRecordOptionItemView)
-    void fileRecord(){
+//    @OnClick(R2.id.fileRecordOptionItemView)
+//    void fileRecord(){
 //        Intent intent = new Intent(getActivity(), FileRecordActivity.class);
 //        intent.putExtra("conversation", conversationInfo.conversation);
 //        startActivity(intent);
-    }
+//    }
 
     @Override
     public void onUserMemberClick(UserInfo userInfo) {

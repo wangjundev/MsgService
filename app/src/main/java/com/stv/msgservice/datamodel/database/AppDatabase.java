@@ -16,9 +16,11 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {ConversationEntity.class, MessageEntity.class, UserInfoEntity.class}, version = 1, exportSchema = false)
+@TypeConverters(TypeConverterUtils.class)
+@Database(entities = {ConversationEntity.class, MessageEntity.class, UserInfoEntity.class}, version = 2, exportSchema = false)
 //@TypeConverters(DateConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
 

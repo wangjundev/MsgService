@@ -18,6 +18,7 @@ import com.stv.msgservice.datamodel.network.ApiService;
 import com.stv.msgservice.datamodel.network.chatbot.CardContent;
 import com.stv.msgservice.datamodel.network.chatbot.ChatbotMultiCard;
 import com.stv.msgservice.datamodel.network.chatbot.MultiCardChatbotMsg;
+import com.stv.msgservice.third.activity.LocationData;
 import com.stv.msgservice.utils.FileUtils;
 
 import java.util.List;
@@ -162,6 +163,143 @@ public class ConversationListViewModel extends AndroidViewModel {
         return null;
     }
 
+    public MessageEntity saveLocationMsg(Context context, String content, String destination, boolean isReceived, int messageType, LocationData locationData){
+        long convId = DataRepository.getInstance(AppDatabase.getInstance(context)).getConversationId(destination);
+        Log.i("Junwang", "addMessage query conversation Id = "+ convId);
+
+        final long time = System.currentTimeMillis();
+        ConversationEntity ce = new ConversationEntity();
+        ce.setLastTimestamp(time);
+        ce.setNormalizedDestination(destination);
+        if(convId == 0){
+            convId = insertConversation(ce);
+        }
+        ce.setId(convId);
+
+        MessageEntity me = new MessageEntity();
+        me.setConversationId(convId);
+        if(isReceived){
+            getJson(content, me);
+            me.setDirection(MessageConstants.DIRECTION_IN);
+            me.setReceivedTimeStamp(time);
+            me.setRead(1);
+        }else {
+            if(content != null){
+                me.setContent(content);
+            }
+            me.setDirection(MessageConstants.DIRECTION_OUT);
+            me.setSentTimestamp(time);
+            me.setMessageType(messageType);
+            me.setRead(0);
+        }
+        me.setLocationData(locationData);
+        me.setAttachmentPath(null);
+        me.setMessageStatus(isReceived ? MessageConstants.BUGLE_STATUS_INCOMING_COMPLETE : MessageConstants.BUGLE_STATUS_OUTGOING_SENDING);
+        long messageId = mRepository.insertMessage(me);
+        Log.i("Junwang", "insert messageId="+messageId);
+        me.setId(messageId);
+        ce.setLatestMessageId(messageId);
+        ce.setSnippetText(me.generateSnippetText());
+        if(isReceived) {
+            ce.setUnreadCount(getUnreadCount(convId));
+        }
+        updateConversation(ce);
+        if(isReceived){
+            UserInfoEntity userInfoEntity = new UserInfoEntity();
+            userInfoEntity.setUri(destination);
+//            userInfoEntity.setName("中国移动");
+            userInfoEntity.setName("新华社");
+            String menu = "{\n" +
+                    "\"menu\":{\"entries\":[{\n" +
+                    "                    \"menu\":{\n" +
+                    "                        \"displayText\":\"现场云\",\n" +
+                    "                        \"entries\":[\n" +
+                    "                            {\n" +
+                    "                                \"reply\":{\n" +
+                    "                                    \"displayText\":\"现场云直播\",\n" +
+                    "                                    \"postback\":{\n" +
+                    "                                        \"data\":\"https://xhpfmapi.zhongguowangshi.com/vh512/home/17024\"\n" +
+                    "                                    }\n" +
+                    "                                }\n" +
+                    "                            },\n" +
+                    "                            {\n" +
+                    "                                \"reply\":{\n" +
+                    "                                    \"displayText\":\"中纪委专刊\",\n" +
+                    "                                    \"postback\":{\n" +
+                    "                                        \"data\":\"https://xhpfmapi.zhongguowangshi.com/vh512/share/9264023\"\n" +
+                    "                                    }\n" +
+                    "                                }\n" +
+                    "                            },\n" +
+                    "                            {\n" +
+                    "                                \"reply\":{\n" +
+                    "                                    \"displayText\":\"区县融媒体\",\n" +
+                    "                                    \"postback\":{\n" +
+                    "                                        \"data\":\"https://xhpfmapi.zhongguowangshi.com/vh512/share/9332289\"\n" +
+                    "                                    }\n" +
+                    "                                }\n" +
+                    "                            },\n" +
+                    "                            {\n" +
+                    "                                \"reply\":{\n" +
+                    "                                    \"displayText\":\"民族品牌\",\n" +
+                    "                                    \"postback\":{\n" +
+                    "                                        \"data\":\"https://xhpfmapi.zhongguowangshi.com/vh512/theme/18052\"\n" +
+                    "                                    }\n" +
+                    "                                }\n" +
+                    "                            },\n" +
+                    "                            {\n" +
+                    "                                \"reply\":{\n" +
+                    "                                    \"displayText\":\"央企服务\",\n" +
+                    "                                    \"postback\":{\n" +
+                    "                                        \"data\":\"https://xhyz.vizen.cn/\"\n" +
+                    "                                    }\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        ]\n" +
+                    "                    }\n" +
+                    "                },\n" +
+                    "                {\n" +
+                    "                    \"menu\":{\n" +
+                    "                        \"displayText\":\"新华99\",\n" +
+                    "                        \"entries\":[\n" +
+                    "                            {\n" +
+                    "                                \"reply\":{\n" +
+                    "                                    \"displayText\":\"地标特产\",\n" +
+                    "                                    \"postback\":{\n" +
+                    "                                        \"data\":\"http://testxhs.supermms.cn/H5/productList.html\"\n" +
+                    "                                    }\n" +
+                    "                                }\n" +
+                    "                            },\n" +
+                    "                            {\n" +
+                    "                                \"reply\":{\n" +
+                    "                                    \"displayText\":\"厂直优品\",\n" +
+                    "                                    \"postback\":{\n" +
+                    "                                        \"data\":\"http://testxhs.supermms.cn/H5/mostBest.html\"\n" +
+                    "                                    }\n" +
+                    "                                }\n" +
+                    "                            }\n" +
+                    "                        ]\n" +
+                    "                    }\n" +
+                    "                },\n" +
+                    "                {\n" +
+                    "                    \"menu\":{\n" +
+                    "                        \"displayText\":\"我的\",\n" +
+                    "                        \"entries\":[\n" +
+                    "\n" +
+                    "                        ]\n" +
+                    "                    }\n" +
+                    "                }\n" +
+                    "            ]\n" +
+                    "        }\n" +
+                    "}";
+            userInfoEntity.setMenu(menu);
+//            userInfoEntity.setPortrait("http://sms-agent.oss-cn-hangzhou.aliyuncs.com/sms_agent_temp/51/5d89bdce9bf79.jpg");
+            userInfoEntity.setPortrait("http://sms-agent.oss-cn-hangzhou.aliyuncs.com/sms_agent_temp/51/xhs.png");
+            mRepository.insertUserInfo(userInfoEntity);
+        }
+//        loadConversations();
+        return me;
+    }
+
     public MessageEntity saveMsg(Context context, String content, String destination, boolean isReceived, String attachmentpath, int messageType){
         long convId = DataRepository.getInstance(AppDatabase.getInstance(context)).getConversationId(destination);
         Log.i("Junwang", "addMessage query conversation Id = "+ convId);
@@ -216,6 +354,7 @@ public class ConversationListViewModel extends AndroidViewModel {
         }else{
             me.setAttachmentPath(null);
         }
+        me.setLocationData(null);
         me.setMessageStatus(isReceived ? MessageConstants.BUGLE_STATUS_INCOMING_COMPLETE : MessageConstants.BUGLE_STATUS_OUTGOING_SENDING);
         long messageId = mRepository.insertMessage(me);
         Log.i("Junwang", "insert messageId="+messageId);

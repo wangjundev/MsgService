@@ -15,6 +15,7 @@ import com.stv.msgservice.datamodel.model.Message;
 import com.stv.msgservice.datamodel.network.ApiService;
 import com.stv.msgservice.datamodel.network.BaseResult;
 import com.stv.msgservice.datamodel.network.SendCallback;
+import com.stv.msgservice.third.activity.LocationData;
 import com.stv.msgservice.ui.conversation.message.ImageMessageContent;
 import com.stv.msgservice.ui.conversation.message.TextMessageContent;
 
@@ -86,6 +87,10 @@ public class MessageViewModel extends AndroidViewModel {
     public LiveData<List<MessageEntity>> getMessages() {
         mObservableMessages = mRepository.getMessages(mConversationId);
         return mObservableMessages;
+    }
+
+    public List<MessageEntity> searchMessages(String query) {
+        return mRepository.searchMessages(query);
     }
 
 //    public void deleteMessage(long messageId){
@@ -230,6 +235,62 @@ public class MessageViewModel extends AndroidViewModel {
             messageDeliverLiveData = new MutableLiveData<>();
         }
         return messageDeliverLiveData;
+    }
+
+    public void sendLocationMessage(MessageEntity msg, LocationData locationData){
+        try{
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(MessageConstants.BASE_URL)
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            ApiService service = retrofit.create(ApiService.class);
+            Gson gson=new Gson();
+            HashMap<String,String> paramsMap=new HashMap<>();
+            paramsMap.put("locationData",new Gson().toJson(locationData));
+            String strEntity = gson.toJson(paramsMap);
+            RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json;charset=UTF-8"),strEntity);
+            Observable<BaseResult<MessageEntity>> response = service.createCommit(body);
+            try{
+                response
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(AndroidSchedulers.mainThread()/*Schedulers.io()*/)
+                        .subscribe(new Consumer<BaseResult<MessageEntity>>() {
+                            @Override
+                            public void accept(BaseResult<MessageEntity> messageEntityBaseResult) throws Exception {
+                                if(messageEntityBaseResult != null){
+                                    msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_COMPLETE);
+                                    messageUpdateLiveData.setValue(msg);
+                                }
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                Log.e("Junwang",  "accept exception "+throwable.toString()+"," + Thread.currentThread().getName());
+                                msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_FAILED);
+                                if(messageUpdateLiveData != null){
+                                    Log.i("Junwang",  "update msgid="+msg.getId()+" status to send fail.");
+                                    messageUpdateLiveData.setValue(msg);
+                                }
+                                throwable.printStackTrace();
+                            }
+                        });
+            }catch (Exception e){
+                Log.e("Junwang",  "sendTextmsg exception "+e.toString());
+                msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_FAILED);
+                if(messageUpdateLiveData != null){
+                    messageUpdateLiveData.setValue(msg);
+                }
+            }
+        }catch (Exception e){
+            Log.e("Junwang",  "retrofit sendTextmsg exception "+e.toString()+"," + Thread.currentThread().getName());
+            msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_FAILED);
+            if(messageUpdateLiveData != null){
+                Log.i("Junwang",  "update msgid="+msg.getId()+" status to send fail.");
+                messageUpdateLiveData.setValue(msg);
+            }
+        }
     }
 
     public void sendFilemsg(MessageEntity msg, String filePath, SendCallback callback){

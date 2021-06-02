@@ -58,4 +58,9 @@ public interface MessageDao {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     public void updateMessageSendStatus(MessageEntity me);
+
+//    @Query("SELECT messages.* FROM messages JOIN messageFts ON (messages.id = messageFts.rowid) "
+//            + "WHERE messageFts MATCH :query")
+    @Query("SELECT messages.* FROM messages WHERE messages.content LIKE :query")
+    List<MessageEntity> searchAllMessages(String query);
 }

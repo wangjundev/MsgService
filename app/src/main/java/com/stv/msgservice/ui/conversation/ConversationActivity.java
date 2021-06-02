@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.stv.msgservice.AppExecutors;
 import com.stv.msgservice.R;
@@ -16,6 +17,7 @@ import com.stv.msgservice.datamodel.model.Message;
 import com.stv.msgservice.datamodel.network.SendCallback;
 import com.stv.msgservice.datamodel.viewmodel.ConversationListViewModel;
 import com.stv.msgservice.datamodel.viewmodel.MessageViewModel;
+import com.stv.msgservice.third.activity.LocationData;
 import com.stv.msgservice.ui.WfcBaseActivity;
 
 import java.util.List;
@@ -95,6 +97,20 @@ public class ConversationActivity extends WfcBaseActivity {
         conversation.setLatestMessageId(newLastMsgId);
     }
 
+    public void saveLocationMsg(Context context, String content, String destination, boolean isReceived, int messageType, LocationData locationData){
+        mAppExecutors.diskIO().execute(() -> {
+            ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
+            MessageEntity me = mViewModel.saveLocationMsg(context, content, destination, isReceived, messageType, locationData);
+            MessageViewModel.Factory factory = new MessageViewModel.Factory(
+                    this.getApplication(), 0);
+            MessageViewModel messageViewModel = new ViewModelProvider(this, factory)
+                    .get(MessageViewModel.class);
+            messageViewModel.sendLocationMessage(me, locationData);
+            messageViewModel.updateMessageSendStatus(me);
+            conversationFragment.setInitialFocusedMessageId(-1);
+        });
+    }
+
     public void saveMsg(Context context, String content, String destination, boolean isReceived, String attachmentpath, int messageType){
         mAppExecutors.diskIO().execute(() -> {
             ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
@@ -114,10 +130,24 @@ public class ConversationActivity extends WfcBaseActivity {
             }
             conversationFragment.setInitialFocusedMessageId(-1);
         });
+//        MessageViewModel.Factory factory = new MessageViewModel.Factory(
+//                this.getApplication(), 0);
+//        MessageViewModel messageViewModel = new ViewModelProvider(this, factory)
+//                .get(MessageViewModel.class);
+//        String query = "%" + content + "%";
+//        Log.i("Junwang", "query="+query);
+//        messageViewModel.searchMessages(query).observe(this, messageEntityList -> {
+//            if(messageEntityList != null && messageEntityList.size() > 0){
+//                for(int i=0; i<messageEntityList.size(); i++){
+//                    Log.i("Junwang", "matched messageid="+messageEntityList.get(i).getId()+", content="+messageEntityList.get(i).getContent());
+//                }
+//            }
+//        });
     }
 
     public void resendMsg(MessageEntity messageEntity){
         deleteMsg(messageEntity);
+        conversationFragment.setInitialFocusedMessageId(-1);
         mAppExecutors.diskIO().execute(() -> {
             ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
             String content = messageEntity.getContent();
@@ -136,7 +166,6 @@ public class ConversationActivity extends WfcBaseActivity {
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
                 messageViewModel.updateMessageSendStatus(me);
             }
-            conversationFragment.setInitialFocusedMessageId(-1);
         });
     }
 
@@ -253,6 +282,13 @@ public class ConversationActivity extends WfcBaseActivity {
     }
 
     private void showConversationInfo() {
+        Intent intent = new Intent(/*getActivity()*/this, ConversationInfoActivity.class);
+        if (conversation == null) {
+            Toast.makeText(this, "获取会话信息失败", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        intent.putExtra("conversation", (ConversationEntity)conversation);
+        startActivity(intent);
 //        Intent intent = new Intent(this, ConversationInfoActivity.class);
 //        ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
 //        if (conversationInfo == null) {
@@ -261,6 +297,17 @@ public class ConversationActivity extends WfcBaseActivity {
 //        }
 //        intent.putExtra("conversationInfo", conversationInfo);
 //        startActivity(intent);
+//        MessageViewModel.Factory factory = new MessageViewModel.Factory(
+//                this.getApplication(), 0);
+//        MessageViewModel messageViewModel = new ViewModelProvider(this, factory)
+//                .get(MessageViewModel.class);
+//        messageViewModel.searchMessages("大").observe(this, messageEntityList -> {
+//            if(messageEntityList != null && messageEntityList.size() > 0){
+//                for(int i=0; i<messageEntityList.size(); i++){
+//                    Log.i("Junwang", "matched messageid="+messageEntityList.get(i).getId()+", content="+messageEntityList.get(i).getContent());
+//                }
+//            }
+//        });
     }
 
     @Override

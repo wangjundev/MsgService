@@ -654,6 +654,8 @@ public class ConversationFragment extends Fragment implements
         }
         messages = messageViewModel.getMessages(conversation.getId());
 
+//        messageViewModel.searchMessages()
+
         // load message
         swipeRefreshLayout.setRefreshing(true);
 //        adapter.setDeliveries(ChatManager.Instance().getMessageDelivery(conversation));
@@ -666,9 +668,17 @@ public class ConversationFragment extends Fragment implements
                 if (initialFocusedMessageId == -1){
                     moveToBottom = true;
                     recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                }else{
+                    int initialMessagePosition = adapter.getMessagePosition(focusMessageId);
+                    if (initialMessagePosition != -1) {
+                        recyclerView.scrollToPosition(initialMessagePosition);
+                        adapter.highlightFocusMessage(initialMessagePosition);
+                    }
                 }
             }
-            ((ConversationActivity)getActivity()).updateConversationLastMsgId(uiMessages.get(uiMessages.size()-1).getId());
+            if(uiMessages != null && uiMessages.size() > 0) {
+                ((ConversationActivity) getActivity()).updateConversationLastMsgId(uiMessages.get(uiMessages.size() - 1).getId());
+            }
 
 //            adapter.setMessages(uiMessages);
 //            adapter.notifyDataSetChanged();

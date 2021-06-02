@@ -8,7 +8,7 @@ import com.stv.msgservice.annotation.ContentTag;
 import com.stv.msgservice.annotation.MessageContentType;
 import com.stv.msgservice.ui.conversation.message.MessageContent;
 
-public class MessageViewHolderManager {
+public class  MessageViewHolderManager {
     private static final String TAG = "MsgViewHolderManager";
     private static MessageViewHolderManager instance = new MessageViewHolderManager();
 
@@ -27,6 +27,7 @@ public class MessageViewHolderManager {
 //        registerMessageViewHolder(StickerMessageContentViewHolder.class, R.layout.conversation_item_sticker_send, R.layout.conversation_item_sticker_receive);
         registerMessageViewHolder(TextMessageContentViewHolder.class, R.layout.conversation_item_text_send, R.layout.conversation_item_text_receive);
         registerMessageViewHolder(VideoMessageContentViewHolder.class, R.layout.conversation_item_video_send, R.layout.conversation_item_video_send);
+        registerMessageViewHolder(LocationMessageContentViewHolder.class, R.layout.conversation_item_location_send, R.layout.conversation_item_location_send);
 //        registerMessageViewHolder(VoipMessageViewHolder.class, R.layout.conversation_item_voip_send, R.layout.conversation_item_voip_receive);
 //        registerMessageViewHolder(SimpleNotificationMessageContentViewHolder.class, R.layout.conversation_item_notification, R.layout.conversation_item_notification);
 //        registerMessageViewHolder(RecallMessageContentViewHolder.class, R.layout.conversation_item_recall_notification, R.layout.conversation_item_recall_notification);

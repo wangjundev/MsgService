@@ -8,8 +8,12 @@ import android.view.View;
 
 import com.stv.msgservice.R;
 import com.stv.msgservice.annotation.ExtContextMenuItem;
+import com.stv.msgservice.datamodel.constants.MessageConstants;
 import com.stv.msgservice.datamodel.model.Conversation;
+import com.stv.msgservice.third.activity.LocationData;
+import com.stv.msgservice.third.activity.MyLocationActivity;
 import com.stv.msgservice.ui.WfcBaseActivity;
+import com.stv.msgservice.ui.conversation.ConversationActivity;
 import com.stv.msgservice.ui.conversation.ext.core.ConversationExt;
 
 import static android.app.Activity.RESULT_OK;
@@ -34,8 +38,8 @@ public class LocationExt extends ConversationExt {
             }
         }
 
-//        Intent intent = new Intent(activity, MyLocationActivity.class);
-//        startActivityForResult(intent, 100);
+        Intent intent = new Intent(activity, MyLocationActivity.class);
+        startActivityForResult(intent, 100);
 //        TypingMessageContent content = new TypingMessageContent(TypingMessageContent.TYPING_LOCATION);
 //        messageViewModel.sendMessage(conversation, content);
     }
@@ -43,8 +47,9 @@ public class LocationExt extends ConversationExt {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-//            LocationData locationData = (LocationData) data.getSerializableExtra("location");
-//            messageViewModel.sendLocationMessage(conversation, locationData);
+            LocationData locationData = (LocationData) data.getSerializableExtra("location");
+            ((ConversationActivity)activity).saveLocationMsg(activity, null, conversation.getNormalizedDestination(), false, MessageConstants.CONTENT_TYPE_LOCATION, locationData);
+            ((ConversationActivity)activity).getConversationFragment().getConversationInputPanel().closeConversationInputPanel();
         }
     }
 

@@ -18,10 +18,10 @@ public interface ApiService {
     @POST("/api/v1/trade/HasAccount.json")
     Observable<BaseResult<MessageEntity>> createCommit(@Body RequestBody route);
 
-//        @GET("right_pic_news")    //plain text
+        @GET("right_pic_news")    //plain text
 //    @GET("xinhua99_news")     //picture
 //    @GET("video")             //video
 //    @GET("three_pic_news")    //multi card
-    @GET("xinhua_news")         //single card
+//    @GET("xinhua_news")         //single card
     Observable<ChatbotMultiCard> getMessageContent();
 }

@@ -17,4 +17,7 @@
     <string name="message_free">消息免打扰</string>
     <string name="set_conversation_to_top">置顶聊天</string>
     <string name="clear_chat_log">清空聊天记录</string>
+
+    <string name="add_friend">添加朋友</string>
+    <string name="search">搜索</string>
 </resources>

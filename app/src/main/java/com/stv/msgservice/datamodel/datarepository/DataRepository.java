@@ -66,6 +66,10 @@ public class DataRepository {
         return mDatabase.messageDao().getMessages(conversationId);
     }
 
+    public List<MessageEntity> searchMessages(String query) {
+        return mDatabase.messageDao().searchAllMessages(query);
+    }
+
     public LiveData<List<MessageEntity>> getUnReadMessages(final long conversationId) {
         return mDatabase.messageDao().getUnReadMessages(conversationId);
     }

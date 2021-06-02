@@ -2,6 +2,7 @@ package com.stv.msgservice.datamodel.database.entity;
 
 import com.stv.msgservice.datamodel.constants.MessageConstants;
 import com.stv.msgservice.datamodel.model.Message;
+import com.stv.msgservice.third.activity.LocationData;
 
 import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
@@ -11,6 +12,7 @@ import androidx.room.PrimaryKey;
 
 import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TYPE_AUDIO;
 import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TYPE_IMAGE;
+import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TYPE_LOCATION;
 import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TYPE_MULTI_CARD;
 import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TYPE_SINGLE_CARD;
 import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TYPE_TEXT;
@@ -55,6 +57,8 @@ public class MessageEntity implements Message {
     private String thumbnailPath;
 
     private int direction;
+
+    private LocationData locationData;
 
     public long getId() {
         return id;
@@ -138,6 +142,8 @@ public class MessageEntity implements Message {
                 return "[多卡片]";
             case CONTENT_TYPE_SINGLE_CARD:
                 return "[单卡片]";
+            case CONTENT_TYPE_LOCATION:
+                return "[位置]";
             default:
                 return getContent();
         }
@@ -175,6 +181,14 @@ public class MessageEntity implements Message {
         this.direction = direction;
     }
 
+    public LocationData getLocationData() {
+        return locationData;
+    }
+
+    public void setLocationData(LocationData locationData) {
+        this.locationData = locationData;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
@@ -182,4 +196,20 @@ public class MessageEntity implements Message {
         MessageEntity that = (MessageEntity) obj;
         return (getId() == that.getId()) && (getContent().equals(that.getContent()));
     }
+
+//    public MessageEntity(long id, long conversationId, int messageStatus, long sentTimestamp, long receivedTimeStamp, String content, int read, String draftContent, int messageType, String attachmentPath, String thumbnailPath, int direction, LocationData locationData) {
+//        this.id = id;
+//        this.conversationId = conversationId;
+//        this.messageStatus = messageStatus;
+//        this.sentTimestamp = sentTimestamp;
+//        this.receivedTimeStamp = receivedTimeStamp;
+//        this.content = content;
+//        this.read = read;
+//        this.draftContent = draftContent;
+//        this.messageType = messageType;
+//        this.attachmentPath = attachmentPath;
+//        this.thumbnailPath = thumbnailPath;
+//        this.direction = direction;
+//        this.locationData = locationData;
+//    }
 }
