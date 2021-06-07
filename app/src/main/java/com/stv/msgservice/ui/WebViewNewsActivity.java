@@ -148,6 +148,13 @@ public class WebViewNewsActivity extends WfcBaseActivity implements View.OnClick
             @Override
             public void onPageFinished(WebView view, String url) {
                 mPbLoading.setVisibility(View.GONE);
+                super.onPageFinished(view, url);
+                String webTitle = view.getTitle();
+                if (!TextUtils.isEmpty(webTitle)) {
+                    if (TextUtils.isEmpty(mTitle) || !TextUtils.equals(webTitle, "about:blank")) {
+                        setTitle(webTitle);
+                    }
+                }
             }
 
             @Override

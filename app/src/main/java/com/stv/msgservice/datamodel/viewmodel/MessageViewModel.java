@@ -71,6 +71,10 @@ public class MessageViewModel extends AndroidViewModel {
         return mObservableMessages;
     }
 
+//    public LiveData<List<MessageEntity>> loadAroundMessages(final long conversationId){
+//
+//    }
+
     public LiveData<List<MessageEntity>> getUnReadMessages(final long conversationId) {
         messageUnReadLiveData = mRepository.getUnReadMessages(conversationId);
         return messageUnReadLiveData;
@@ -89,8 +93,8 @@ public class MessageViewModel extends AndroidViewModel {
         return mObservableMessages;
     }
 
-    public List<MessageEntity> searchMessages(String query) {
-        return mRepository.searchMessages(query);
+    public List<MessageEntity> searchMessages(long conversationId, String query) {
+        return mRepository.searchMessages(conversationId, query);
     }
 
 //    public void deleteMessage(long messageId){

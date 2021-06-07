@@ -50,8 +50,10 @@ public class ConversationMessageSearchModule extends SearchableModule<Message, M
         Intent intent = new Intent(fragment.getContext(), ConversationActivity.class);
         intent.putExtra("conversation", /*message.conversation*/(ConversationEntity)conversation);
         intent.putExtra("toFocusMessageId", message.getId());
-        fragment.startActivity(intent);
-        fragment.getActivity().finish();
+        intent.putExtra("fromSearch", true);
+        /*fragment*/activity.startActivity(intent);
+//        ((ConversationActivity)fragment.getActivity().getParent()).getConversationFragment().getAdapter().notifyDataSetChanged();
+//        fragment.getActivity().finish();
     }
 
     @Override
@@ -70,7 +72,7 @@ public class ConversationMessageSearchModule extends SearchableModule<Message, M
                 , 0);
         MessageViewModel messageViewModel = new ViewModelProvider(activity, factory)
                 .get(MessageViewModel.class);
-        return messageViewModel.searchMessages(keyword);
+        return messageViewModel.searchMessages(conversation.getId(), keyword);
 //        return ChatManager.Instance().searchMessage(conversation, keyword, true, 100, 0);
     }
 

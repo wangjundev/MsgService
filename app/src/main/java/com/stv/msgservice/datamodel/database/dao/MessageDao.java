@@ -41,7 +41,7 @@ public interface MessageDao {
     @Delete
     void deleteMessages(List<MessageEntity> messageEntityList);
 
-    @Query("SELECT * FROM messages where conversation_id = :conversationId AND id < :fromMessageId ORDER BY id DESC LIMIT 20")
+    @Query("SELECT * FROM messages where conversation_id = :conversationId AND id < :fromMessageId ORDER BY id ASC LIMIT 20")
     public LiveData<List<MessageEntity>> loadOldMessages(long conversationId, long fromMessageId);
 
     @Query("SELECT * FROM messages where conversation_id = :conversationId AND id > :fromMessageId ORDER BY id DESC LIMIT 20")
@@ -61,6 +61,9 @@ public interface MessageDao {
 
 //    @Query("SELECT messages.* FROM messages JOIN messageFts ON (messages.id = messageFts.rowid) "
 //            + "WHERE messageFts MATCH :query")
-    @Query("SELECT messages.* FROM messages WHERE messages.content LIKE :query")
+    @Query("SELECT messages.* FROM messages WHERE messages.content LIKE :query AND conversation_id = :conversationId AND message_type = 200")
+    List<MessageEntity> searchMessages(long conversationId, String query);
+
+    @Query("SELECT messages.* FROM messages WHERE messages.content LIKE :query AND message_type = 200")
     List<MessageEntity> searchAllMessages(String query);
 }

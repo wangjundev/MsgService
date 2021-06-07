@@ -10,4 +10,7 @@ public interface Conversation{
     int getUnreadCount();
     void setUnreadCount(int unreadCount);
     void setLatestMessageId(long latestMessageId);
+    void setTop(boolean top);
+    boolean isTop();
+    void setTopTimestamp(long topTimestamp);
 }

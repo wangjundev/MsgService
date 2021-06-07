@@ -127,6 +127,7 @@ public class ConversationFragment extends Fragment implements
     // 用户channel主发起，针对某个用户的会话
     private String channelPrivateChatUser;
     private String conversationTitle = "";
+    private boolean isFromSearch;
     private LinearLayoutManager layoutManager;
 
     // for group
@@ -326,11 +327,15 @@ public class ConversationFragment extends Fragment implements
         }
     }
 
-    public void setupConversation(Conversation conversation, String title, long focusMessageId, String target) {
+    public void setupConversation(Conversation conversation, String title, long focusMessageId, String target, boolean isFromSearch) {
         this.conversation = conversation;
         this.conversationTitle = title;
         this.initialFocusedMessageId = focusMessageId;
         this.channelPrivateChatUser = target;
+        this.isFromSearch = isFromSearch;
+//        if(isFromSearch){
+//            setupConversation(conversation);
+//        }
 //        setupConversation(conversation);
     }
 
@@ -346,17 +351,16 @@ public class ConversationFragment extends Fragment implements
 //        startMenuSwitchAnimation(mThreeButtonMenu, inputPanel);
 //    }
 
-    public void switchInputPanel(){
-        Log.i("junwang", "switch button onClicked.");
-//                            inputPanel.setVisibility(View.GONE);
-        Log.i("Junwang", "menuNumber=" + menuNumber);
-        if (menuNumber == 2) {
-            startMenuSwitchAnimation(inputPanel, mTwoButtonMenu);
-        } else if (menuNumber == 3) {
-            Log.i("Junwang", "start switch from compose to menu");
-            startMenuSwitchAnimation(inputPanel, mThreeButtonMenu);
-        }
-    }
+//    public void switchInputPanel(){
+//        Log.i("junwang", "switch button onClicked.");
+//        Log.i("Junwang", "menuNumber=" + menuNumber);
+//        if (menuNumber == 2) {
+//            startMenuSwitchAnimation(inputPanel, mTwoButtonMenu);
+//        } else if (menuNumber == 3) {
+//            Log.i("Junwang", "start switch from compose to menu");
+//            startMenuSwitchAnimation(inputPanel, mThreeButtonMenu);
+//        }
+//    }
 
     private final ChatbotMenuEntity getChatbotMenuEntity(String json){
         ChatbotMenuEntity menuEntity = null;
@@ -636,6 +640,7 @@ public class ConversationFragment extends Fragment implements
         this.initialFocusedMessageId = initialFocusedMessageId;
     }
 
+
     private void loadMessage(long focusMessageId) {
 
         LiveData<List<MessageEntity>> messages;
@@ -653,23 +658,27 @@ public class ConversationFragment extends Fragment implements
                     .get(MessageViewModel.class);
         }
         messages = messageViewModel.getMessages(conversation.getId());
-
-//        messageViewModel.searchMessages()
+//        messages = messageViewModel.loadOldMessages(conversation.getId(), conversation.getLatestMessageId()+10000, 20);
 
         // load message
-        swipeRefreshLayout.setRefreshing(true);
+//        swipeRefreshLayout.setRefreshing(true);
 //        adapter.setDeliveries(ChatManager.Instance().getMessageDelivery(conversation));
 //        adapter.setReadEntries(ChatManager.Instance().getConversationRead(conversation));
         messages.observe(getViewLifecycleOwner(), uiMessages -> {
             swipeRefreshLayout.setRefreshing(false);
             Log.i("Junwang", "update messages size="+uiMessages.size());
             adapter.setMessageList(uiMessages);
+//            if(isFromSearch){
+                adapter.notifyDataSetChanged();
+//                isFromSearch = false;
+//            }
             if (adapter.getItemCount() > 1){
                 if (initialFocusedMessageId == -1){
                     moveToBottom = true;
                     recyclerView.scrollToPosition(adapter.getItemCount() - 1);
                 }else{
                     int initialMessagePosition = adapter.getMessagePosition(focusMessageId);
+                    Log.i("Junwang", "focusMessageId="+focusMessageId+", initialMessagePosition="+initialMessagePosition);
                     if (initialMessagePosition != -1) {
                         recyclerView.scrollToPosition(initialMessagePosition);
                         adapter.highlightFocusMessage(initialMessagePosition);
@@ -1097,6 +1106,10 @@ public class ConversationFragment extends Fragment implements
         adapter.notifyDataSetChanged();
         multiMessageActionContainerLinearLayout.setVisibility(View.VISIBLE);
         setupMultiMessageAction();
+    }
+
+    public ConversationMessageAdapter getAdapter(){
+        return adapter;
     }
 
     public void toggleConversationMode() {

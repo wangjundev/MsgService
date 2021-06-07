@@ -28,7 +28,7 @@ import butterknife.BindView;
 public class ConversationActivity extends WfcBaseActivity {
     private boolean isInitialized = false;
     private ConversationFragment conversationFragment;
-    private Conversation conversation;
+    public static Conversation conversation;
     private AppExecutors mAppExecutors;
     private SendCallback sendCallback;
     @BindView(R2.id.toolbar_title)
@@ -98,6 +98,7 @@ public class ConversationActivity extends WfcBaseActivity {
     }
 
     public void saveLocationMsg(Context context, String content, String destination, boolean isReceived, int messageType, LocationData locationData){
+        conversationFragment.setInitialFocusedMessageId(-1);
         mAppExecutors.diskIO().execute(() -> {
             ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
             MessageEntity me = mViewModel.saveLocationMsg(context, content, destination, isReceived, messageType, locationData);
@@ -107,11 +108,11 @@ public class ConversationActivity extends WfcBaseActivity {
                     .get(MessageViewModel.class);
             messageViewModel.sendLocationMessage(me, locationData);
             messageViewModel.updateMessageSendStatus(me);
-            conversationFragment.setInitialFocusedMessageId(-1);
         });
     }
 
     public void saveMsg(Context context, String content, String destination, boolean isReceived, String attachmentpath, int messageType){
+        conversationFragment.setInitialFocusedMessageId(-1);
         mAppExecutors.diskIO().execute(() -> {
             ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
             MessageEntity me = mViewModel.saveMsg(context, content, destination, isReceived,  attachmentpath,messageType);
@@ -128,7 +129,6 @@ public class ConversationActivity extends WfcBaseActivity {
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
                 messageViewModel.updateMessageSendStatus(me);
             }
-            conversationFragment.setInitialFocusedMessageId(-1);
         });
 //        MessageViewModel.Factory factory = new MessageViewModel.Factory(
 //                this.getApplication(), 0);
@@ -288,6 +288,7 @@ public class ConversationActivity extends WfcBaseActivity {
             return;
         }
         intent.putExtra("conversation", (ConversationEntity)conversation);
+        intent.putExtra("activityname", "com.stv.msgservice.ui.conversation.ConversationActivity");
         startActivity(intent);
 //        Intent intent = new Intent(this, ConversationInfoActivity.class);
 //        ConversationInfo conversationInfo = ChatManager.Instance().getConversation(conversation);
@@ -310,6 +311,11 @@ public class ConversationActivity extends WfcBaseActivity {
 //        });
     }
 
+    public void setConversationTopStatus(boolean isTop){
+//        Log.i("Junwang", "setConversationTopStatus isTop="+isTop+", id="+conversation.getId());
+        conversation.setTop(isTop);
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         Log.i("Junwang", "onNewIntent intent enter.");
@@ -320,7 +326,15 @@ public class ConversationActivity extends WfcBaseActivity {
         }
         long initialFocusedMessageId = intent.getLongExtra("toFocusMessageId", -1);
         String channelPrivateChatUser = intent.getStringExtra("channelPrivateChatUser");
-        conversationFragment.setupConversation(conversation, null, initialFocusedMessageId, channelPrivateChatUser);
+        boolean isFromSearch = intent.getBooleanExtra("fromSearch", false);
+        if(conversationFragment.getAdapter() != null){
+            Log.i("Junwang", "onNewIntent notifyDataSetChanged");
+            conversationFragment.getAdapter().notifyDataSetChanged();
+        }
+//        if(isFromSearch) {
+//            conversationFragment.onDestroy();
+//        }
+        conversationFragment.setupConversation(conversation, null, initialFocusedMessageId, channelPrivateChatUser, isFromSearch);
     }
 
     @Override
@@ -335,11 +349,12 @@ public class ConversationActivity extends WfcBaseActivity {
         conversation = intent.getParcelableExtra("conversation");
         String conversationTitle = intent.getStringExtra("conversationTitle");
         long initialFocusedMessageId = intent.getLongExtra("toFocusMessageId", -1);
+        boolean isFromSearch = intent.getBooleanExtra("fromSearch", false);
         if (conversation == null) {
             finish();
         }
         Log.i("Junwang", "snippet text = "+conversation.getSnippetText()+", lastmsgId="+conversation.getLatestMessageId());
-        conversationFragment.setupConversation(conversation, conversationTitle, initialFocusedMessageId, null);
+        conversationFragment.setupConversation(conversation, conversationTitle, initialFocusedMessageId, null, isFromSearch);
         updateMessagesReadStatus();
     }
 

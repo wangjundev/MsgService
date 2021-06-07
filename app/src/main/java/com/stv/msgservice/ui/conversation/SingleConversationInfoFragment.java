@@ -52,6 +52,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     private ConversationMemberAdapter conversationMemberAdapter;
 //    private ConversationViewModel conversationViewModel;
     private UserInfoViewModel userViewModel;
+    private AppExecutors mAppExecutors;
 
 
     public static SingleConversationInfoFragment newInstance(ConversationEntity conversationInfo) {
@@ -81,6 +82,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     }
 
     private void init() {
+        mAppExecutors = new AppExecutors();
 //        conversationViewModel = WfcUIKit.getAppScopeViewModel(ConversationViewModel.class);
 //        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         Log.i("Junwang", "SingleConversationInfoFragment init");
@@ -96,12 +98,11 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
             members.add(userInfoEntity);
             conversationMemberAdapter.setMembers(members);
             conversationMemberAdapter.setOnMemberClickListener(this);
+            memberReclerView.setAdapter(conversationMemberAdapter);
+            memberReclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
         });
-
-
-        memberReclerView.setAdapter(conversationMemberAdapter);
-        memberReclerView.setLayoutManager(new GridLayoutManager(getActivity(), 5));
-//        stickTopSwitchButton.setChecked(conversationInfo.isTop);
+        Log.i("Junwang", "conversationInfo.isTop()="+conversationInfo.isTop());
+        stickTopSwitchButton.setChecked(conversationInfo.isTop());
 //        silentSwitchButton.setChecked(conversationInfo.isSilent);
         stickTopSwitchButton.setOnCheckedChangeListener(this);
         silentSwitchButton.setOnCheckedChangeListener(this);
@@ -128,7 +129,6 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     }
 
     public void RemoveConversation(ConversationEntity ce){
-        AppExecutors mAppExecutors = new AppExecutors();
         MessageViewModel.Factory factory = new MessageViewModel.Factory(
                 getActivity().getApplication(), 0);
         MessageViewModel messageViewModel = new ViewModelProvider(this, factory)
@@ -195,6 +195,18 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     }
 
     private void stickTop(boolean top) {
+        ((ConversationInfoActivity)getActivity()).setConversationTopStatus(top);
+        mAppExecutors.diskIO().execute(() -> {
+            ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
+            Log.i("Junwang", "top="+top);
+            conversationInfo.setTop(top);
+            if(top){
+                conversationInfo.setTopTimestamp(System.currentTimeMillis());
+            }else {
+                conversationInfo.setTopTimestamp(0);
+            }
+            mViewModel.updateConversation((ConversationEntity) conversationInfo);
+        });
 //        ConversationListViewModel conversationListViewModel = ViewModelProviders
 //                .of(this, new ConversationListViewModelFactory(Arrays.asList(Conversation.ConversationType.Single, Conversation.ConversationType.Group, Conversation.ConversationType.Channel), Arrays.asList(0)))
 //                .get(ConversationListViewModel.class);

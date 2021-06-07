@@ -39,6 +39,11 @@ public class ConversationEntity  implements Conversation, Parcelable {
 
     private int unreadCount;
 
+    private boolean isTop;
+
+    @ColumnInfo(name = "top_timestamp")
+    private long topTimestamp;
+
     public long getId() {
         return id;
     }
@@ -103,6 +108,22 @@ public class ConversationEntity  implements Conversation, Parcelable {
         this.unreadCount = unreadCount;
     }
 
+    public boolean isTop() {
+        return isTop;
+    }
+
+    public void setTop(boolean top) {
+        isTop = top;
+    }
+
+    public long getTopTimestamp() {
+        return topTimestamp;
+    }
+
+    public void setTopTimestamp(long topTimestamp) {
+        this.topTimestamp = topTimestamp;
+    }
+
     public static final Parcelable.Creator<ConversationEntity> CREATOR = new Parcelable.Creator<ConversationEntity>() {
         @Override
         public ConversationEntity createFromParcel(Parcel source) {
@@ -129,6 +150,9 @@ public class ConversationEntity  implements Conversation, Parcelable {
         parcel.writeString(this.snippetText);
         parcel.writeInt(this.latestMessageStatus);
         parcel.writeString(this.normalizedDestination);
+        parcel.writeInt(this.unreadCount);
+        parcel.writeInt(this.isTop ? 1 : 0);
+        parcel.writeLong(this.topTimestamp);
     }
 
     public ConversationEntity(Parcel parcel) {
@@ -139,6 +163,9 @@ public class ConversationEntity  implements Conversation, Parcelable {
         this.snippetText = parcel.readString();
         this.latestMessageStatus = parcel.readInt();
         this.normalizedDestination = parcel.readString();
+        this.unreadCount = parcel.readInt();
+        this.isTop = parcel.readInt() == 0 ? false : true;
+        this.topTimestamp = parcel.readLong();
     }
 
     public ConversationEntity() {

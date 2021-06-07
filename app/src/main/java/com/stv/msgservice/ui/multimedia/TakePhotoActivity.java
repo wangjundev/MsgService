@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.os.SystemClock;
 
 import com.cjt2325.cameralibrary.JCameraView;
+import com.cjt2325.cameralibrary.listener.ClickListener;
 import com.cjt2325.cameralibrary.listener.JCameraListener;
 import com.stv.msgservice.R;
 import com.stv.msgservice.datamodel.constants.Config;
@@ -39,7 +40,8 @@ public class TakePhotoActivity extends AppCompatActivity {
     private void initView() {
         mJCameraView = findViewById(R.id.cameraView);
         //(0.0.7+)设置视频保存路径（如果不设置默认为Environment.getExternalStorageDirectory().getPath()）
-        mJCameraView.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath());
+//        mJCameraView.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath());
+        mJCameraView.setSaveVideoPath(this.getExternalFilesDir(Environment.DIRECTORY_MOVIES).getPath());
         //(0.0.8+)设置手动/自动对焦，默认为自动对焦
         //设置小视频保存路径
         File file = new File(this.getFilesDir().toString()+Config.VIDEO_SAVE_DIR);
@@ -73,6 +75,12 @@ public class TakePhotoActivity extends AppCompatActivity {
                 finish();
             }
         });
+        mJCameraView.setLeftClickListener(new ClickListener(){
+            @Override
+            public void onClick() {
+                finish();
+            }
+        });
     }
 
     @Override
@@ -93,7 +101,7 @@ public class TakePhotoActivity extends AppCompatActivity {
 
     public String saveBitmap(Bitmap bm, String dir) {
         String path = "";
-        File f = new File(dir, "wfc_" + SystemClock.currentThreadTimeMillis() + ".png");
+        File f = new File(dir, "santi_" + SystemClock.currentThreadTimeMillis() + ".png");
         if (f.exists()) {
             f.delete();
         }

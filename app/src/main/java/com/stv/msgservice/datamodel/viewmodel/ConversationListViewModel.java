@@ -207,8 +207,8 @@ public class ConversationListViewModel extends AndroidViewModel {
         if(isReceived){
             UserInfoEntity userInfoEntity = new UserInfoEntity();
             userInfoEntity.setUri(destination);
-//            userInfoEntity.setName("中国移动");
-            userInfoEntity.setName("新华社");
+            userInfoEntity.setName("中国移动");
+//            userInfoEntity.setName("新华社");
             String menu = "{\n" +
                     "\"menu\":{\"entries\":[{\n" +
                     "                    \"menu\":{\n" +
@@ -291,9 +291,9 @@ public class ConversationListViewModel extends AndroidViewModel {
                     "            ]\n" +
                     "        }\n" +
                     "}";
-            userInfoEntity.setMenu(menu);
-//            userInfoEntity.setPortrait("http://sms-agent.oss-cn-hangzhou.aliyuncs.com/sms_agent_temp/51/5d89bdce9bf79.jpg");
-            userInfoEntity.setPortrait("http://sms-agent.oss-cn-hangzhou.aliyuncs.com/sms_agent_temp/51/xhs.png");
+//            userInfoEntity.setMenu(menu);
+            userInfoEntity.setPortrait("http://sms-agent.oss-cn-hangzhou.aliyuncs.com/sms_agent_temp/51/5d89bdce9bf79.jpg");
+//            userInfoEntity.setPortrait("http://sms-agent.oss-cn-hangzhou.aliyuncs.com/sms_agent_temp/51/xhs.png");
             mRepository.insertUserInfo(userInfoEntity);
         }
 //        loadConversations();

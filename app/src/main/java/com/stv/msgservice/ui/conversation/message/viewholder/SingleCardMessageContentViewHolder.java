@@ -26,6 +26,7 @@ import com.stv.msgservice.datamodel.network.chatbot.GeneralPurposeCardCarousel;
 import com.stv.msgservice.datamodel.network.chatbot.MultiCardChatbotMsg;
 import com.stv.msgservice.datamodel.network.chatbot.SuggestionAction;
 import com.stv.msgservice.datamodel.network.chatbot.SuggestionActionWrapper;
+import com.stv.msgservice.ui.WebViewNewsActivity;
 import com.stv.msgservice.ui.WfcWebViewActivity;
 import com.stv.msgservice.ui.conversation.ConversationFragment;
 import com.stv.msgservice.ui.conversation.message.SingleCardMessageContent;
@@ -87,8 +88,8 @@ public class SingleCardMessageContentViewHolder extends MediaMessageContentViewH
                         tv1.setOnClickListener(new View.OnClickListener(){
                             @Override
                             public void onClick(View v) {
-                                WfcWebViewActivity.loadUrl(context, "", sa.urlAction.openUrl.url);
-//                                WebViewNewsActivity.start(context, sa.urlAction.openUrl.url);
+//                                WfcWebViewActivity.loadUrl(context, "", sa.urlAction.openUrl.url);
+                                WebViewNewsActivity.start(context, sa.urlAction.openUrl.url);
                             }
                         });
                     }else if((sa != null) && (sa.dialerAction != null)){

@@ -14,7 +14,8 @@ import androidx.room.Update;
 
 @Dao
 public interface ConversationDao {
-    @Query("SELECT * FROM conversations")
+    @Query("SELECT * FROM conversations ORDER BY CASE WHEN isTop = 1 THEN 0 ELSE 1 END, top_timestamp DESC, last_timestamp DESC")
+//    @Query("SELECT * FROM conversations")
     LiveData<List<ConversationEntity>> getConversations();
 
     @Query("SELECT id FROM conversations WHERE conversations.participant_normalized_destination = :contactNumber ")

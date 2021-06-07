@@ -74,7 +74,8 @@ public abstract class SearchActivity extends BaseNoToolbarActivity {
     }
 
     void search(String keyword) {
-        if (!TextUtils.isEmpty(keyword)) {
+        if(!"%%".equals(keyword)){
+//        if (!TextUtils.isEmpty(keyword)) {
             searchFragment.search(keyword, modules);
         } else {
             searchFragment.reset();

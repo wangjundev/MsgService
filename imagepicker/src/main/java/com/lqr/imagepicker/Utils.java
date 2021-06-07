@@ -86,13 +86,14 @@ public class Utils {
     /**
      * @return 绝对路径
      */
-    public static String genTakePhotoOutputPath() {
+    public static String genTakePhotoOutputPath(Context context) {
         File takeImageFile;
-        if (existSDCard()) {
-            takeImageFile = new File(Environment.getExternalStorageDirectory(), "/DCIM/camera/");
-        } else {
-            takeImageFile = Environment.getDataDirectory();
-        }
+//        if (existSDCard()) {
+//            takeImageFile = new File(Environment.getExternalStorageDirectory(), "/DCIM/camera/");
+//        } else {
+//            takeImageFile = Environment.getDataDirectory();
+//        }
+        takeImageFile = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         takeImageFile = createFile(takeImageFile, "IMG_", ".jpg");
         return takeImageFile.getAbsolutePath();
     }

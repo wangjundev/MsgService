@@ -97,7 +97,7 @@ public class ImageGridAdapter extends BaseAdapter {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((ImageGridActivity) mActivity).takePhoto();
+                    ((ImageGridActivity) mActivity).takePhoto(mActivity.getApplicationContext());
                 }
             });
         } else {

@@ -2,6 +2,7 @@ package com.lqr.imagepicker.ui;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -120,8 +121,8 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
         }
     }
 
-    public void takePhoto() {
-        takePhotoOutputPath = Utils.genTakePhotoOutputPath();
+    public void takePhoto(Context context) {
+        takePhotoOutputPath = Utils.genTakePhotoOutputPath(context);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!checkPermission(Manifest.permission.CAMERA)) {
                 requestPermissions(new String[]{Manifest.permission.CAMERA}, ImageGridActivity.REQUEST_PERMISSION_CAMERA);

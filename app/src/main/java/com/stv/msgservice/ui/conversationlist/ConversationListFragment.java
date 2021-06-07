@@ -89,6 +89,7 @@ public class ConversationListFragment extends ProgressFragment {
 //        });
         conversationListViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
         conversationListViewModel.getConversations().observe(this, conversationInfos -> {
+            Log.i("Junwang", "conversationListViewModel showContent");
             showContent();
             conversations = conversationInfos;
             adapter.setConversationInfos(conversationInfos);
