@@ -10,11 +10,13 @@ import com.jimi_wu.easyrxretrofit.upload.UploadParam;
 import com.stv.msgservice.datamodel.constants.MessageConstants;
 import com.stv.msgservice.datamodel.network.FileBean;
 import com.stv.msgservice.datamodel.network.ResultBean;
+import com.stv.msgservice.datamodel.network.UploadFileCallback;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class FileUtils {
@@ -52,20 +54,27 @@ public class FileUtils {
     /**
      * 单图上传
      */
-    public static void upload(File file, String url) {
+    public static void upload(File file, String url, UploadFileCallback callback) {
         RetrofitManager
                 .uploadFile(url, new UploadParam("upload", file))
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread()/*Schedulers.io()*/)
                 .subscribe(new UploadObserver<ResultBean<FileBean>>() {
+                    String url;
                     @Override
                     public void _onNext(ResultBean<FileBean> fileBeanResultBean) {
-                        Log.i("retrofit", "onNext=======>url:" + fileBeanResultBean.getData().getUrl());
+                        url = fileBeanResultBean.getData().getUrl();
+                        Log.i("retrofit", "onNext=======>url:" + url);
                     }
 
                     @Override
                     public void _onProgress(Integer percent) {
                         Log.i("retrofit", "onProgress======>" + percent);
+                        if(percent.intValue() == 100){
+                            if(callback != null){
+                                callback.onSuccess(url);
+                            }
+                        }
                     }
 
                     @Override
@@ -76,6 +85,34 @@ public class FileUtils {
                     @Override
                     public void _onError(Throwable e) {
                         Log.i("retrofit", "onError======>" + e.getMessage());
+                        if(callback != null){
+                            callback.onFail(-1);
+                        }
+                    }
+                });
+    }
+
+    /**
+     * 单图上传
+     */
+    public static void uploadChatbotFile(File file, String url, UploadFileCallback callback) {
+        RetrofitManager
+                .uploadFile(url, new UploadParam("upload", file))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()/*Schedulers.io()*/)
+                .subscribe(new Consumer<Object>(){
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        if(callback != null){
+                            callback.onSuccess(null);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        if(callback != null){
+                            callback.onFail(-1);
+                        }
                     }
                 });
     }

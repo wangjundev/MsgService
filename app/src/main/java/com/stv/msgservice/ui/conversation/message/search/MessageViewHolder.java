@@ -1,11 +1,11 @@
 package com.stv.msgservice.ui.conversation.message.search;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.stv.msgservice.R;
 import com.stv.msgservice.R2;
 import com.stv.msgservice.datamodel.constants.MessageConstants;
@@ -13,7 +13,7 @@ import com.stv.msgservice.datamodel.model.Message;
 import com.stv.msgservice.datamodel.viewmodel.UserInfoViewModel;
 import com.stv.msgservice.third.utils.TimeUtils;
 import com.stv.msgservice.ui.GlideApp;
-import com.stv.msgservice.utils.UIUtils;
+import com.stv.msgservice.ui.GlideCircleWithBorder;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -64,12 +64,16 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         userInfoViewModel.getUserInfoByConversationId(message.getConversationId()).observe(fragment, userInfo -> {
             if(userInfo != null){
                 if(message.getDirection() == MessageConstants.DIRECTION_IN){
+                    Log.i("Junwang", "1111111");
                     String name = userInfo.getName();
                     String portrait = userInfo.getPortrait();
                     GlideApp.with(fragment)
                             .load(portrait)
                             .placeholder(R.mipmap.avatar_def)
-                            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4)))
+//                            .apply(RequestOptions.bitmapTransform(new CircleCrop()))
+//                            .optionalTransform(new GlideCircleWithBorder())
+                            .transform(new CenterCrop(),new GlideCircleWithBorder())
+//                            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4)))
                             .into(portraitImageView);
                     nameTextView.setText(name);
                 }else{

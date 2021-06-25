@@ -3,7 +3,9 @@ package com.stv.msgservice.ui.conversation.ext;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
@@ -12,10 +14,12 @@ import com.stv.msgservice.R;
 import com.stv.msgservice.annotation.ExtContextMenuItem;
 import com.stv.msgservice.datamodel.constants.MessageConstants;
 import com.stv.msgservice.datamodel.model.Conversation;
+import com.stv.msgservice.third.utils.ImageUtils;
 import com.stv.msgservice.ui.WfcBaseActivity;
 import com.stv.msgservice.ui.conversation.ConversationActivity;
 import com.stv.msgservice.ui.conversation.ext.core.ConversationExt;
 import com.stv.msgservice.ui.multimedia.TakePhotoActivity;
+import com.stv.msgservice.utils.VideoUtil;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -50,11 +54,16 @@ public class ShootExt extends ConversationExt {
             }
             if (data.getBooleanExtra("take_photo", true)) {
                 //照片
-                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getNormalizedDestination(), false, path, MessageConstants.CONTENT_TYPE_IMAGE);
+                ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, ImageUtils.genThumbImgFile(path).getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
 //                messageViewModel.sendImgMsg(conversation, ImageUtils.genThumbImgFile(path), new File(path));
             } else {
                 //小视频
-                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getNormalizedDestination(), false, path, MessageConstants.CONTENT_TYPE_VIDEO);
+                Bitmap b = VideoUtil.getVideoThumb(path);
+                String thumbnail = null;
+                if(b != null){
+                    thumbnail = VideoUtil.bitmap2File(activity, b, "thumb_"+ SystemClock.currentThreadTimeMillis());
+                }
+                ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO);
 //                messageViewModel.sendVideoMsg(conversation, new File(path));
             }
             ((ConversationActivity)activity).getConversationFragment().getConversationInputPanel().closeConversationInputPanel();

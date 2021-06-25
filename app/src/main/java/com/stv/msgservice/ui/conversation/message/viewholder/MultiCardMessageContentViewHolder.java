@@ -55,7 +55,7 @@ public class MultiCardMessageContentViewHolder extends MediaMessageContentViewHo
 
     @Override
     public void onBind(Message message) {
-        Log.i("Junwang", "singlecard content view onBind");
+        Log.i("Junwang", "multicard content view onBind");
         String content = message.getContent();
         MultiCardChatbotMsg multiCard = new Gson().fromJson(content, MultiCardChatbotMsg.class);
         GeneralPurposeCardCarousel gpcc = multiCard.getGeneralPurposeCardCarousel();

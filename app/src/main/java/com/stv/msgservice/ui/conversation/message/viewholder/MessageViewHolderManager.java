@@ -34,8 +34,12 @@ public class  MessageViewHolderManager {
 //        registerMessageViewHolder(UserCardMessageContentViewHolder.class, R.layout.conversation_item_user_card_send, R.layout.conversation_item_user_card_receive);
 //        registerMessageViewHolder(ConferenceInviteMessageContentViewHolder.class, R.layout.conversation_item_conference_invite_send, R.layout.conversation_item_conference_invite_receive);
 //        registerMessageViewHolder(CompositeMessageContentViewHolder.class, R.layout.conversation_item_composite_send, R.layout.conversation_item_composite_receive);
-        registerMessageViewHolder(SingleCardMessageContentViewHolder.class, R.layout.conversation_item_single_card_receive, R.layout.conversation_item_single_card_receive);
-        registerMessageViewHolder(MultiCardMessageContentViewHolder.class, R.layout.conversation_item_multi_card_receive, R.layout.conversation_item_multi_card_receive);
+//        registerMessageViewHolder(SingleCardMessageContentViewHolder.class, R.layout.conversation_item_single_card_receive, R.layout.conversation_item_single_card_receive);
+//        registerMessageViewHolder(MultiCardMessageContentViewHolder.class, R.layout.conversation_item_multi_card_receive, R.layout.conversation_item_multi_card_receive);
+        registerMessageViewHolder(SingleCardStdMessageContentViewHolder.class, R.layout.conversation_item_single_card_receive, R.layout.conversation_item_single_card_receive);
+        registerMessageViewHolder(SingleCardWithSuggestionsMessageContentViewHolder.class, R.layout.conversation_item_single_card_receive, R.layout.conversation_item_single_card_receive);
+        registerMessageViewHolder(MultiCardStdMessageContentViewHolder.class, R.layout.conversation_item_multi_card_receive, R.layout.conversation_item_multi_card_receive);
+        registerMessageViewHolder(TextSuggestionMessageContentViewHolder.class, R.layout.conversation_item_text_suggestion_receive, R.layout.conversation_item_text_suggestion_receive);
     }
 
     private SparseArray<Class<? extends MessageContentViewHolder>> messageViewHolders = new SparseArray<>();

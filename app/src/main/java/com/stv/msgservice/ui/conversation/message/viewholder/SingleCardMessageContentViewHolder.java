@@ -147,7 +147,7 @@ public class SingleCardMessageContentViewHolder extends MediaMessageContentViewH
                 cardTitle.setText(cardcontent.getTitle());
                 cardDescription.setText(cardcontent.getDescription());
 
-                RequestOptions options = new RequestOptions().error(R.mipmap.default_image).bitmapTransform(new RoundedCornerCenterCrop(20));//图片圆角为30
+                RequestOptions options = new RequestOptions().error(R.mipmap.default_image).bitmapTransform(new RoundedCornerCenterCrop(24));//图片圆角为30
                 if("image/png".equals(cardcontent.getMedia().getThumbnailContentType())
                         || ("image/jpg".equals(cardcontent.getMedia().getThumbnailContentType()))
                         || ("image/jpeg".equals(cardcontent.getMedia().getThumbnailContentType()))){

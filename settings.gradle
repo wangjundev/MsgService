@@ -1,3 +1,4 @@
+include ':immersionbar'
 include ':SwipeRecyclerView'
 include ':imagepicker'
 include ':emojilibrary'

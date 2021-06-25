@@ -450,7 +450,8 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 int position = viewHolder.getAdapterPosition();
                 Message message = getItem(position);
                 // FIXME: 2019/2/15 getUserInfo可能返回null
-//                onPortraitClickListener.onPortraitClick(ChatManager.Instance().getUserInfo(message.message.sender, false));
+                Log.i("Junwang", "conversationMessageAdapter processPortraitClick");
+                onPortraitClickListener.onPortraitClick(null);
             }
         });
     }

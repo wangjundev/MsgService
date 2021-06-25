@@ -14,4 +14,12 @@ public interface Message {
     long getConversationId();
     int getRead();
     LocationData getLocationData();
+    String getConversationID();
+    void setConversationID(String conversationID);
+    String getContributionID();
+    void setContributionID(String contributionID);
+    String getMessageId();
+    void setMessageId(String messageId);
+    String getDeliveryStatus();
+    void setDeliveryStatus(String deliveryStatus);
 }

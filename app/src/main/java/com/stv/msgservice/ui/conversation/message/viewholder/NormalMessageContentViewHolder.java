@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.stv.msgservice.R;
 import com.stv.msgservice.R2;
 import com.stv.msgservice.annotation.MessageContextMenuItem;
@@ -22,10 +21,10 @@ import com.stv.msgservice.datamodel.database.entity.MessageEntity;
 import com.stv.msgservice.datamodel.model.Message;
 import com.stv.msgservice.datamodel.viewmodel.UserInfoViewModel;
 import com.stv.msgservice.ui.GlideApp;
+import com.stv.msgservice.ui.GlideCircleWithBorder;
 import com.stv.msgservice.ui.conversation.ConversationActivity;
 import com.stv.msgservice.ui.conversation.ConversationFragment;
 import com.stv.msgservice.ui.conversation.ConversationMessageAdapter;
-import com.stv.msgservice.utils.UIUtils;
 
 import java.util.Map;
 
@@ -348,13 +347,15 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 .get(UserInfoViewModel.class);
         userInfoViewModel.getUserInfoByConversationId(item.getConversationId()).observe(fragment, userInfo -> {
             if(userInfo != null){
+                Log.i("Junwang", "222222");
                 if(item.getDirection() == MessageConstants.DIRECTION_IN){
                     String name = userInfo.getName();
                     String portrait = userInfo.getPortrait();
                     GlideApp.with(fragment)
                             .load(portrait)
                             .placeholder(R.mipmap.avatar_def)
-                            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4)))
+                            .transform(new CenterCrop(),new GlideCircleWithBorder())
+//                            .transforms(new CenterCrop(), new RoundedCorners(UIUtils.dip2Px(fragment.getContext(), 4)))
                             .into(portraitImageView);
                     nameTextView.setText(name);
                 }else{

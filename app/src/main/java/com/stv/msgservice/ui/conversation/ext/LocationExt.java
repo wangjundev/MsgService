@@ -48,7 +48,7 @@ public class LocationExt extends ConversationExt {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             LocationData locationData = (LocationData) data.getSerializableExtra("location");
-            ((ConversationActivity)activity).saveLocationMsg(activity, null, conversation.getNormalizedDestination(), false, MessageConstants.CONTENT_TYPE_LOCATION, locationData);
+            ((ConversationActivity)activity).saveLocationMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, MessageConstants.CONTENT_TYPE_LOCATION, locationData);
             ((ConversationActivity)activity).getConversationFragment().getConversationInputPanel().closeConversationInputPanel();
         }
     }

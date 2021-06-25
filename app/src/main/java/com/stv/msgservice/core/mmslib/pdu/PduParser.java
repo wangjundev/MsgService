@@ -104,6 +104,9 @@ public class PduParser {
      */
     private final boolean mParseContentDisposition;
 
+    //add by junwang
+    public byte[] contentValue = null;
+
     /**
      * Constructor.
      *
@@ -432,6 +435,8 @@ public class PduParser {
                                         +
                                         new String(value));
                             }
+                            //add by junwang
+                            contentValue = value;
                             headers.setTextString(value, headerField);
                         } catch (NullPointerException e) {
                             log("null pointer error!");
@@ -2044,5 +2049,9 @@ public class PduParser {
         }
 
         return true;
+    }
+
+    public byte[] getContentValue(){
+        return contentValue;
     }
 }

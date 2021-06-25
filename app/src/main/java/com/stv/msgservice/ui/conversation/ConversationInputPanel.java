@@ -92,6 +92,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     ConversationExtension extension;
     private Conversation conversation;
+    private String chatbotId;
     private MessageViewModel messageViewModel;
 //    private ConversationViewModel conversationViewModel;
     private InputAwareLayout rootLinearLayout;
@@ -136,9 +137,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     }
 
-    public void setupConversation(Conversation conversation) {
+    public void setupConversation(Conversation conversation, String chatbotId) {
         this.conversation = conversation;
         this.extension.bind(this.messageViewModel, conversation);
+        this.chatbotId = chatbotId;
 
 //        setDraft();
     }
@@ -202,7 +204,11 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                 File file = new File(audioFile);
                 if (file.exists()) {
 //                    messageViewModel.sendAudioFile(conversation, Uri.parse(audioFile), duration);
-                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getNormalizedDestination(), false, audioFile, MessageConstants.CONTENT_TYPE_AUDIO);
+                    if(conversation != null){
+                        ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, audioFile, null, MessageConstants.CONTENT_TYPE_AUDIO);
+                    }else if(chatbotId != null){
+                        ((ConversationActivity)activity).saveMsg(activity, null, chatbotId, false, audioFile, null, MessageConstants.CONTENT_TYPE_AUDIO);
+                    }
                 }
             }
 
@@ -389,7 +395,12 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 //                }
 //            }
 //        });
-        ((ConversationActivity)(fragment.getActivity())).saveMsg(fragment.getContext(), content.toString().trim(), conversation.getNormalizedDestination(), false, null, MessageConstants.CONTENT_TYPE_TEXT);
+        if(conversation != null){
+            ((ConversationActivity)(fragment.getActivity())).saveMsg(fragment.getContext(), content.toString().trim(), /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, null, null, MessageConstants.CONTENT_TYPE_TEXT);
+        }else if(chatbotId != null){
+            ((ConversationActivity)(fragment.getActivity())).saveMsg(fragment.getContext(), content.toString().trim(), chatbotId, false, null, null, MessageConstants.CONTENT_TYPE_TEXT);
+        }
+
         ((ConversationFragment)fragment).getConversationInputPanel().closeConversationInputPanel();
 //        TextMessageContent txtContent = new TextMessageContent(content.toString().trim());
 //        if (this.quoteInfo != null) {

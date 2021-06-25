@@ -18,8 +18,11 @@ public interface ConversationDao {
 //    @Query("SELECT * FROM conversations")
     LiveData<List<ConversationEntity>> getConversations();
 
-    @Query("SELECT id FROM conversations WHERE conversations.participant_normalized_destination = :contactNumber ")
+    @Query("SELECT id FROM conversations WHERE conversations.sender_address = :contactNumber ")
     long getConversationId(String contactNumber);
+
+    @Query("SELECT * FROM conversations WHERE conversations.sender_address = :chatbotId")
+    LiveData<ConversationEntity> getConversationByChatbotId(String chatbotId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<ConversationEntity> conversations);

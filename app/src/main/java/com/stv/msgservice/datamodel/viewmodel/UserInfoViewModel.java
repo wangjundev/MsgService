@@ -41,6 +41,33 @@ public class UserInfoViewModel extends AndroidViewModel {
         return mRepository.getUsers();
     }
 
+//    public void SearchChatbotList() {
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl(MessageConstants.BASE_URL)
+////                .client(httpClient)
+//                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//
+//        ApiService service = retrofit.create(ApiService.class);
+//        try {
+//            service.searchChatbotList(/*chatbotId*/MessageViewModel.getHttpsRequestArguments(getApplication().getApplicationContext(), null, null))
+//                    .subscribe(new Consumer<ChatbotSearchResult>() {
+//                        @Override
+//                        public void accept(ChatbotSearchResult chatbotSearchResult) throws Exception {
+//                            chatbotSearchResult.getBots();
+//                        }
+//                    }, new Consumer<Throwable>() {
+//                        @Override
+//                        public void accept(Throwable throwable) throws Exception {
+//
+//                        }
+//                    });
+//        }catch (Exception e){
+//            Log.i("Junwang", "SearchChatbotList exception "+e.toString());
+//        }
+//    }
+
     public LiveData<UserInfoEntity> getUserInfo(String uri){
         return mRepository.getUser(uri);
     }

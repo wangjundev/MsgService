@@ -34,7 +34,8 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
     public MediaMessageContentViewHolder(ConversationFragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
         placeholderOptions.diskCacheStrategy(DiskCacheStrategy.ALL);
-        placeholderOptions.centerCrop();
+//        placeholderOptions.centerCrop();
+//        placeholderOptions.fitCenter();
         placeholderOptions.placeholder(R.drawable.image_chat_placeholder);
     }
 
@@ -69,7 +70,12 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
 
             } else {
                 entry.setType(MediaEntry.TYPE_VIDEO);
-                Bitmap bitmap = BitmapFactory.decodeFile(msg.getThumbnailPath());
+                Bitmap bitmap;
+                if(msg.getThumbnailPath() == null || msg.getThumbnailPath().length() == 0){
+                    bitmap = BitmapFactory.decodeFile(msg.getAttachmentPath());
+                }else{
+                    bitmap = BitmapFactory.decodeFile(msg.getThumbnailPath());
+                }
                 entry.setThumbnail(bitmap);
 //                entry.setThumbnail(((VideoMessageContent) msg.message.content).getThumbnail());
             }
@@ -99,19 +105,30 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
      */
     protected void loadMedia(Bitmap thumbnail, String imagePath, ImageView imageView){
         RequestBuilder<Drawable> thumbnailRequest = null;
-        if(thumbnail != null) {
-            thumbnailRequest = Glide
-                    .with(fragment)
-                    .load(thumbnail);
+        if(thumbnail != null){
+            Glide.with(fragment)
+                    .load(thumbnail)
+                    .apply(placeholderOptions)
+                    .into(imageView);
         }else{
-            thumbnailRequest = Glide
-                    .with(fragment)
-                    .load(R.drawable.image_chat_placeholder);
+            Glide.with(fragment)
+                    .load(imagePath)
+                    .apply(placeholderOptions)
+                    .into(imageView);
         }
-        Glide.with(fragment)
-                .load(imagePath)
-                .thumbnail(thumbnailRequest)
-                .apply(placeholderOptions)
-                .into(imageView);
+//        if(thumbnail != null) {
+//            thumbnailRequest = Glide
+//                    .with(fragment)
+//                    .load(thumbnail);
+//        }else{
+//            thumbnailRequest = Glide
+//                    .with(fragment)
+//                    .load(R.drawable.image_chat_placeholder);
+//        }
+//        Glide.with(fragment)
+//                .load(imagePath)
+//                .thumbnail(thumbnailRequest)
+//                .apply(placeholderOptions)
+//                .into(imageView);
     }
 }

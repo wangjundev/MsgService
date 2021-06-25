@@ -33,11 +33,26 @@ public class MessageConstants {
     public static final int CONTENT_TYPE_NOTIFICATION           = 207;
     public static final int CONTENT_TYPE_SINGLE_CARD            = 208;
     public static final int CONTENT_TYPE_MULTI_CARD             = 209;
-    public static final int CONTENT_TYPE_UNKNOWN                = 210;
+    public static final int CONTENT_TYPE_TEXT_WITH_SUGGESTION   = 210;
+    public static final int CONTENT_TYPE_IMAGE_WITH_SUGGESTION  = 211;
+    public static final int CONTENT_TYPE_VIDEO_WITH_SUGGESTION  = 212;
+    public static final int CONTENT_TYPE_AUDIO_WITH_SUGGESTION  = 213;
+    public static final int CONTENT_TYPE_LOCATION_WITH_SUGGESTION = 214;
+    public static final int CONTENT_TYPE_FILE_WITH_SUGGESTION   = 215;
+    public static final int CONTENT_TYPE_AVCHAT_WITH_SUGGESTION = 216;
+    public static final int CONTENT_TYPE_NOTIFICATION_WITH_SUGGESTION = 217;
+    public static final int CONTENT_TYPE_SINGLE_CARD_WITH_SUGGESTION  = 218;
+    public static final int CONTENT_TYPE_MULTI_CARD_WITH_SUGGESTION   = 219;
+    public static final int CONTENT_TYPE_UNKNOWN                = 220;
 
-    public static final String BASE_URL = "http://192.168.5.127:3000/";
+    public static final String BASE_URL = "http://callback.supermms.cn";//"http://47.103.127.125:8890";//http://192.168.5.127:3000/";
     public static final String UPLOAD_URL = "/upload/file";    //上传单文件
     public static final String UPLOADS_URL = "/upload/files";
+
+    public static final String DELIVEREDTOTERMINAL = "DeliveredToTerminal";
+    public static final String DELIVEREDFAILED = "DeliveryImpossible";//"DeliveredFailed";
+    public static final String MESSAGEDISPLAYED = "MessageDisplayed";
+    public static final String MESSAGEREADREPORTFAILED = "MessageReadReportFailed";
 
     //原生action类型
     public static class NativeActionType{

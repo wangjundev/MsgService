@@ -47,11 +47,13 @@
     <color name="gray21">#DADADA</color>
     <color name="gray22">#F5F6F8</color>
     <color name="gray23">#ADADAD</color>
+    <color name="google_gray">#F1F1F1</color>
 
     <color name="blue0">#576B95</color>
     <color name="blue1">#3B62E0</color>
     <color name="blue2">#3E65E4</color>
     <color name="blue3">#5B6E8E</color>
+    <color name="blue">#FF1895FF</color>
 
     <color name="line">#E5E5E5</color>
 
@@ -66,6 +68,11 @@
 
     <color name="color_3091D8">#3091D8</color>
     <color name="selector_grey">#DDDDDD</color>
+    <color name="action_bar_background_color">#FFFFFF</color>
 
     <color name="colorTransparent">#00FFFFFF</color>
+    <color name="dkplayer_theme_color">#39C5BB</color>
+    <color name="dkplayer_theme_color_translucent">#9939C5BB</color>
+    <color name="dkplayer_background_color">#96000000</color>
+    <color name="compose_contact_divider">#44000000</color>
 </resources>

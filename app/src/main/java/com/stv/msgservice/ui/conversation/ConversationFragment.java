@@ -129,6 +129,7 @@ public class ConversationFragment extends Fragment implements
     private String conversationTitle = "";
     private boolean isFromSearch;
     private LinearLayoutManager layoutManager;
+    private String chatbotId;
 
     // for group
 //    private GroupInfo groupInfo;
@@ -176,7 +177,9 @@ public class ConversationFragment extends Fragment implements
 //                conversationViewModel.clearUnreadStatus(conversation);
 //            }
 //            conversationViewModel.clearUnreadStatus(conversation);
-            messageViewModel.clearUnreadStatus(conversation.getId());
+            if(conversation != null){
+                messageViewModel.clearUnreadStatus(conversation.getId());
+            }
         }
     };
     private Observer<MessageEntity> messageUpdateLiveDatObserver = new Observer<MessageEntity>() {
@@ -293,7 +296,7 @@ public class ConversationFragment extends Fragment implements
 //    }
 
     private boolean isMessageInCurrentConversation(Message message) {
-        if (/*conversation == null || message == null || message.message == null*/message == null) {
+        if (conversation == null || message == null) {
             return false;
         }
 //        return conversation.equals(message.message.conversation);
@@ -327,8 +330,9 @@ public class ConversationFragment extends Fragment implements
         }
     }
 
-    public void setupConversation(Conversation conversation, String title, long focusMessageId, String target, boolean isFromSearch) {
+    public void setupConversation(Conversation conversation, String chatbotId, String title, long focusMessageId, String target, boolean isFromSearch) {
         this.conversation = conversation;
+        this.chatbotId = chatbotId;
         this.conversationTitle = title;
         this.initialFocusedMessageId = focusMessageId;
         this.channelPrivateChatUser = target;
@@ -616,7 +620,7 @@ public class ConversationFragment extends Fragment implements
 //        }
 //        userViewModel.getUserInfo(userViewModel.getUserId(), true);
 
-        inputPanel.setupConversation(conversation);
+        inputPanel.setupConversation(conversation, chatbotId);
 
 //        if (conversation.type != Conversation.ConversationType.ChatRoom) {
 //            loadMessage(initialFocusedMessageId);
@@ -657,37 +661,40 @@ public class ConversationFragment extends Fragment implements
             messageViewModel = new ViewModelProvider(this, factory)
                     .get(MessageViewModel.class);
         }
-        messages = messageViewModel.getMessages(conversation.getId());
+        if(conversation == null){
+            adapter.setMessageList(null);
+        }else{
+            messages = messageViewModel.getMessages(conversation.getId());
 //        messages = messageViewModel.loadOldMessages(conversation.getId(), conversation.getLatestMessageId()+10000, 20);
 
-        // load message
+            // load message
 //        swipeRefreshLayout.setRefreshing(true);
 //        adapter.setDeliveries(ChatManager.Instance().getMessageDelivery(conversation));
 //        adapter.setReadEntries(ChatManager.Instance().getConversationRead(conversation));
-        messages.observe(getViewLifecycleOwner(), uiMessages -> {
-            swipeRefreshLayout.setRefreshing(false);
-            Log.i("Junwang", "update messages size="+uiMessages.size());
-            adapter.setMessageList(uiMessages);
+            messages.observe(getViewLifecycleOwner(), uiMessages -> {
+                swipeRefreshLayout.setRefreshing(false);
+                Log.i("Junwang", "update messages size="+uiMessages.size());
+                adapter.setMessageList(uiMessages);
 //            if(isFromSearch){
                 adapter.notifyDataSetChanged();
 //                isFromSearch = false;
 //            }
-            if (adapter.getItemCount() > 1){
-                if (initialFocusedMessageId == -1){
-                    moveToBottom = true;
-                    recyclerView.scrollToPosition(adapter.getItemCount() - 1);
-                }else{
-                    int initialMessagePosition = adapter.getMessagePosition(focusMessageId);
-                    Log.i("Junwang", "focusMessageId="+focusMessageId+", initialMessagePosition="+initialMessagePosition);
-                    if (initialMessagePosition != -1) {
-                        recyclerView.scrollToPosition(initialMessagePosition);
-                        adapter.highlightFocusMessage(initialMessagePosition);
+                if (adapter.getItemCount() > 1){
+                    if (initialFocusedMessageId == -1){
+                        moveToBottom = true;
+                        recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+                    }else{
+                        int initialMessagePosition = adapter.getMessagePosition(focusMessageId);
+                        Log.i("Junwang", "focusMessageId="+focusMessageId+", initialMessagePosition="+initialMessagePosition);
+                        if (initialMessagePosition != -1) {
+                            recyclerView.scrollToPosition(initialMessagePosition);
+                            adapter.highlightFocusMessage(initialMessagePosition);
+                        }
                     }
                 }
-            }
-            if(uiMessages != null && uiMessages.size() > 0) {
-                ((ConversationActivity) getActivity()).updateConversationLastMsgId(uiMessages.get(uiMessages.size() - 1).getId());
-            }
+                if(uiMessages != null && uiMessages.size() > 0) {
+                    ((ConversationActivity) getActivity()).updateConversationLastMsgId(uiMessages.get(uiMessages.size() - 1).getId());
+                }
 
 //            adapter.setMessages(uiMessages);
 //            adapter.notifyDataSetChanged();
@@ -704,7 +711,8 @@ public class ConversationFragment extends Fragment implements
 //                    recyclerView.scrollToPosition(adapter.getItemCount() - 1);
 //                }
 //            }
-        });
+            });
+        }
     }
 
     private void updateGroupMuteStatus() {
@@ -836,8 +844,11 @@ public class ConversationFragment extends Fragment implements
             userViewModel = new ViewModelProvider(this, factory)
                     .get(UserInfoViewModel.class);
         }
-        userViewModel.getUserInfo(conversation.getNormalizedDestination()).observe(getViewLifecycleOwner(), userInfo -> {
+        Log.i("Junwang", "query user NormalizedDestination ="+conversation.getNormalizedDestination()+", sender address="+conversation.getSenderAddress());
+        userViewModel.getUserInfo(/*conversation.getNormalizedDestination()*/conversation.getSenderAddress()).observe(getViewLifecycleOwner(), userInfo -> {
+            Log.i("Junwang", "query end");
             if(userInfo != null){
+                Log.i("Junwang", "query end userinfo != null");
                 setActivityTitle(userInfo.getName());
                 setSwitchButton(userInfo.getMenu());
             }
@@ -868,6 +879,8 @@ public class ConversationFragment extends Fragment implements
 
     @Override
     public void onPortraitClick(UserInfo userInfo) {
+        Log.i("Junwang", "conversationFragment onPortraitClick");
+        ChatbotIntroduceActivity.start(getContext(), conversation.getSenderAddress(), null);
 //        if (groupInfo != null && groupInfo.privateChat == 1) {
 //            boolean allowPrivateChat = false;
 //            GroupMember groupMember = groupViewModel.getGroupMember(groupInfo.target, userViewModel.getUserId());

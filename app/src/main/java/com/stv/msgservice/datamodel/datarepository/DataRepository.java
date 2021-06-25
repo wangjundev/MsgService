@@ -140,6 +140,10 @@ public class DataRepository {
         return mDatabase.messageDao().getLastMessage(conversationId);
     }
 
+    public LiveData<ConversationEntity> getConversationByChatbotId(String chatbotId){
+        return mDatabase.conversationDao().getConversationByChatbotId(chatbotId);
+    }
+
     public void deleteMessage(long messageId){
         mDatabase.messageDao().deleteMessage(messageId);
     }

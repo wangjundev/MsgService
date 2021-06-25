@@ -3,7 +3,9 @@ package com.stv.msgservice.ui.conversation.ext;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
@@ -15,6 +17,7 @@ import com.stv.msgservice.datamodel.model.Conversation;
 import com.stv.msgservice.third.utils.ImageUtils;
 import com.stv.msgservice.ui.conversation.ConversationActivity;
 import com.stv.msgservice.ui.conversation.ext.core.ConversationExt;
+import com.stv.msgservice.utils.VideoUtil;
 
 import java.io.File;
 
@@ -75,7 +78,7 @@ public class FileExt extends ConversationExt {
                 case ".jpeg":
                 case ".gif":
                     File imageFileThumb = ImageUtils.genThumbImgFile(path);
-                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getNormalizedDestination(), false, path, MessageConstants.CONTENT_TYPE_IMAGE);
+                    ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
 //                    messageViewModel.sendImgMsg(conversation, imageFileThumb, file);
                     break;
                 case ".3gp":
@@ -84,11 +87,16 @@ public class FileExt extends ConversationExt {
                 case ".mpe":
                 case ".mp4":
                 case ".avi":
-                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getNormalizedDestination(), false, path, MessageConstants.CONTENT_TYPE_VIDEO);
+                    Bitmap b = VideoUtil.getVideoThumb(path);
+                    String thumbnail = null;
+                    if(b != null){
+                       thumbnail = VideoUtil.bitmap2File(activity, b, "thumb_"+SystemClock.currentThreadTimeMillis());
+                    }
+                    ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO);
 //                    messageViewModel.sendVideoMsg(conversation, file);
                     break;
                 default:
-                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getNormalizedDestination(), false, path, MessageConstants.CONTENT_TYPE_FILE);
+                    ((ConversationActivity)activity).saveMsg(activity, null, /*(conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, null, MessageConstants.CONTENT_TYPE_FILE);
 //                    messageViewModel.sendFileMsg(conversation, file);
                     break;
             }

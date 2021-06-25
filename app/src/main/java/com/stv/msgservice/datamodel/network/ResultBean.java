@@ -8,15 +8,7 @@ public class ResultBean<T> implements BaseModel<T> {
 
     private T data;
 
-    private String errMsg;
-
-    public String getErrMsg() {
-        return errMsg;
-    }
-
-    public void setErrMsg(String errMsg) {
-        this.errMsg = errMsg;
-    }
+    private String msg;
 
     public int getCode() {
         return code;
@@ -41,7 +33,7 @@ public class ResultBean<T> implements BaseModel<T> {
 
     @Override
     public String getMsg() {
-        return errMsg;
+        return msg;
     }
 
     @Override

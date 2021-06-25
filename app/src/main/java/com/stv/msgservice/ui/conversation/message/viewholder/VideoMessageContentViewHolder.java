@@ -2,16 +2,15 @@ package com.stv.msgservice.ui.conversation.message.viewholder;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.FileUtils;
 import com.stv.msgservice.R2;
 import com.stv.msgservice.annotation.EnableContextMenu;
 import com.stv.msgservice.annotation.MessageContentType;
 import com.stv.msgservice.datamodel.model.Message;
-import com.stv.msgservice.third.utils.TimeConvertUtils;
 import com.stv.msgservice.ui.conversation.ConversationFragment;
 import com.stv.msgservice.ui.conversation.message.VideoMessageContent;
 import com.stv.msgservice.ui.widget.BubbleImageView;
@@ -54,9 +53,12 @@ public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder
             int imageSize[] = WeChatImageUtils.getImageSizeByOrgSizeToWeChat(thumbnail.getWidth(), thumbnail.getHeight());
             width = imageSize[0] > 0 ? imageSize[0] : 200;
             height = imageSize[1] > 0 ? imageSize[1] : 200;
+//            width = thumbnail.getWidth();
+//            height = thumbnail.getHeight();
+            imageView.getLayoutParams().width = width;
+            imageView.getLayoutParams().height = height;
+            Log.i("Junwang", "width="+width+", height="+height);
         }
-        imageView.getLayoutParams().width = width;
-        imageView.getLayoutParams().height = height;
         playImageView.setVisibility(View.VISIBLE);
 //        if(FileUtils.isFileExists(videoMessageContent.localPath)){
 //            imagePath = videoMessageContent.localPath;

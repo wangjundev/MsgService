@@ -20,6 +20,7 @@ import com.stv.msgservice.datamodel.viewmodel.MessageViewModel;
 import com.stv.msgservice.third.activity.LocationData;
 import com.stv.msgservice.ui.WfcBaseActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.lifecycle.ViewModelProvider;
@@ -33,6 +34,8 @@ public class ConversationActivity extends WfcBaseActivity {
     private SendCallback sendCallback;
     @BindView(R2.id.toolbar_title)
     TextView toolbarTitle;
+    private MessageViewModel.Factory factory;
+    private MessageViewModel mMessageViewModel;
 
     @Override
     protected int contentLayout() {
@@ -46,6 +49,10 @@ public class ConversationActivity extends WfcBaseActivity {
 
     @Override
     protected void afterViews() {
+        factory = new MessageViewModel.Factory(
+                this.getApplication(), 0);
+        mMessageViewModel = new ViewModelProvider(this, factory)
+                .get(MessageViewModel.class);
 //        IMServiceStatusViewModel imServiceStatusViewModel = ViewModelProviders.of(this).get(IMServiceStatusViewModel.class);
 //        imServiceStatusViewModel.imServiceStatusLiveData().observe(this, aBoolean -> {
 //            if (!isInitialized && aBoolean) {
@@ -102,32 +109,24 @@ public class ConversationActivity extends WfcBaseActivity {
         mAppExecutors.diskIO().execute(() -> {
             ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
             MessageEntity me = mViewModel.saveLocationMsg(context, content, destination, isReceived, messageType, locationData);
-            MessageViewModel.Factory factory = new MessageViewModel.Factory(
-                    this.getApplication(), 0);
-            MessageViewModel messageViewModel = new ViewModelProvider(this, factory)
-                    .get(MessageViewModel.class);
-            messageViewModel.sendLocationMessage(me, locationData);
-            messageViewModel.updateMessageSendStatus(me);
+            mMessageViewModel.sendLocationMessage(me, locationData);
+            mMessageViewModel.updateMessageSendStatus(me);
         });
     }
 
-    public void saveMsg(Context context, String content, String destination, boolean isReceived, String attachmentpath, int messageType){
+    public void saveMsg(Context context, String content, String destination, boolean isReceived, String attachmentpath, String thumbnail, int messageType){
         conversationFragment.setInitialFocusedMessageId(-1);
         mAppExecutors.diskIO().execute(() -> {
             ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
-            MessageEntity me = mViewModel.saveMsg(context, content, destination, isReceived,  attachmentpath,messageType);
-            MessageViewModel.Factory factory = new MessageViewModel.Factory(
-                    this.getApplication(), 0);
-            MessageViewModel messageViewModel = new ViewModelProvider(this, factory)
-                    .get(MessageViewModel.class);
+            MessageEntity me = mViewModel.saveMsg(context, content, destination, isReceived,  attachmentpath, thumbnail, messageType);
             if(content != null && content.length() > 0){
-                messageViewModel.sendTextmsg(me, content, null);
+                mMessageViewModel.sendTextmsg(conversation, me, content, null);
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
-                messageViewModel.updateMessageSendStatus(me);
+                mMessageViewModel.updateMessageSendStatus(me);
             }else if(attachmentpath != null){
-                messageViewModel.sendFilemsg(me, attachmentpath, null);
+                mMessageViewModel.sendFilemsg(me, attachmentpath, null);
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
-                messageViewModel.updateMessageSendStatus(me);
+                mMessageViewModel.updateMessageSendStatus(me);
             }
         });
 //        MessageViewModel.Factory factory = new MessageViewModel.Factory(
@@ -152,32 +151,30 @@ public class ConversationActivity extends WfcBaseActivity {
             ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
             String content = messageEntity.getContent();
             String attachmentpath = messageEntity.getAttachmentPath();
-            MessageEntity me = mViewModel.saveMsg(this, content, conversation.getNormalizedDestination(), false,  attachmentpath,messageEntity.getMessageType());
-            MessageViewModel.Factory factory = new MessageViewModel.Factory(
-                    this.getApplication(), 0);
-            MessageViewModel messageViewModel = new ViewModelProvider(this, factory)
-                    .get(MessageViewModel.class);
+            String thumbnail = messageEntity.getThumbnailPath();
+            MessageEntity me = mViewModel.saveMsg(this, content, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false,  attachmentpath, thumbnail, messageEntity.getMessageType());
             if(content != null && content.length() > 0){
-                messageViewModel.sendTextmsg(me, content, null);
+                mMessageViewModel.sendTextmsg(conversation, me, content, null);
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
-                messageViewModel.updateMessageSendStatus(me);
+                mMessageViewModel.updateMessageSendStatus(me);
             }else if(attachmentpath != null){
-                messageViewModel.sendFilemsg(me, attachmentpath, null);
+                mMessageViewModel.sendFilemsg(me, attachmentpath, null);
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
-                messageViewModel.updateMessageSendStatus(me);
+                mMessageViewModel.updateMessageSendStatus(me);
             }
         });
     }
 
-    public void updateMessagesReadStatus(){
-        MessageViewModel.Factory factory = new MessageViewModel.Factory(
-                getApplication(), 0);
-        MessageViewModel mMessageViewModel = new ViewModelProvider(this, factory)
-                .get(MessageViewModel.class);
+    public void sendReadReport(MessageEntity me){
+        mMessageViewModel.sendReadReport(me, conversation.getSenderAddress());
+    }
 
+    public void updateMessagesReadStatus(){
+        List<MessageEntity> messageEntityList = new ArrayList<>();
         mMessageViewModel.getUnReadMessages(conversation.getId()).observe(this, messageEntities ->{
             if((messageEntities != null) && (messageEntities.size() > 0)){
                 for(MessageEntity me : messageEntities){
+                    messageEntityList.add(me);
                     me.setRead(0);
                 }
                 mAppExecutors.diskIO().execute(() -> {
@@ -185,6 +182,12 @@ public class ConversationActivity extends WfcBaseActivity {
                     ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
                     mViewModel.updateConversation((ConversationEntity) conversation);
                     mMessageViewModel.updateMessagesReadStatus(messageEntities);
+
+                    if(messageEntityList != null && messageEntityList.size() > 0){
+                        for(MessageEntity me : messageEntityList){
+                            sendReadReport(me);
+                        }
+                    }
                 });
             }
         });
@@ -192,17 +195,13 @@ public class ConversationActivity extends WfcBaseActivity {
 
     public void deleteMsgs(List<MessageEntity> messageList){
         conversationFragment.setInitialFocusedMessageId(0);
-        MessageViewModel.Factory factory = new MessageViewModel.Factory(
-                getApplication(), 0);
-        MessageViewModel mViewModel = new ViewModelProvider(this, factory)
-                .get(MessageViewModel.class);
         mAppExecutors.diskIO().execute(() -> {
 //            MessageEntity me = new MessageEntity();
 //            for(Message message : messageList){
 //                me.setId(message.getId());
 //                mViewModel.deleteMessage(me);
 //            }
-            mViewModel.deleteMessages(messageList);
+            mMessageViewModel.deleteMessages(messageList);
         });
         boolean isDeleteMsgLastMsg = false;
         for(Message message : messageList){
@@ -214,7 +213,7 @@ public class ConversationActivity extends WfcBaseActivity {
             }
         }
         if(isDeleteMsgLastMsg){
-            mViewModel.getMessages(conversation.getId()).observe(this, messageEntities ->{
+            mMessageViewModel.getMessages(conversation.getId()).observe(this, messageEntities ->{
                 if((messageEntities != null) && (messageEntities.size() > 0)){
                     Log.i("Junwang", "message count="+messageEntities.size());
                     MessageEntity messageEntity = messageEntities.get(messageEntities.size()-1);
@@ -222,6 +221,8 @@ public class ConversationActivity extends WfcBaseActivity {
                     ce.setLastTimestamp(messageEntity.getTime());
                     ce.setNormalizedDestination(conversation.getNormalizedDestination());
                     ce.setId(conversation.getId());
+                    ce.setDestinationAddress(conversation.getDestinationAddress());
+                    ce.setSenderAddress(conversation.getSenderAddress());
                     ce.setLatestMessageId(messageEntity.getId());
                     ce.setSnippetText(messageEntity.generateSnippetText());
 
@@ -243,23 +244,21 @@ public class ConversationActivity extends WfcBaseActivity {
     }
     public void deleteMsg( Message message){
         conversationFragment.setInitialFocusedMessageId(0);
-        MessageViewModel.Factory factory = new MessageViewModel.Factory(
-                getApplication(), 0);
-        MessageViewModel mViewModel = new ViewModelProvider(this, factory)
-                .get(MessageViewModel.class);
         mAppExecutors.diskIO().execute(() -> {
             MessageEntity me = new MessageEntity();
             me.setId(message.getId());
-            mViewModel.deleteMessage(me);
+            mMessageViewModel.deleteMessage(me);
         });
         if(message.getId() == conversation.getLatestMessageId()){
-            mViewModel.getMessages(conversation.getId()).observe(this, messageEntities ->{
+            mMessageViewModel.getMessages(conversation.getId()).observe(this, messageEntities ->{
                 if((messageEntities != null) && (messageEntities.size() > 0)){
                     Log.i("Junwang", "message count="+messageEntities.size());
                     MessageEntity messageEntity = messageEntities.get(messageEntities.size()-1);
                     ConversationEntity ce = new ConversationEntity();
                     ce.setLastTimestamp(messageEntity.getTime());
                     ce.setNormalizedDestination(conversation.getNormalizedDestination());
+                    ce.setDestinationAddress(conversation.getDestinationAddress());
+                    ce.setSenderAddress(conversation.getSenderAddress());
                     ce.setId(conversation.getId());
                     ce.setLatestMessageId(messageEntity.getId());
                     ce.setSnippetText(messageEntity.generateSnippetText());
@@ -321,9 +320,11 @@ public class ConversationActivity extends WfcBaseActivity {
         Log.i("Junwang", "onNewIntent intent enter.");
         super.onNewIntent(intent);
         conversation = intent.getParcelableExtra("conversation");
-        if (conversation == null) {
-            finish();
-        }
+        String chatbotId = intent.getStringExtra("chatbotId");
+        String title = intent.getStringExtra("conversationTitle");
+//        if (conversation == null) {
+//            finish();
+//        }
         long initialFocusedMessageId = intent.getLongExtra("toFocusMessageId", -1);
         String channelPrivateChatUser = intent.getStringExtra("channelPrivateChatUser");
         boolean isFromSearch = intent.getBooleanExtra("fromSearch", false);
@@ -334,7 +335,7 @@ public class ConversationActivity extends WfcBaseActivity {
 //        if(isFromSearch) {
 //            conversationFragment.onDestroy();
 //        }
-        conversationFragment.setupConversation(conversation, null, initialFocusedMessageId, channelPrivateChatUser, isFromSearch);
+        conversationFragment.setupConversation(conversation, chatbotId, title, initialFocusedMessageId, channelPrivateChatUser, isFromSearch);
     }
 
     @Override
@@ -347,6 +348,7 @@ public class ConversationActivity extends WfcBaseActivity {
     private void init() {
         Intent intent = getIntent();
         conversation = intent.getParcelableExtra("conversation");
+        String chatbotId = intent.getStringExtra("chatbotId");
         String conversationTitle = intent.getStringExtra("conversationTitle");
         long initialFocusedMessageId = intent.getLongExtra("toFocusMessageId", -1);
         boolean isFromSearch = intent.getBooleanExtra("fromSearch", false);
@@ -354,7 +356,7 @@ public class ConversationActivity extends WfcBaseActivity {
             finish();
         }
         Log.i("Junwang", "snippet text = "+conversation.getSnippetText()+", lastmsgId="+conversation.getLatestMessageId());
-        conversationFragment.setupConversation(conversation, conversationTitle, initialFocusedMessageId, null, isFromSearch);
+        conversationFragment.setupConversation(conversation, chatbotId, conversationTitle, initialFocusedMessageId, null, isFromSearch);
         updateMessagesReadStatus();
     }
 

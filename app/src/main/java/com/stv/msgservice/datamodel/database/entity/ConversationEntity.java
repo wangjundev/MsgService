@@ -44,6 +44,39 @@ public class ConversationEntity  implements Conversation, Parcelable {
     @ColumnInfo(name = "top_timestamp")
     private long topTimestamp;
 
+    @ColumnInfo(name = "sender_address")
+    private String senderAddress;
+
+    @ColumnInfo(name = "destination_address")
+    private String destinationAddress;
+
+    @ColumnInfo(name = "conversation_id")
+    private String conversationID;
+
+    public String getConversationID() {
+        return conversationID;
+    }
+
+    public void setConversationID(String conversationID) {
+        this.conversationID = conversationID;
+    }
+
+    public String getSenderAddress() {
+        return senderAddress;
+    }
+
+    public void setSenderAddress(String senderAddress) {
+        this.senderAddress = senderAddress;
+    }
+
+    public String getDestinationAddress() {
+        return destinationAddress;
+    }
+
+    public void setDestinationAddress(String destinationAddress) {
+        this.destinationAddress = destinationAddress;
+    }
+
     public long getId() {
         return id;
     }
@@ -86,10 +119,12 @@ public class ConversationEntity  implements Conversation, Parcelable {
 
     public String getNormalizedDestination() {
         return normalizedDestination;
+//        return senderAddress;
     }
 
     public void setNormalizedDestination(String normalizedDestination) {
         this.normalizedDestination = normalizedDestination;
+//        this.senderAddress = normalizedDestination;
     }
 
     public int getLatestMessageStatus() {
@@ -153,6 +188,9 @@ public class ConversationEntity  implements Conversation, Parcelable {
         parcel.writeInt(this.unreadCount);
         parcel.writeInt(this.isTop ? 1 : 0);
         parcel.writeLong(this.topTimestamp);
+        parcel.writeString(this.senderAddress);
+        parcel.writeString(this.destinationAddress);
+        parcel.writeString(this.conversationID);
     }
 
     public ConversationEntity(Parcel parcel) {
@@ -166,6 +204,9 @@ public class ConversationEntity  implements Conversation, Parcelable {
         this.unreadCount = parcel.readInt();
         this.isTop = parcel.readInt() == 0 ? false : true;
         this.topTimestamp = parcel.readLong();
+        this.senderAddress = parcel.readString();
+        this.destinationAddress = parcel.readString();
+        this.conversationID = parcel.readString();
     }
 
     public ConversationEntity() {

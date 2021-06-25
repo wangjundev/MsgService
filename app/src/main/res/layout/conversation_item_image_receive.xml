@@ -10,7 +10,7 @@
     android:minWidth="80dp"
     android:minHeight="80dp"
     android:scaleType="centerCrop"
-    app:bubble_angle="10dp"
+    app:bubble_angle="6dp"
     app:bubble_arrowHeight="10dp"
     app:bubble_arrowLocation="left"
     app:bubble_arrowOffset="-5dp"

@@ -14,7 +14,9 @@ import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TY
 import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TYPE_IMAGE;
 import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TYPE_LOCATION;
 import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TYPE_MULTI_CARD;
+import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TYPE_MULTI_CARD_WITH_SUGGESTION;
 import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TYPE_SINGLE_CARD;
+import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TYPE_SINGLE_CARD_WITH_SUGGESTION;
 import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TYPE_TEXT;
 import static com.stv.msgservice.datamodel.constants.MessageConstants.CONTENT_TYPE_VIDEO;
 
@@ -59,6 +61,20 @@ public class MessageEntity implements Message {
     private int direction;
 
     private LocationData locationData;
+
+    @ColumnInfo(name = "conversation_uuid")
+    private String conversationID;
+
+    @ColumnInfo(name = "contribution_id")
+    private String contributionID;
+
+    @ColumnInfo(name = "message_id")
+    private String messageId;
+
+    @ColumnInfo(name = "delivery_status")
+    private String deliveryStatus;
+
+    private String domain;
 
     public long getId() {
         return id;
@@ -139,8 +155,10 @@ public class MessageEntity implements Message {
             case CONTENT_TYPE_IMAGE:
                 return "[图片]";
             case CONTENT_TYPE_MULTI_CARD:
+            case CONTENT_TYPE_MULTI_CARD_WITH_SUGGESTION:
                 return "[多卡片]";
             case CONTENT_TYPE_SINGLE_CARD:
+            case CONTENT_TYPE_SINGLE_CARD_WITH_SUGGESTION:
                 return "[单卡片]";
             case CONTENT_TYPE_LOCATION:
                 return "[位置]";
@@ -187,6 +205,46 @@ public class MessageEntity implements Message {
 
     public void setLocationData(LocationData locationData) {
         this.locationData = locationData;
+    }
+
+    public String getConversationID() {
+        return conversationID;
+    }
+
+    public void setConversationID(String conversationID) {
+        this.conversationID = conversationID;
+    }
+
+    public String getContributionID() {
+        return contributionID;
+    }
+
+    public void setContributionID(String contributionID) {
+        this.contributionID = contributionID;
+    }
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
+    }
+
+    public String getDeliveryStatus() {
+        return deliveryStatus;
+    }
+
+    public void setDeliveryStatus(String deliveryStatus) {
+        this.deliveryStatus = deliveryStatus;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     @Override

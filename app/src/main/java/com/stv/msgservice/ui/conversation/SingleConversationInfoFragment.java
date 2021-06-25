@@ -91,7 +91,8 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
 
         userViewModel = new ViewModelProvider(this, factory1)
                 .get(UserInfoViewModel.class);
-        String userId = conversationInfo.getNormalizedDestination();
+//        String userId = conversationInfo.getNormalizedDestination();
+        String userId = conversationInfo.getSenderAddress();
         conversationMemberAdapter = new ConversationMemberAdapter(conversationInfo, false, false);
         List<UserInfo> members = new ArrayList<>();//Collections.singletonList(userViewModel.getUserInfo(userId));
         userViewModel.getUserInfo(userId).observe(getViewLifecycleOwner(), userInfoEntity -> {
@@ -118,7 +119,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     private void observerUserInfoUpdate() {
         userViewModel.userInfoLiveData().observe(getViewLifecycleOwner(), userInfos -> {
             for (UserInfo userInfo : userInfos) {
-                if (userInfo.getUri().equals(this.conversationInfo.getNormalizedDestination())) {
+                if (userInfo.getUri().equals(this.conversationInfo.getSenderAddress()/*getNormalizedDestination()*/)) {
                     List<UserInfo> members = Collections.singletonList(userInfo);
                     conversationMemberAdapter.setMembers(members);
                     conversationMemberAdapter.notifyDataSetChanged();
@@ -163,6 +164,7 @@ public class SingleConversationInfoFragment extends Fragment implements Conversa
     void searchGroupMessage() {
         Intent intent = new Intent(getActivity(), SearchMessageActivity.class);
         intent.putExtra("conversation", (ConversationEntity)conversationInfo);
+//        Intent intent = new Intent(getActivity(), ChatbotSearchActivity.class);
         startActivity(intent);
     }
 

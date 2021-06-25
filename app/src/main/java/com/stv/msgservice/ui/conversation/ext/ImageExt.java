@@ -3,6 +3,8 @@ package com.stv.msgservice.ui.conversation.ext;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 
@@ -15,6 +17,7 @@ import com.stv.msgservice.datamodel.model.Conversation;
 import com.stv.msgservice.third.utils.ImageUtils;
 import com.stv.msgservice.ui.conversation.ConversationActivity;
 import com.stv.msgservice.ui.conversation.ext.core.ConversationExt;
+import com.stv.msgservice.utils.VideoUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -71,7 +74,12 @@ public class ImageExt extends ConversationExt {
                             boolean isGif = isGifFile(imageItem.path);
                             if (isGif) {
 //                                UIUtils.postTaskSafely(() -> messageViewModel.sendStickerMsg(conversation, imageItem.path, null));
-                                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getNormalizedDestination(), false, imageItem.path, MessageConstants.CONTENT_TYPE_IMAGE);
+                                Bitmap b = VideoUtil.getVideoThumb(imageItem.path);
+                                String thumbnail = null;
+                                if(b != null){
+                                    thumbnail = VideoUtil.bitmap2File(activity, b, "thumb_"+ SystemClock.currentThreadTimeMillis());
+                                }
+                                ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE);
                                 continue;
                             }
                             File imageFileThumb;
@@ -98,7 +106,7 @@ public class ImageExt extends ConversationExt {
 //                            messageViewModel.sendImgMsg(conversation, imageFileThumb, imageFileSource);
 //                            File finalImageFileSource = imageFileSource;
 //                            UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, imageFileThumb, finalImageFileSource));
-                            ((ConversationActivity)activity).saveMsg(activity, null, conversation.getNormalizedDestination(), false, imageFileSource.getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
+                            ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
                         }
                     }
                 }).start();

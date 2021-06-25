@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.stv.msgservice.R;
 import com.stv.msgservice.datamodel.constants.MessageConstants;
 import com.stv.msgservice.datamodel.network.chatbot.CardContent;
@@ -60,9 +61,11 @@ public class MultiCardItemViewAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         String title = lists.get(position).getTitle();
         String description = lists.get(position).getDescription();
+        RequestOptions options = new RequestOptions().error(R.mipmap.default_image).bitmapTransform(new RoundedCornerCenterCrop(8));//图片圆角为8
         Log.i("Junwang", "multicard title="+title+", description="+description);
         Glide.with(context).load(lists.get(position).getMedia().getThumbnailUrl())
-                .centerCrop()
+//                .centerCrop()
+                .apply(options)
                 .into(((MyHolder)holder).iv);
         ((MyHolder)holder).iv.setOnClickListener(new View.OnClickListener(){
             @Override

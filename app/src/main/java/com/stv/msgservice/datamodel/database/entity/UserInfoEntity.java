@@ -20,6 +20,8 @@ public class UserInfoEntity implements UserInfo {
     private String name;
     private String menu;
     private String portrait;
+    private String category;
+    private String description;
 
     public long getUser_id() {
         return user_id;
@@ -93,7 +95,23 @@ public class UserInfoEntity implements UserInfo {
         this.portrait = portrait;
     }
 
-//    public UserInfoEntity(String name, String portrait) {
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    //    public UserInfoEntity(String name, String portrait) {
 //        this.name = name;
 //        this.portrait = portrait;
 //    }

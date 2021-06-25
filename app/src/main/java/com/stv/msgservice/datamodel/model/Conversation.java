@@ -13,4 +13,10 @@ public interface Conversation{
     void setTop(boolean top);
     boolean isTop();
     void setTopTimestamp(long topTimestamp);
+    String getSenderAddress();
+    void setSenderAddress(String senderAddress);
+    String getDestinationAddress();
+    void setDestinationAddress(String destinationAddress);
+    String getConversationID();
+    void setConversationID(String conversationID);
 }

@@ -10,6 +10,7 @@ import com.stv.msgservice.MainActivity;
 import com.stv.msgservice.R;
 import com.stv.msgservice.datamodel.database.entity.ConversationEntity;
 import com.stv.msgservice.datamodel.database.entity.UserInfoEntity;
+import com.stv.msgservice.datamodel.model.Conversation;
 import com.stv.msgservice.datamodel.viewmodel.ConversationListViewModel;
 import com.stv.msgservice.datamodel.viewmodel.UserInfoViewModel;
 import com.stv.msgservice.ui.widget.ProgressFragment;
@@ -108,13 +109,22 @@ public class ConversationListFragment extends ProgressFragment {
                         .setBackgroundColor(getResources().getColor(R.color.red0))
                         .setWidth(36*5)
                         .setHeight(height);
-//                SwipeMenuItem topItem = new SwipeMenuItem(getContext())
-//                        .setText("置顶")
-//                        .setHeight(height)
-//                        .setWidth(36*5)
-//                        .setBackgroundColor(getResources().getColor(R.color.green1));
+                SwipeMenuItem topItem;
+                if(conversations.get(position).isTop()){
+                    topItem = new SwipeMenuItem(getContext())
+                            .setText("取消置顶")
+                            .setHeight(height)
+                            .setWidth(36*5)
+                            .setBackgroundColor(getResources().getColor(R.color.green1));
+                }else{
+                    topItem = new SwipeMenuItem(getContext())
+                            .setText("置顶")
+                            .setHeight(height)
+                            .setWidth(36*5)
+                            .setBackgroundColor(getResources().getColor(R.color.green1));
+                }
                 swipeRightMenu.addMenuItem(deleteItem);// 添加菜单到右侧。
-//                swipeRightMenu.addMenuItem(topItem);
+                swipeRightMenu.addMenuItem(topItem);
             }
         };
 
@@ -129,13 +139,25 @@ public class ConversationListFragment extends ProgressFragment {
 
                 int direction = menuBridge.getDirection();
                 int menuPosition = menuBridge.getPosition();
+                Conversation conversation = conversations.get(position);
 
                 if (direction == SwipeRecyclerView.RIGHT_DIRECTION) {
                     if(menuPosition == 0){
                         Log.i("Junwang", "选中删除第"+position+"条会话.");
-                        ((MainActivity)getActivity()).deleteConversation(conversations.get(position));
+                        ((MainActivity)getActivity()).deleteConversation((ConversationEntity)conversation);
                     }else if(menuPosition == 1){
                         //置顶
+                        ((MainActivity)getActivity()).getAppExecutors().diskIO().execute(() -> {
+                            ConversationListViewModel mViewModel = new ViewModelProvider(getActivity()).get(ConversationListViewModel.class);
+                            if(!conversation.isTop()){
+                                conversation.setTopTimestamp(System.currentTimeMillis());
+                                conversation.setTop(true);
+                            }else {
+                                conversation.setTopTimestamp(0);
+                                conversation.setTop(false);
+                            }
+                            mViewModel.updateConversation((ConversationEntity) conversation);
+                        });
                     }
                 }
             }

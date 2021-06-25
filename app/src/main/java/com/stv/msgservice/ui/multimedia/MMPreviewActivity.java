@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -64,6 +65,13 @@ public class MMPreviewActivity extends Activity {
             } else {
                 view = LayoutInflater.from(MMPreviewActivity.this).inflate(R.layout.preview_video, null);
             }
+            PhotoView photoView = view.findViewById(R.id.photoView);
+            photoView.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
 
             container.addView(view);
             views.put(position % 3, view);
@@ -218,6 +226,7 @@ public class MMPreviewActivity extends Activity {
 
     private void playVideo(View view, String videoUrl) {
         VideoView videoView = view.findViewById(R.id.videoView);
+        videoView.setMediaController(new MediaController(this));
         videoView.setVisibility(View.INVISIBLE);
 
         PhotoView photoView = view.findViewById(R.id.photoView);
