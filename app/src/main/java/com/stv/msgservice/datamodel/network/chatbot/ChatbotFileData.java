@@ -20,4 +20,9 @@ public class ChatbotFileData {
     public String getUntil() {
         return until;
     }
+
+//    public ChatbotFileData(String url, String until) {
+//        this.url = url;
+//        this.until = until;
+//    }
 }

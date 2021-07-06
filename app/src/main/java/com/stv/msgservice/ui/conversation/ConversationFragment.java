@@ -38,7 +38,6 @@ import com.stv.msgservice.ui.conversation.message.multimsg.MultiMessageAction;
 import com.stv.msgservice.ui.conversation.message.multimsg.MultiMessageActionManager;
 import com.stv.msgservice.ui.widget.InputAwareLayout;
 import com.stv.msgservice.ui.widget.KeyboardAwareLinearLayout;
-import com.stv.msgservice.utils.UIUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -47,6 +46,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -104,6 +104,10 @@ public class ConversationFragment extends Fragment implements
     private ChatbotMenuEntity mChatbotMenuEntity;
     private boolean mIsSwitchOnClickListenerSet;
     private int menuNumber;
+    public MutableLiveData<MessageEntity> msgUpdateLiveData;
+    public MutableLiveData<MessageEntity> msgLiveData;
+    public MutableLiveData<Message> msgRemovedLiveData;
+
 
 //    @BindView(R2.id.unreadCountLinearLayout)
 //    LinearLayout unreadCountLinearLayout;
@@ -112,7 +116,7 @@ public class ConversationFragment extends Fragment implements
 //    @BindView(R2.id.unreadMentionCountTextView)
 //    TextView unreadMentionCountTextView;
 
-    private ConversationMessageAdapter adapter;
+    public ConversationMessageAdapter adapter;
     private boolean moveToBottom = true;
 //    private ConversationViewModel conversationViewModel;
 //    private SettingViewModel settingViewModel;
@@ -142,11 +146,11 @@ public class ConversationFragment extends Fragment implements
     private Observer<MessageEntity> messageLiveDataObserver = new Observer<MessageEntity>() {
         @Override
         public void onChanged(@Nullable MessageEntity uiMessage) {
-            if (!isMessageInCurrentConversation(uiMessage)) {
-                return;
-            }
+//            if (!isMessageInCurrentConversation(uiMessage)) {
+//                return;
+//            }
 //            MessageContent content = uiMessage.message.content;
-            if (isDisplayableMessage(uiMessage)) {
+            if (/*isDisplayableMessage(uiMessage)*/true) {
                 // 消息定位时，如果收到新消息、或者发送消息，需要重新加载消息列表
                 if (shouldContinueLoadNewMessage) {
                     shouldContinueLoadNewMessage = false;
@@ -154,17 +158,22 @@ public class ConversationFragment extends Fragment implements
                     return;
                 }
                 adapter.addNewMessage(uiMessage);
-                if (moveToBottom/* || uiMessage.message.sender.equals(ChatManager.Instance().getUserId())*/) {
-                    UIUtils.postTaskDelay(() -> {
-
-                                int position = adapter.getItemCount() - 1;
-                                if (position < 0) {
-                                    return;
-                                }
-                                recyclerView.scrollToPosition(position);
-                            },
-                            100);
+                int position = adapter.getItemCount() - 1;
+                if (position < 0) {
+                    return;
                 }
+                recyclerView.scrollToPosition(position);
+//                if (moveToBottom/* || uiMessage.message.sender.equals(ChatManager.Instance().getUserId())*/) {
+//                    UIUtils.postTaskDelay(() -> {
+//
+//                                int position = adapter.getItemCount() - 1;
+//                                if (position < 0) {
+//                                    return;
+//                                }
+//                                recyclerView.scrollToPosition(position);
+//                            },
+//                            100);
+//                }
             }
 //            if (content instanceof TypingMessageContent && uiMessage.message.direction == MessageDirection.Receive) {
 //                updateTypingStatusTitle((TypingMessageContent) content);
@@ -185,23 +194,29 @@ public class ConversationFragment extends Fragment implements
     private Observer<MessageEntity> messageUpdateLiveDatObserver = new Observer<MessageEntity>() {
         @Override
         public void onChanged(@Nullable MessageEntity uiMessage) {
-            if (!isMessageInCurrentConversation(uiMessage)) {
-                return;
-            }
-            if (isDisplayableMessage(uiMessage)) {
-                adapter.updateMessage(uiMessage);
-            }
+//            if (!isMessageInCurrentConversation(uiMessage)) {
+//                return;
+//            }
+//            if (isDisplayableMessage(uiMessage)) {
+//                adapter.updateMessage(uiMessage);
+//            }
+            Log.i("Junwang", "messageUpdateLiveDatObserver onChanged");
+            adapter.updateMessage(uiMessage);
+            ((ConversationActivity)getActivity()).updateMesasge(uiMessage);
         }
     };
 
     private Observer<Message> messageRemovedLiveDataObserver = new Observer<Message>() {
         @Override
         public void onChanged(@Nullable Message uiMessage) {
-            // 当通过server api删除消息时，只知道消息的uid
-            if (uiMessage != null && !isMessageInCurrentConversation(uiMessage)) {
-                return;
-            }
-            if (uiMessage.getId() == 0 || isDisplayableMessage(uiMessage)) {
+//            // 当通过server api删除消息时，只知道消息的uid
+//            if (uiMessage != null && !isMessageInCurrentConversation(uiMessage)) {
+//                return;
+//            }
+//            if (uiMessage.getId() == 0 || isDisplayableMessage(uiMessage)) {
+//                adapter.removeMessage(uiMessage);
+//            }
+            if(uiMessage != null){
                 adapter.removeMessage(uiMessage);
             }
         }
@@ -309,6 +324,7 @@ public class ConversationFragment extends Fragment implements
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.i("Junwang", "ConversationFragment onCreate");
         super.onCreate(savedInstanceState);
     }
 
@@ -420,12 +436,18 @@ public class ConversationFragment extends Fragment implements
     public void setSwitchButton(String chatbotMenu){
         //add by junwang for chatbot menu start
         if(chatbotMenu != null){
+            Log.i("Junwang", "setSwitchButton chatbotMenu = "+chatbotMenu);
             mChatbotMenuEntity = getChatbotMenuEntity(chatbotMenu);
-            int i= 0;
-            for(;i<mChatbotMenuEntity.getMenu().getEntries().length;i++){
-                i++;
+            if(mChatbotMenuEntity != null){
+                int i= 0;
+                for(;i<mChatbotMenuEntity.getMenu().getEntries().length;i++){
+                    i++;
+                }
+                mMenuCount = i;
+            }else{
+                mMenuCount = 0;
             }
-            mMenuCount = i;
+
         }else{
             mMenuCount = 0;
         }
@@ -560,11 +582,15 @@ public class ConversationFragment extends Fragment implements
                     .get(MessageViewModel.class);
         }
 
-        messageViewModel.messageLiveData().observeForever(messageLiveDataObserver);
-//        messageViewModel.messageLiveData().observeForever(messageLiveDataObserver);
-        messageViewModel.messageUpdateLiveData().observeForever(messageUpdateLiveDatObserver);
-        messageViewModel.messageRemovedLiveData().observeForever(messageRemovedLiveDataObserver);
-        messageViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
+        if(/*conversation == null*/true){
+            msgLiveData = messageViewModel.messageLiveData();
+            msgUpdateLiveData = messageViewModel.messageUpdateLiveData();
+            msgRemovedLiveData = messageViewModel.messageRemovedLiveData();
+            msgLiveData.observeForever(messageLiveDataObserver);
+            msgUpdateLiveData.observeForever(messageUpdateLiveDatObserver);
+            msgRemovedLiveData.observeForever(messageRemovedLiveDataObserver);
+//            messageViewModel.mediaUpdateLiveData().observeForever(mediaUploadedLiveDataObserver);
+        }
 
 //        messageViewModel.messageDeliverLiveData().observe(getActivity(), stringLongMap -> {
 //            if (conversation == null) {
@@ -661,17 +687,22 @@ public class ConversationFragment extends Fragment implements
             messageViewModel = new ViewModelProvider(this, factory)
                     .get(MessageViewModel.class);
         }
+        long searchId = -1;
         if(conversation == null){
             adapter.setMessageList(null);
         }else{
-            messages = messageViewModel.getMessages(conversation.getId());
+            searchId = conversation.getId();
+        }
+        Log.i("Junwang", "searchId="+searchId);
+        messages = messageViewModel.getMessages(searchId);
 //        messages = messageViewModel.loadOldMessages(conversation.getId(), conversation.getLatestMessageId()+10000, 20);
 
-            // load message
+        // load message
 //        swipeRefreshLayout.setRefreshing(true);
 //        adapter.setDeliveries(ChatManager.Instance().getMessageDelivery(conversation));
 //        adapter.setReadEntries(ChatManager.Instance().getConversationRead(conversation));
-            messages.observe(getViewLifecycleOwner(), uiMessages -> {
+        messages.observe(getViewLifecycleOwner(), uiMessages -> {
+            if(uiMessages != null && uiMessages.size() > 0){
                 swipeRefreshLayout.setRefreshing(false);
                 Log.i("Junwang", "update messages size="+uiMessages.size());
                 adapter.setMessageList(uiMessages);
@@ -695,6 +726,7 @@ public class ConversationFragment extends Fragment implements
                 if(uiMessages != null && uiMessages.size() > 0) {
                     ((ConversationActivity) getActivity()).updateConversationLastMsgId(uiMessages.get(uiMessages.size() - 1).getId());
                 }
+            }
 
 //            adapter.setMessages(uiMessages);
 //            adapter.notifyDataSetChanged();
@@ -711,8 +743,7 @@ public class ConversationFragment extends Fragment implements
 //                    recyclerView.scrollToPosition(adapter.getItemCount() - 1);
 //                }
 //            }
-            });
-        }
+        });
     }
 
     private void updateGroupMuteStatus() {
@@ -844,8 +875,13 @@ public class ConversationFragment extends Fragment implements
             userViewModel = new ViewModelProvider(this, factory)
                     .get(UserInfoViewModel.class);
         }
-        Log.i("Junwang", "query user NormalizedDestination ="+conversation.getNormalizedDestination()+", sender address="+conversation.getSenderAddress());
-        userViewModel.getUserInfo(/*conversation.getNormalizedDestination()*/conversation.getSenderAddress()).observe(getViewLifecycleOwner(), userInfo -> {
+        String botId = null;
+        if(conversation != null){
+            botId = conversation.getSenderAddress();
+        }else{
+            botId = chatbotId;
+        }
+        userViewModel.getUserInfo(botId).observe(getViewLifecycleOwner(), userInfo -> {
             Log.i("Junwang", "query end");
             if(userInfo != null){
                 Log.i("Junwang", "query end userinfo != null");
@@ -981,12 +1017,19 @@ public class ConversationFragment extends Fragment implements
 //        if (conversation.type == Conversation.ConversationType.ChatRoom) {
 //            quitChatRoom();
 //        }
+        if(msgLiveData != null){
+            msgLiveData.removeObserver(messageLiveDataObserver);
+        }
+        if(msgUpdateLiveData != null){
+            msgUpdateLiveData.removeObserver(messageUpdateLiveDatObserver);
+        }
+        if(msgRemovedLiveData != null){
+            msgRemovedLiveData.removeObserver(messageRemovedLiveDataObserver);
+        }
 
-        messageViewModel.messageLiveData().removeObserver(messageLiveDataObserver);
-        messageViewModel.messageUpdateLiveData().removeObserver(messageUpdateLiveDatObserver);
-        messageViewModel.messageRemovedLiveData().removeObserver(messageRemovedLiveDataObserver);
-        messageViewModel.mediaUpdateLiveData().removeObserver(mediaUploadedLiveDataObserver);
-        userViewModel.userInfoLiveData().removeObserver(userInfoUpdateLiveDataObserver);
+//        messageViewModel.mediaUpdateLiveData().removeObserver(mediaUploadedLiveDataObserver);
+//        userViewModel.userInfoLiveData().removeObserver(userInfoUpdateLiveDataObserver);
+
 //        conversationViewModel.clearConversationMessageLiveData().removeObserver(clearConversationMessageObserver);
 //        settingViewModel.settingUpdatedLiveData().removeObserver(settingUpdateLiveDataObserver);
 

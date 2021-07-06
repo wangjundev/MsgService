@@ -15,19 +15,29 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baronzhang.retrofit2.converter.FastJsonConverterFactory;
 import com.cjt2325.cameralibrary.util.LogUtil;
 import com.google.gson.Gson;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.stv.msgservice.R;
+import com.stv.msgservice.datamodel.chatbotinfo.Botinfo;
+import com.stv.msgservice.datamodel.chatbotinfo.CategoryList;
 import com.stv.msgservice.datamodel.chatbotinfo.ChatbotInfo;
 import com.stv.msgservice.datamodel.chatbotinfo.ChatbotSearchResult;
+import com.stv.msgservice.datamodel.chatbotinfo.Media;
+import com.stv.msgservice.datamodel.chatbotinfo.MediaEntry;
+import com.stv.msgservice.datamodel.chatbotinfo.MediaList;
+import com.stv.msgservice.datamodel.chatbotinfo.OrgDetails;
+import com.stv.msgservice.datamodel.chatbotinfo.OrgName;
+import com.stv.msgservice.datamodel.chatbotinfo.Pcc;
+import com.stv.msgservice.datamodel.chatbotinfo.PersistentMenu;
 import com.stv.msgservice.datamodel.chatbotinfo.SearchedBot;
 import com.stv.msgservice.datamodel.constants.MessageConstants;
+import com.stv.msgservice.datamodel.database.entity.ConversationEntity;
 import com.stv.msgservice.datamodel.database.entity.UserInfoEntity;
 import com.stv.msgservice.datamodel.model.UserInfo;
 import com.stv.msgservice.datamodel.network.ApiService;
 import com.stv.msgservice.datamodel.viewmodel.ConversationListViewModel;
-import com.stv.msgservice.datamodel.viewmodel.MessageViewModel;
 import com.stv.msgservice.datamodel.viewmodel.UserInfoViewModel;
 import com.stv.msgservice.ui.conversation.ConversationActivity;
 import com.stv.msgservice.ui.conversation.message.search.BaseNoToolbarActivity;
@@ -37,15 +47,17 @@ import com.zhy.view.flowlayout.TagAdapter;
 import com.zhy.view.flowlayout.TagFlowLayout;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.RequestBody;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -122,7 +134,7 @@ public class ChatbotSearchActivity extends BaseNoToolbarActivity implements Adap
         initView();
     }
 
-    public void searchChatbotList() {
+    public void searchChatbotList(String keyWord, boolean isNeedPopupDlg) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(MessageConstants.BASE_URL)
 //                .client(httpClient)
@@ -130,30 +142,45 @@ public class ChatbotSearchActivity extends BaseNoToolbarActivity implements Adap
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        String postBody = ConversationListViewModel.getPostBodyJson(this, keyWord, null, null);
+        Log.i("Junwang", "post body json is "+postBody);
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json;charset=UTF-8"), postBody);
+
         ApiService service = retrofit.create(ApiService.class);
         try {
-            service.searchChatbotList(MessageViewModel.getHttpsRequestArguments(getApplication().getApplicationContext(), null, null))
+            service.searchChatbotList(body)
+                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Consumer<ChatbotSearchResult>() {
                         @Override
                         public void accept(ChatbotSearchResult chatbotSearchResult) throws Exception {
-                            mChatbotList = (ArrayList<SearchedBot>) Arrays.asList(chatbotSearchResult.getBots());
+//                            mChatbotList = (ArrayList<SearchedBot>) Arrays.asList(chatbotSearchResult.getBots());
+                            mChatbotList = chatbotSearchResult.getBots();
                             if(mChatbotList != null) {
+                                String id = mChatbotList.get(0).getId();
+                                Log.i("Junwang", "searched chatbot id="+id);
                                 mAdapter.setChatbotListItems(mChatbotList);
                             }else{
-                                Toast.makeText(getApplicationContext(), "没有找到服务号", Toast.LENGTH_LONG).show();
+                                if(isNeedPopupDlg){
+                                    Toast.makeText(getApplicationContext(), "没有找到服务号", Toast.LENGTH_LONG).show();
+                                }
                             }
                             mHistoryAdapter.notifyDataChanged();
                         }
                     }, new Consumer<Throwable>() {
                         @Override
                         public void accept(Throwable throwable) throws Exception {
-                            Toast.makeText(getApplicationContext(), "没有找到服务号", Toast.LENGTH_LONG).show();
+                            Log.i("Junwang", "SearchChatbotList throwable "+throwable.toString());
+                            if(isNeedPopupDlg){
+                                Toast.makeText(getApplicationContext(), "没有找到服务号", Toast.LENGTH_LONG).show();
+                            }
                         }
                     });
         }catch (Exception e){
             Log.i("Junwang", "SearchChatbotList exception "+e.toString());
-            Toast.makeText(getApplicationContext(), "没有找到服务号", Toast.LENGTH_LONG).show();
+            if(isNeedPopupDlg){
+                Toast.makeText(getApplicationContext(), "没有找到服务号", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -227,7 +254,7 @@ public class ChatbotSearchActivity extends BaseNoToolbarActivity implements Adap
                     }else{
                         mIsFromHistory = false;
                     }
-                    searchChatbotList();
+                    searchChatbotList(query, true);
                     mHistoryAdapter.notifyDataChanged();
                 }
 
@@ -247,7 +274,13 @@ public class ChatbotSearchActivity extends BaseNoToolbarActivity implements Adap
                     mAdapter.notifyDataSetChanged();
                 }else {
                     mChatbotListView.setVisibility(View.VISIBLE);
-                    searchChatbotList();
+                    if(mChatbotList != null){
+                        mChatbotList.clear();
+                    }
+                    if(mAdapter != null){
+                        mAdapter.clear();
+                    }
+                    searchChatbotList(newText, false);
 //                    ChatbotInfoQueryHelper.SearchChatbot(newText);
 
                 }
@@ -352,35 +385,97 @@ public class ChatbotSearchActivity extends BaseNoToolbarActivity implements Adap
                             .baseUrl(MessageConstants.BASE_URL)
 //                .client(httpClient)
                             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                            .addConverterFactory(GsonConverterFactory.create())
+//                            .addConverterFactory(GsonConverterFactory.create())
+                            .addConverterFactory(FastJsonConverterFactory.create())
                             .build();
+                    String postBody = ConversationListViewModel.getPostBodyJson(getContext(), null, null, chatbotId);
+                    Log.i("Junwang", "post body json is "+postBody);
+                    RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json;charset=UTF-8"), postBody);
 
                     ApiService service = retrofit.create(ApiService.class);
                     try {
-                        service.getChatbotInfo(/*chatbotId*/MessageViewModel.getHttpsRequestArguments(getApplication().getApplicationContext(), chatbotId, null)).subscribe(new Consumer<ChatbotInfo>() {
+                        service.getChatbotInfo(body)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Consumer<ChatbotInfo>() {
                             @Override
                             public void accept(ChatbotInfo chatbotInfo) throws Exception {
                                 UserInfoEntity userInfoEntity = new UserInfoEntity();
                                 userInfoEntity.setUri(chatbotId);
-                                String menuJson = new Gson().toJson(chatbotInfo.getPersistent_menu());
-                                userInfoEntity.setMenu(menuJson);
-                                userInfoEntity.setPortrait(chatbotInfo.getBotinfo().getPcc().getOrg_details().getMedia_list().getMedia_entry().get(0).getMedia().getMedia_url());
-                                userInfoEntity.setName(chatbotInfo.getBotinfo().getPcc().getOrg_details().getOrg_name().get(0).getDisplay_name());
-                                userInfoEntity.setCategory(chatbotInfo.getBotinfo().getPcc().getOrg_details().getCategory_list().getCategory_entry().toString());
-                                userInfoEntity.setDescription(chatbotInfo.getBotinfo().getPcc().getOrg_details().getOrg_description());
-//                                mRepository.insertUserInfo(userInfoEntity);
-                                userInfoViewModel.insertUserInfo(userInfoEntity);
-                                mConversationListViewModel.getConversationByChatbotId(chatbotId).observe(ChatbotSearchActivity.this, conversationEntity -> {
+                                PersistentMenu menu = chatbotInfo.getPersistent_menu();
+                                if(menu != null){
+                                    Log.i("Junwang", "menu = "+menu.getMenu().toString());
+                                    String menuJson = new Gson().toJson(menu);
+                                    userInfoEntity.setMenu(menuJson);
+                                }else{
+                                    userInfoEntity.setMenu(null);
+                                }
+
+                                Botinfo botinfo = chatbotInfo.getBotinfo();
+                                if(botinfo != null){
+                                    Pcc pcc = botinfo.getPcc();
+                                    if(pcc != null){
+                                        OrgDetails orgDetails = pcc.getOrg_details();
+                                        if(orgDetails != null){
+                                            MediaList mediaList = orgDetails.getMedia_list();
+                                            if(mediaList != null){
+                                                List<MediaEntry> mediaEntries = mediaList.getMedia_entry();
+                                                if(mediaEntries != null && mediaEntries.size() > 0){
+                                                    MediaEntry mediaEntry = mediaEntries.get(0);
+                                                    if(mediaEntry != null){
+                                                        Media media = mediaEntry.getMedia();
+                                                        if(media != null){
+                                                            userInfoEntity.setPortrait(media.getMedia_url());
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            List<OrgName> orgNameList = orgDetails.getOrg_name();
+                                            if(orgNameList != null && orgNameList.size() > 0){
+                                                OrgName orgName = orgNameList.get(0);
+                                                if(orgName != null)
+                                                    userInfoEntity.setName(orgName.getDisplay_name());
+                                                Log.i("Junwang", "search chatbotInfo id="+chatbotId+", name="+orgName.getDisplay_name());
+                                            }
+
+                                            CategoryList categoryList = orgDetails.getCategory_list();
+                                            if(categoryList != null){
+                                                List<String> entry = categoryList.getCategory_entry();
+                                                if(entry != null && entry.size() > 0){
+                                                    userInfoEntity.setCategory(entry.get(0));
+                                                }
+                                            }
+
+                                            userInfoEntity.setDescription(orgDetails.getOrg_description());
+                                        }
+                                    }
+                                }
+                                new Thread(
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                userInfoViewModel.insertUserInfo(userInfoEntity);
+                                            }
+                                        }
+                                ).start();
+//                                userInfoViewModel.insertUserInfo(userInfoEntity);
+                                LiveData<ConversationEntity> liveData = mConversationListViewModel.getConversationByChatbotId(chatbotId);
+                                liveData.observe(ChatbotSearchActivity.this, conversationEntity -> {
                                     if(conversationEntity != null) {
                                         Intent intent = new Intent(getContext(), ConversationActivity.class);
                                         intent.putExtra("conversation", conversationEntity);
-                                        getContext().startActivity(intent);
+                                        intent.putExtra("toFocusMessageId", -1);
+                                        intent.putExtra("fromSearch", false);
+                                        ChatbotSearchActivity.this.startActivity(intent);
                                     }else{
                                         Intent intent = new Intent(getContext(), ConversationActivity.class);
                                         intent.putExtra("chatbotId", chatbotId);
+                                        intent.putExtra("fromSearch", false);
                                         intent.putExtra("conversationTitle", chatbotInfo.getBotinfo().getPcc().getOrg_details().getOrg_name().get(0).getDisplay_name());
-                                        getContext().startActivity(intent);
+                                        ChatbotSearchActivity.this.startActivity(intent);
                                     }
+                                    liveData.removeObservers(ChatbotSearchActivity.this);
                                 });
                             }
                         }, new Consumer<Throwable>() {

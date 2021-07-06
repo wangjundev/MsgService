@@ -3,7 +3,6 @@ package com.stv.msgservice.datamodel.network;
 import com.google.gson.JsonObject;
 import com.stv.msgservice.datamodel.chatbotinfo.ChatbotInfo;
 import com.stv.msgservice.datamodel.chatbotinfo.ChatbotSearchResult;
-import com.stv.msgservice.datamodel.database.entity.MessageEntity;
 import com.stv.msgservice.datamodel.network.chatbot.ChatbotMessageBody;
 import com.stv.msgservice.datamodel.network.chatbot.ChatbotMultiCard;
 
@@ -16,7 +15,6 @@ import okhttp3.RequestBody;
 import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
@@ -27,9 +25,9 @@ import retrofit2.http.Url;
  * api商店
  */
 public interface ApiService {
-    @Headers({"Content-type:application/xml; charset=UTF-8"})
-    @POST("/api/catherine/InboundMessageNotification/{token}")
-    Observable<BaseResult<MessageEntity>> createCommit(@Body RequestBody route, @Query("token") String token/*, @Header("Address") String address*/);
+//    @Headers({"Content-type:application/xml; charset=UTF-8"})
+    @POST
+    Observable<Response<Void>> createCommit(@Body RequestBody route, @Url String url);
 
     @POST("notifications/InboundMessageNotification/{token}")
     Observable<BaseResult<FileBean>> uploadFile(@Query("token") String token);
@@ -53,15 +51,17 @@ public interface ApiService {
     @GET("video")             //xml video
     Observable<ChatbotMessageBody> getMessageBody();
 
-    @GET("{token}")
-    Observable<ChatbotInfo> getChatbotInfo(@Query("token") String token);
+    @POST("/5gcallback/api/catherine/queryChatbotDetail")
+    Observable<ChatbotInfo> getChatbotInfo(@Body RequestBody route);
 
-    @GET("{token}")
-    Observable<ChatbotSearchResult> searchChatbotList(@Query("token") String token);
+    @POST("/5gcallback/api/catherine/queryChatbotList")
+    Observable<ChatbotSearchResult> searchChatbotList(@Body RequestBody route);
 
-    @POST("/5gcallback/api/catherine/send")
-    Observable<ResultBean<String>> getXmlMessage(@Body RequestBody route);
+    @POST("send")
+    Observable<ResultBean<String>> getXmlMessage(@Body RequestBody route/*, @Query("token") String token*/);
 
-    @POST("/5gcallback/api/catherine/DeliveryInfoNotification/{token}")
-    Flowable<Response<Void>> sendStatusReport(@Body RequestBody route, @Query("token") String token);
+//    @POST("/5gcallback/api/catherine/DeliveryInfoNotification/{token}")
+//    Flowable<Response<Void>> sendStatusReport(@Body RequestBody route, @Path("token") String token);
+    @POST
+    Flowable<Response<Void>> sendStatusReport(@Body RequestBody route, @Url String url);
 }

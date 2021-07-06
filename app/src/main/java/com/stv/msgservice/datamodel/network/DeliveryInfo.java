@@ -2,7 +2,7 @@ package com.stv.msgservice.datamodel.network;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-@XStreamAlias("deliveryInfo")
+@XStreamAlias("deliverinfo")
 public class DeliveryInfo {
     String address;
     String messageId;

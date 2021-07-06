@@ -78,8 +78,13 @@ public class FileExt extends ConversationExt {
                 case ".jpeg":
                 case ".gif":
                     File imageFileThumb = ImageUtils.genThumbImgFile(path);
-                    ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
+//                    ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
 //                    messageViewModel.sendImgMsg(conversation, imageFileThumb, file);
+                    if(conversation != null){
+                        ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, path, imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/"+type.substring(1));
+                    }else if(chatbotId != null){
+                        ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, path, imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE,"image/"+type.substring(1));
+                    }
                     break;
                 case ".3gp":
                 case ".mpg":
@@ -92,12 +97,22 @@ public class FileExt extends ConversationExt {
                     if(b != null){
                        thumbnail = VideoUtil.bitmap2File(activity, b, "thumb_"+SystemClock.currentThreadTimeMillis());
                     }
-                    ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO);
+//                    ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO);
 //                    messageViewModel.sendVideoMsg(conversation, file);
+                    if(conversation != null){
+                        ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO, "video/"+type.substring(1));
+                    }else if(chatbotId != null){
+                        ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO,"video/"+type.substring(1));
+                    }
                     break;
                 default:
-                    ((ConversationActivity)activity).saveMsg(activity, null, /*(conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, null, MessageConstants.CONTENT_TYPE_FILE);
+//                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getSenderAddress(), false, path, null, MessageConstants.CONTENT_TYPE_FILE);
 //                    messageViewModel.sendFileMsg(conversation, file);
+                    if(conversation != null){
+                        ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, path, null, MessageConstants.CONTENT_TYPE_FILE, "image/"+type.substring(1));
+                    }else if(chatbotId != null){
+                        ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, path, null, MessageConstants.CONTENT_TYPE_FILE, "image/"+type.substring(1));
+                    }
                     break;
             }
             ((ConversationActivity)activity).getConversationFragment().getConversationInputPanel().closeConversationInputPanel();

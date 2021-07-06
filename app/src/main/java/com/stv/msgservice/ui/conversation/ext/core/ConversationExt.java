@@ -16,6 +16,7 @@ public abstract class ConversationExt {
     private int index;
     protected Conversation conversation;
     protected MessageViewModel messageViewModel;
+    protected String chatbotId;
 
     /**
      * ext 优先级
@@ -63,13 +64,14 @@ public abstract class ConversationExt {
      * @param fragment
      */
 
-    protected void onBind(Fragment fragment, MessageViewModel messageViewModel, Conversation conversation, ConversationExtension conversationExtension, int index) {
+    protected void onBind(Fragment fragment, MessageViewModel messageViewModel, Conversation conversation, ConversationExtension conversationExtension, int index, String chatbotId) {
         this.activity = fragment.getActivity();
         this.fragment = fragment;
         this.messageViewModel = messageViewModel;
         this.conversation = conversation;
         this.extension = conversationExtension;
         this.index = index;
+        this.chatbotId = chatbotId;
     }
 
     protected void onDestroy() {

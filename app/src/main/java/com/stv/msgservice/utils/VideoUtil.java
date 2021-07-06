@@ -9,6 +9,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class VideoUtil {
     /**
@@ -19,12 +20,22 @@ public class VideoUtil {
      */
 
     public static Bitmap getVideoThumb(String path) {
+        Bitmap bitmap = null;
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
-        MediaMetadataRetriever media = new MediaMetadataRetriever();
+//        retriever.setDataSource(path, new HashMap());
+        try {
+            //根据url获取缩略图
+            retriever.setDataSource(path, new HashMap());
+            //获得第一帧图片
+            bitmap = retriever.getFrameAtTime();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } finally {
+            retriever.release();
+        }
 
-        media.setDataSource(path);
-
-        return media.getFrameAtTime();
+        return bitmap;
 
     }
 

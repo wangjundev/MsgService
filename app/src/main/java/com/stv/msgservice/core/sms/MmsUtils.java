@@ -188,7 +188,7 @@ public class MmsUtils {
                     if (body[i] != 0x7C) {
                         continue;
                     }else{
-                        byte[] temp = Arrays.copyOfRange(body, 0, i-1);
+                        byte[] temp = Arrays.copyOfRange(body, 0, i);
                         parsedMsgBean.setOrderNo(new String(temp));
                         domainStartIndex = i+1;
                         Log.i("Junwang", "MmsWapPushReceiver orderNo = " + parsedMsgBean.getOrderNo());

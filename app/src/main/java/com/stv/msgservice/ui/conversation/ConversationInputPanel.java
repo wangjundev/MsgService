@@ -139,9 +139,8 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 
     public void setupConversation(Conversation conversation, String chatbotId) {
         this.conversation = conversation;
-        this.extension.bind(this.messageViewModel, conversation);
         this.chatbotId = chatbotId;
-
+        this.extension.bind(this.messageViewModel, conversation, chatbotId);
 //        setDraft();
     }
 
@@ -205,9 +204,10 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                 if (file.exists()) {
 //                    messageViewModel.sendAudioFile(conversation, Uri.parse(audioFile), duration);
                     if(conversation != null){
-                        ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, audioFile, null, MessageConstants.CONTENT_TYPE_AUDIO);
+                        ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, audioFile, null, MessageConstants.CONTENT_TYPE_AUDIO,"audio/mp3");
                     }else if(chatbotId != null){
-                        ((ConversationActivity)activity).saveMsg(activity, null, chatbotId, false, audioFile, null, MessageConstants.CONTENT_TYPE_AUDIO);
+                        //need to get local phone number
+                        ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null, false, audioFile, null, MessageConstants.CONTENT_TYPE_AUDIO, "audio/mp3");
                     }
                 }
             }
@@ -396,9 +396,9 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 //            }
 //        });
         if(conversation != null){
-            ((ConversationActivity)(fragment.getActivity())).saveMsg(fragment.getContext(), content.toString().trim(), /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, null, null, MessageConstants.CONTENT_TYPE_TEXT);
+            ((ConversationActivity)(fragment.getActivity())).saveMsg(fragment.getContext(), content.toString().trim(), conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, null, null, MessageConstants.CONTENT_TYPE_TEXT, null);
         }else if(chatbotId != null){
-            ((ConversationActivity)(fragment.getActivity())).saveMsg(fragment.getContext(), content.toString().trim(), chatbotId, false, null, null, MessageConstants.CONTENT_TYPE_TEXT);
+            ((ConversationActivity)(fragment.getActivity())).saveMsg(fragment.getContext(), content.toString().trim(), null, chatbotId, null,false, null, null, MessageConstants.CONTENT_TYPE_TEXT, null);
         }
 
         ((ConversationFragment)fragment).getConversationInputPanel().closeConversationInputPanel();

@@ -1,8 +1,7 @@
 package com.stv.msgservice.datamodel.network;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
-@XStreamAlias("deliveryInfoNotification")
+//@Namespace(reference = "urn:oma:xml:rest:netapi:messaging:1", prefix = "xmlns:msg")
+//@XStreamAlias("deliveryInfoNotification")
 public class DeliveryInfoNotification {
     DeliveryInfo deliveryInfo;
 

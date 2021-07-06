@@ -77,12 +77,17 @@ public class ConversationActivity extends WfcBaseActivity {
 
     @Override
     protected int menu() {
-        return R.menu.conversation;
+        if(conversation != null){
+            return R.menu.conversation;
+        }else{
+            return 0;
+        }
     }
 
     public ConversationFragment getConversationFragment() {
         return conversationFragment;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -114,35 +119,56 @@ public class ConversationActivity extends WfcBaseActivity {
         });
     }
 
-    public void saveMsg(Context context, String content, String destination, boolean isReceived, String attachmentpath, String thumbnail, int messageType){
+    public void updateMesasge(MessageEntity me){
+        mAppExecutors.diskIO().execute(() -> {
+            mMessageViewModel.updateMessageSendStatus(me);
+        });
+    }
+
+    public void saveMsg(Context context, String content, String from, String to, String conversationId, boolean isReceived, String attachmentpath, String thumbnail, int messageType, String attachmentType){
         conversationFragment.setInitialFocusedMessageId(-1);
         mAppExecutors.diskIO().execute(() -> {
             ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
-            MessageEntity me = mViewModel.saveMsg(context, content, destination, isReceived,  attachmentpath, thumbnail, messageType);
+            if(conversation == null){
+                conversation = new ConversationEntity();
+            }
+            MessageEntity me = mViewModel.saveMsg(context, content, to, from, conversationId, isReceived,  attachmentpath, thumbnail, messageType, (ConversationEntity) conversation, attachmentType);
+            if(conversationFragment.msgLiveData != null) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        conversationFragment.msgLiveData.setValue(me);
+                    }
+                });
+            }
             if(content != null && content.length() > 0){
-                mMessageViewModel.sendTextmsg(conversation, me, content, null);
+                mMessageViewModel.sendTextmsg(context, from, to, conversationId, me, content, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
-                mMessageViewModel.updateMessageSendStatus(me);
+//                mMessageViewModel.updateMessageSendStatus(me);
             }else if(attachmentpath != null){
-                mMessageViewModel.sendFilemsg(me, attachmentpath, null);
+                mMessageViewModel.sendFilemsg(me, from, to, conversationId, attachmentpath, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
-                mMessageViewModel.updateMessageSendStatus(me);
+//                mMessageViewModel.updateMessageSendStatus(me);
             }
         });
-//        MessageViewModel.Factory factory = new MessageViewModel.Factory(
-//                this.getApplication(), 0);
-//        MessageViewModel messageViewModel = new ViewModelProvider(this, factory)
-//                .get(MessageViewModel.class);
-//        String query = "%" + content + "%";
-//        Log.i("Junwang", "query="+query);
-//        messageViewModel.searchMessages(query).observe(this, messageEntityList -> {
-//            if(messageEntityList != null && messageEntityList.size() > 0){
-//                for(int i=0; i<messageEntityList.size(); i++){
-//                    Log.i("Junwang", "matched messageid="+messageEntityList.get(i).getId()+", content="+messageEntityList.get(i).getContent());
-//                }
+    }
+
+//    public void saveMsg(Context context, String content, String destination, boolean isReceived, String attachmentpath, String thumbnail, int messageType){
+//        conversationFragment.setInitialFocusedMessageId(-1);
+//        mAppExecutors.diskIO().execute(() -> {
+//            ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
+//            MessageEntity me = mViewModel.saveMsg(context, content, destination, isReceived,  attachmentpath, thumbnail, messageType);
+//            if(content != null && content.length() > 0){
+//                mMessageViewModel.sendTextmsg(context, conversation, me, content, null);
+//                Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
+//                mMessageViewModel.updateMessageSendStatus(me);
+//            }else if(attachmentpath != null){
+//                mMessageViewModel.sendFilemsg(me, attachmentpath, null);
+//                Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
+//                mMessageViewModel.updateMessageSendStatus(me);
 //            }
 //        });
-    }
+//    }
 
     public void resendMsg(MessageEntity messageEntity){
         deleteMsg(messageEntity);
@@ -152,21 +178,29 @@ public class ConversationActivity extends WfcBaseActivity {
             String content = messageEntity.getContent();
             String attachmentpath = messageEntity.getAttachmentPath();
             String thumbnail = messageEntity.getThumbnailPath();
-            MessageEntity me = mViewModel.saveMsg(this, content, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false,  attachmentpath, thumbnail, messageEntity.getMessageType());
+            MessageEntity me = mViewModel.saveMsg(this, content, conversation.getSenderAddress(), conversation.getDestinationAddress(), conversation.getConversationID(), false,  attachmentpath, thumbnail, messageEntity.getMessageType(), (ConversationEntity) conversation, messageEntity.getAttachmentType());
+            if(conversationFragment.msgLiveData != null) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        conversationFragment.msgLiveData.setValue(me);
+                    }
+                });
+            }
             if(content != null && content.length() > 0){
-                mMessageViewModel.sendTextmsg(conversation, me, content, null);
+                mMessageViewModel.sendTextmsg(this, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), me, content, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
-                mMessageViewModel.updateMessageSendStatus(me);
+//                mMessageViewModel.updateMessageSendStatus(me);
             }else if(attachmentpath != null){
-                mMessageViewModel.sendFilemsg(me, attachmentpath, null);
+                mMessageViewModel.sendFilemsg(me, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), attachmentpath, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
-                mMessageViewModel.updateMessageSendStatus(me);
+//                mMessageViewModel.updateMessageSendStatus(me);
             }
         });
     }
 
     public void sendReadReport(MessageEntity me){
-        mMessageViewModel.sendReadReport(me, conversation.getSenderAddress());
+        mMessageViewModel.sendReadReport(me, conversation.getSenderAddress(), conversation.getDestinationAddress());
     }
 
     public void updateMessagesReadStatus(){
@@ -206,10 +240,11 @@ public class ConversationActivity extends WfcBaseActivity {
         boolean isDeleteMsgLastMsg = false;
         for(Message message : messageList){
             Log.i("Junwang","delete msg id="+message.getId()+", lastmsgid="+conversation.getLatestMessageId());
+            conversationFragment.adapter.removeMessage(message);
             if(message.getId() == conversation.getLatestMessageId()){
                 isDeleteMsgLastMsg = true;
                 Log.i("Junwang", "isDeleteMsgLastMsg=true");
-                break;
+//                break;
             }
         }
         if(isDeleteMsgLastMsg){
@@ -247,7 +282,7 @@ public class ConversationActivity extends WfcBaseActivity {
         mAppExecutors.diskIO().execute(() -> {
             MessageEntity me = new MessageEntity();
             me.setId(message.getId());
-            mMessageViewModel.deleteMessage(me);
+            mMessageViewModel.deleteMessage(me, conversationFragment.msgRemovedLiveData);
         });
         if(message.getId() == conversation.getLatestMessageId()){
             mMessageViewModel.getMessages(conversation.getId()).observe(this, messageEntities ->{
@@ -262,13 +297,15 @@ public class ConversationActivity extends WfcBaseActivity {
                     ce.setId(conversation.getId());
                     ce.setLatestMessageId(messageEntity.getId());
                     ce.setSnippetText(messageEntity.generateSnippetText());
-
+                    conversationFragment.adapter.removeMessage(message);
+//                    conversationFragment.adapter.notifyDataSetChanged();
                     mAppExecutors.diskIO().execute(() -> {
                         ConversationListViewModel mConversationListViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
                         mConversationListViewModel.updateConversation(ce);
                     });
                 }else{
                     Log.i("Junwang", "message count1="+messageEntities.size());
+                    conversationFragment.adapter.removeMessage(message);
                     mAppExecutors.diskIO().execute(() -> {
                         ConversationListViewModel mConversationListViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
                         ConversationEntity ce = new ConversationEntity();
@@ -277,6 +314,9 @@ public class ConversationActivity extends WfcBaseActivity {
                     });
                 }
             });
+        }else{
+            conversationFragment.adapter.removeMessage(message);
+//            conversationFragment.adapter.notifyDataSetChanged();
         }
     }
 
@@ -319,23 +359,23 @@ public class ConversationActivity extends WfcBaseActivity {
     protected void onNewIntent(Intent intent) {
         Log.i("Junwang", "onNewIntent intent enter.");
         super.onNewIntent(intent);
-        conversation = intent.getParcelableExtra("conversation");
-        String chatbotId = intent.getStringExtra("chatbotId");
-        String title = intent.getStringExtra("conversationTitle");
-//        if (conversation == null) {
-//            finish();
+//        conversation = intent.getParcelableExtra("conversation");
+//        String chatbotId = intent.getStringExtra("chatbotId");
+//        String title = intent.getStringExtra("conversationTitle");
+////        if (conversation == null) {
+////            finish();
+////        }
+//        long initialFocusedMessageId = intent.getLongExtra("toFocusMessageId", -1);
+//        String channelPrivateChatUser = intent.getStringExtra("channelPrivateChatUser");
+//        boolean isFromSearch = intent.getBooleanExtra("fromSearch", false);
+//        if(conversationFragment.getAdapter() != null){
+//            Log.i("Junwang", "onNewIntent notifyDataSetChanged");
+//            conversationFragment.getAdapter().notifyDataSetChanged();
 //        }
-        long initialFocusedMessageId = intent.getLongExtra("toFocusMessageId", -1);
-        String channelPrivateChatUser = intent.getStringExtra("channelPrivateChatUser");
-        boolean isFromSearch = intent.getBooleanExtra("fromSearch", false);
-        if(conversationFragment.getAdapter() != null){
-            Log.i("Junwang", "onNewIntent notifyDataSetChanged");
-            conversationFragment.getAdapter().notifyDataSetChanged();
-        }
-//        if(isFromSearch) {
-//            conversationFragment.onDestroy();
-//        }
-        conversationFragment.setupConversation(conversation, chatbotId, title, initialFocusedMessageId, channelPrivateChatUser, isFromSearch);
+////        if(isFromSearch) {
+////            conversationFragment.onDestroy();
+////        }
+//        conversationFragment.setupConversation(conversation, chatbotId, title, initialFocusedMessageId, channelPrivateChatUser, isFromSearch);
     }
 
     @Override
@@ -352,12 +392,14 @@ public class ConversationActivity extends WfcBaseActivity {
         String conversationTitle = intent.getStringExtra("conversationTitle");
         long initialFocusedMessageId = intent.getLongExtra("toFocusMessageId", -1);
         boolean isFromSearch = intent.getBooleanExtra("fromSearch", false);
-        if (conversation == null) {
-            finish();
-        }
-        Log.i("Junwang", "snippet text = "+conversation.getSnippetText()+", lastmsgId="+conversation.getLatestMessageId());
+//        if (conversation == null && !isFromSearch) {
+//            finish();
+//        }
+//        Log.i("Junwang", "snippet text = "+conversation.getSnippetText()+", lastmsgId="+conversation.getLatestMessageId());
         conversationFragment.setupConversation(conversation, chatbotId, conversationTitle, initialFocusedMessageId, null, isFromSearch);
-        updateMessagesReadStatus();
+        if(conversation != null){
+            updateMessagesReadStatus();
+        }
     }
 
 //    public static Intent buildConversationIntent(Context context, int type, String target, int line) {

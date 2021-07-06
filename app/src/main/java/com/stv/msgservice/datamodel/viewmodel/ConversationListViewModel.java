@@ -1,15 +1,29 @@
 package com.stv.msgservice.datamodel.viewmodel;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.baronzhang.retrofit2.converter.FastJsonConverterFactory;
 import com.cjt2325.cameralibrary.util.LogUtil;
 import com.google.gson.Gson;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import com.stv.msgservice.datamodel.TerminalInfo.DeviceIdUtil;
 import com.stv.msgservice.datamodel.TerminalInfo.TerminalInfo;
+import com.stv.msgservice.datamodel.chatbotinfo.Botinfo;
+import com.stv.msgservice.datamodel.chatbotinfo.CategoryList;
 import com.stv.msgservice.datamodel.chatbotinfo.ChatbotInfo;
+import com.stv.msgservice.datamodel.chatbotinfo.Media;
+import com.stv.msgservice.datamodel.chatbotinfo.MediaEntry;
+import com.stv.msgservice.datamodel.chatbotinfo.MediaList;
+import com.stv.msgservice.datamodel.chatbotinfo.OrgDetails;
+import com.stv.msgservice.datamodel.chatbotinfo.OrgName;
+import com.stv.msgservice.datamodel.chatbotinfo.Pcc;
+import com.stv.msgservice.datamodel.chatbotinfo.PersistentMenu;
 import com.stv.msgservice.datamodel.constants.MessageConstants;
 import com.stv.msgservice.datamodel.database.AppDatabase;
 import com.stv.msgservice.datamodel.database.entity.ConversationEntity;
@@ -19,7 +33,7 @@ import com.stv.msgservice.datamodel.datarepository.DataRepository;
 import com.stv.msgservice.datamodel.model.Conversation;
 import com.stv.msgservice.datamodel.network.ApiService;
 import com.stv.msgservice.datamodel.network.DeliveryInfo;
-import com.stv.msgservice.datamodel.network.DeliveryInfoNotification;
+import com.stv.msgservice.datamodel.network.NetworkUtil;
 import com.stv.msgservice.datamodel.network.ResultBean;
 import com.stv.msgservice.datamodel.network.chatbot.CardContent;
 import com.stv.msgservice.datamodel.network.chatbot.ChatbotFile;
@@ -29,6 +43,7 @@ import com.stv.msgservice.datamodel.network.chatbot.ChatbotMultiCard;
 import com.stv.msgservice.datamodel.network.chatbot.MultiCardChatbotMsg;
 import com.stv.msgservice.third.activity.LocationData;
 import com.stv.msgservice.utils.FileUtils;
+import com.stv.msgservice.utils.VideoUtil;
 import com.thoughtworks.xstream.XStream;
 
 import org.simpleframework.xml.Serializer;
@@ -121,7 +136,7 @@ public class ConversationListViewModel extends AndroidViewModel {
         mRepository.deleteConversation(ce);
     }
 
-    public void getChatbotInfo(String chatbotId){
+    public void getChatbotInfo(Context context, String chatbotId){
 //        OkHttpClient.Builder client = new OkHttpClient.Builder();
 //        client.addInterceptor(new Interceptor() {
 //            @Override
@@ -142,23 +157,78 @@ public class ConversationListViewModel extends AndroidViewModel {
                 .baseUrl(MessageConstants.BASE_URL)
 //                .client(httpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
+//                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(FastJsonConverterFactory.create())
                 .build();
+
+        String postBody = getPostBodyJson(context, null, null, chatbotId);
+        Log.i("Junwang", "post body json is "+postBody);
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json;charset=UTF-8"), postBody);
 
         ApiService service = retrofit.create(ApiService.class);
         try {
-            service.getChatbotInfo(/*chatbotId*/MessageViewModel.getHttpsRequestArguments(getApplication().getApplicationContext(), chatbotId, null)).subscribe(new Consumer<ChatbotInfo>() {
+            service.getChatbotInfo(body)
+                    .subscribe(new Consumer<ChatbotInfo>() {
                 @Override
                 public void accept(ChatbotInfo chatbotInfo) throws Exception {
-                    UserInfoEntity userInfoEntity = new UserInfoEntity();
-                    userInfoEntity.setUri(chatbotId);
-                    String menuJson = new Gson().toJson(chatbotInfo.getPersistent_menu());
-                    userInfoEntity.setMenu(menuJson);
-                    userInfoEntity.setPortrait(chatbotInfo.getBotinfo().getPcc().getOrg_details().getMedia_list().getMedia_entry().get(0).getMedia().getMedia_url());
-                    userInfoEntity.setName(chatbotInfo.getBotinfo().getPcc().getOrg_details().getOrg_name().get(0).getDisplay_name());
-                    userInfoEntity.setCategory(chatbotInfo.getBotinfo().getPcc().getOrg_details().getCategory_list().getCategory_entry().toString());
-                    userInfoEntity.setDescription(chatbotInfo.getBotinfo().getPcc().getOrg_details().getOrg_description());
-                    mRepository.insertUserInfo(userInfoEntity);
+                    if(chatbotInfo != null){
+                        UserInfoEntity userInfoEntity = new UserInfoEntity();
+                        userInfoEntity.setUri(chatbotId);
+                        PersistentMenu menu = chatbotInfo.getPersistent_menu();
+                        if(menu != null){
+                            Log.i("Junwang", "menu = "+menu.getMenu().toString());
+                            String menuJson = new Gson().toJson(menu);
+                            userInfoEntity.setMenu(menuJson);
+                        }else{
+                            userInfoEntity.setMenu(null);
+                        }
+
+                        Botinfo botinfo = chatbotInfo.getBotinfo();
+                        if(botinfo != null){
+                            Pcc pcc = botinfo.getPcc();
+                            if(pcc != null){
+                                OrgDetails orgDetails = pcc.getOrg_details();
+                                if(orgDetails != null){
+                                    MediaList mediaList = orgDetails.getMedia_list();
+                                    if(mediaList != null){
+                                        List<MediaEntry> mediaEntries = mediaList.getMedia_entry();
+                                        if(mediaEntries != null && mediaEntries.size() > 0){
+                                            MediaEntry mediaEntry = mediaEntries.get(0);
+                                            if(mediaEntry != null){
+                                                Media media = mediaEntry.getMedia();
+                                                if(media != null){
+                                                    userInfoEntity.setPortrait(media.getMedia_url());
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    List<OrgName> orgNameList = orgDetails.getOrg_name();
+                                    if(orgNameList != null && orgNameList.size() > 0){
+                                        OrgName orgName = orgNameList.get(0);
+                                        if(orgName != null)
+                                        userInfoEntity.setName(orgName.getDisplay_name());
+                                        Log.i("Junwang", "search chatbotInfo id="+chatbotId+", name="+orgName.getDisplay_name());
+                                    }
+
+                                    CategoryList categoryList = orgDetails.getCategory_list();
+                                    if(categoryList != null){
+                                        List<String> entry = categoryList.getCategory_entry();
+                                        if(entry != null && entry.size() > 0){
+                                            userInfoEntity.setCategory(entry.get(0));
+                                        }
+                                    }
+
+                                    userInfoEntity.setDescription(orgDetails.getOrg_description());
+                                }
+                            }
+//                            userInfoEntity.setPortrait(botinfo.getPcc().getOrg_details().getMedia_list().getMedia_entry().get(0).getMedia().getMedia_url());
+//                            userInfoEntity.setName(botinfo.getPcc().getOrg_details().getOrg_name().get(0).getDisplay_name());
+//                            userInfoEntity.setCategory(botinfo.getPcc().getOrg_details().getCategory_list().getCategory_entry().get(0));
+//                            userInfoEntity.setDescription(botinfo.getPcc().getOrg_details().getOrg_description());
+                        }
+                        mRepository.insertUserInfo(userInfoEntity);
+                    }
                 }
             }, new Consumer<Throwable>() {
                 @Override
@@ -171,7 +241,7 @@ public class ConversationListViewModel extends AndroidViewModel {
         }
     }
 
-    public void sendStatusReport(MessageEntity me, String address, String messageId, String deliveryStatus){
+    public void sendStatusReport(MessageEntity me, String senderAddress, String destinationAddress, String messageId, String deliveryStatus){
         try{
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(MessageConstants.BASE_URL)
@@ -181,16 +251,29 @@ public class ConversationListViewModel extends AndroidViewModel {
 
             ApiService service = retrofit.create(ApiService.class);
 
-            DeliveryInfo deliveryInfo = new DeliveryInfo(address, messageId, deliveryStatus);
-            DeliveryInfoNotification deliveryInfoNotification = new DeliveryInfoNotification(deliveryInfo);
+//            DeliveryInfo deliveryInfo = new DeliveryInfo(destinationAddress, messageId, deliveryStatus);
+//            DeliveryInfoNotification deliveryInfoNotification = new DeliveryInfoNotification(deliveryInfo);
+//            XStream xStream = new XStream();
+//            xStream.aliasType("msg:deliveryInfoNotification", DeliveryInfoNotification.class);
+////            xStream.alias("inboundMessage", null);
+//            String requestXml = xStream.toXML(deliveryInfoNotification);
+//            Log.i("Junwang", "requestXml="+requestXml);
+//            RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/xml;charset=UTF-8"),requestXml);
+
+            String xmlPrefix = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                    "<msg:deliveryInfoNotification xmlns:msg=\"urn:oma:xml:rest:netapi:messaging:1\">\n";
+            String xmlSuffix = "\n</msg:deliveryInfoNotification>";
+            DeliveryInfo deliveryInfo = new DeliveryInfo(destinationAddress, messageId, deliveryStatus);
+//        DeliveryInfoNotification deliveryInfoNotification = new DeliveryInfoNotification(deliveryInfo);
             XStream xStream = new XStream();
-            xStream.aliasType("msg:deliveryInfoNotification", DeliveryInfoNotification.class);
-//            xStream.alias("inboundMessage", null);
-            String requestXml = xStream.toXML(deliveryInfoNotification);
+            xStream.aliasType("deliveryInfo", DeliveryInfo.class);
+            String requestXml = xmlPrefix+xStream.toXML(deliveryInfo)+xmlSuffix;
             Log.i("Junwang", "requestXml="+requestXml);
             RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/xml;charset=UTF-8"),requestXml);
 
-            Flowable<Response<Void>> response = service.sendStatusReport(body, address);
+            String concatUrl = MessageViewModel.getHttpsRequestArguments(getApplication().getApplicationContext(), senderAddress, null);
+            Log.i("Junwang", "concatUrl="+concatUrl);
+            Flowable<Response<Void>> response = service.sendStatusReport(body, /*address*/"/5gcallback/api/catherine/DeliveryInfoNotification/"+concatUrl);
             try{
                 response.subscribe(new Consumer<Response>() {
                     @Override
@@ -216,42 +299,70 @@ public class ConversationListViewModel extends AndroidViewModel {
         mRepository.updateMessageSendStatus(me);
     }
 
+    public static String getPostBodyJson(Context context, String keyword, String orderNo, String chatbotId){
+        HashMap<String,String> paramsMap=new HashMap<>();
+        if(keyword != null) {
+            paramsMap.put("q", keyword);
+        }
+        if(orderNo != null){
+            paramsMap.put("orderNo",orderNo);
+        }
+        if(chatbotId != null){
+            paramsMap.put("id", chatbotId);
+        }
+        paramsMap.put("client_vendor", TerminalInfo.getClientVendor());
+        paramsMap.put("client_version", TerminalInfo.getTerminalSoftwareVersion());
+//        paramsMap.put("client_serial", TerminalInfo.getMEID(context)+"_"+TerminalInfo.getVerName(context));
+        String androidId = TerminalInfo.getAndroidId(context);
+        String serial = TerminalInfo.getSERIAL();
+        Log.i("Junwang", "androidId="+androidId+",serial="+serial);
+        String deviceId = DeviceIdUtil.getDeviceId(context);
+        Log.i("Junwang", "deviceId="+deviceId);
+        paramsMap.put("client_serial", deviceId/*androidId+"_"+TerminalInfo.getSERIAL()+"_"+TerminalInfo.getVerName(context)*/);
+        Gson gson=new Gson();
+        String strEntity = gson.toJson(paramsMap);
+        Log.i("Junwang", "strEntity="+strEntity);
+        return strEntity;
+    }
+
+    @SuppressLint("CheckResult")
     public ChatbotMessageBody getXml(Context context, String orderNo, String domain){
+//        int tokenIndex = domain.indexOf("/");
+//        String baseUrl = domain.substring(0, tokenIndex+1);
+//        String token = domain.substring(tokenIndex+1);
+//        Log.i("Junwang", "getXml baseUrl="+baseUrl+", token="+token+", domain="+domain);
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://"+domain)
+                .baseUrl("http://"+domain+"/api/catherine/")
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
 //                .addConverterFactory(SimpleXmlConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        HashMap<String,String> paramsMap=new HashMap<>();
-        paramsMap.put("orderNo",orderNo);
-        paramsMap.put("client_vendor", TerminalInfo.getClientVendor());
-        paramsMap.put("client_version", TerminalInfo.getTerminalSoftwareVersion());
-        paramsMap.put("client_serial", TerminalInfo.getMEID(context)+"_"+TerminalInfo.getVerName(context));
-        Gson gson=new Gson();
-        String strEntity = gson.toJson(paramsMap);
-        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json;charset=UTF-8"),strEntity);
+        String postBody = getPostBodyJson(context, null, orderNo, null);
+        Log.i("Junwang", "post body json is "+postBody);
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json;charset=UTF-8"), postBody);
 
         ApiService service = retrofit.create(ApiService.class);
-        Observable<ResultBean<String>> response = service.getXmlMessage(body);
+        Observable<ResultBean<String>> response = service.getXmlMessage(body/*, token*/);
         try{
             response.subscribe(new Consumer<ResultBean<String>>() {
+                @SuppressLint("CheckResult")
                 @Override
                 public void accept(ResultBean<String> chatbotMessageBodyResultBean) throws Exception {
                     if (chatbotMessageBodyResultBean.getCode() == 0) {
                         String xmlContent = chatbotMessageBodyResultBean.getData();
+                        Log.i("Junwang", "get xmlContent="+xmlContent);
                         Serializer serializer=new Persister();
                         ChatbotMessageBody chatbotMessageBody=(ChatbotMessageBody )serializer.read(ChatbotMessageBody.class, xmlContent);
                         if(chatbotMessageBody != null){
-                            String destination = chatbotMessageBody.getSenderAddress();
-                            Log.i("Junwang", "accept sender address = "+ destination);
-                            long convId = DataRepository.getInstance(AppDatabase.getInstance(context)).getConversationId(destination);
+                            String sender = chatbotMessageBody.getSenderAddress();
+                            Log.i("Junwang", "accept sender address = "+ sender);
+                            long convId = DataRepository.getInstance(AppDatabase.getInstance(context)).getConversationId(sender);
                             Log.i("Junwang", "addMessage query conversation Id = "+ convId);
                             final long time = System.currentTimeMillis();
                             ConversationEntity ce = new ConversationEntity();
                             ce.setLastTimestamp(time);
-                            ce.setSenderAddress(destination);
+                            ce.setSenderAddress(sender);
                             ce.setConversationID(chatbotMessageBody.getOutboundIMMessage().getConversationID());
                             if(convId == 0){
                                 convId = insertConversation(ce);
@@ -267,7 +378,13 @@ public class ConversationListViewModel extends AndroidViewModel {
 
                             String contentType = chatbotMessageBody.getOutboundIMMessage().getContentType();
                             String bodyText = chatbotMessageBody.getOutboundIMMessage().getBodyText();
-                            ce.setDestinationAddress(chatbotMessageBody.getDestinationAddress());
+                            String destination = chatbotMessageBody.getDestinationAddress();
+                            Log.i("Junwang", "received xml destination="+destination);
+                            if(destination != null && destination.startsWith("tel:")){
+                                ce.setDestinationAddress(destination.substring(4));
+                            }else {
+                                ce.setDestinationAddress(destination);
+                            }
                             me.setContributionID(chatbotMessageBody.getOutboundIMMessage().getContributionID());
                             me.setConversationID(chatbotMessageBody.getOutboundIMMessage().getConversationID());
                             me.setMessageId(chatbotMessageBody.getOutboundIMMessage().getMessageId());
@@ -389,7 +506,7 @@ public class ConversationListViewModel extends AndroidViewModel {
                             }else if("application/vnd.gsma.rcs-ft-http+xml".equals(contentType)){
                                 try{
                                     Serializer se=new Persister();
-                                    ChatbotFile file=(ChatbotFile )se.read(ChatbotFile.class, bodyText);
+                                    ChatbotFile file=(ChatbotFile)se.read(ChatbotFile.class, bodyText);
                                     String fileType = file.getFileInfo().get(0).getContent_type();
                                     String fileContentType;
                                     String thumbnail = null;
@@ -402,6 +519,7 @@ public class ConversationListViewModel extends AndroidViewModel {
                                             me.setThumbnailPath(thumbnail);
                                         }else if("file".equals(fileType)){
                                             mediaUrl = file.getFileInfo().get(i).getData().getUrl();
+                                            Log.i("Junwang", "parsed mediaUrl="+mediaUrl);
                                             me.setAttachmentPath(mediaUrl);
                                             if(fileContentType != null && fileContentType.startsWith("image/")){
                                                 me.setMessageType(MessageConstants.CONTENT_TYPE_IMAGE);
@@ -425,14 +543,6 @@ public class ConversationListViewModel extends AndroidViewModel {
                             if(me.getMessageType() == MessageConstants.CONTENT_TYPE_IMAGE
                                     || me.getMessageType() == MessageConstants.CONTENT_TYPE_AUDIO
                                     || me.getMessageType() == MessageConstants.CONTENT_TYPE_VIDEO){
-                                String thumbnailurl = me.getThumbnailPath();
-                                Log.i("Junwang", "thumbnailurl="+thumbnailurl);
-                                String originalThumbnailFileName = thumbnailurl.substring(thumbnailurl.lastIndexOf("/")+1);
-                                String saveThumbnailFileName = "thumbnail"+time+"_"+originalThumbnailFileName;
-                                String thumbnailSavedPath = context.getFilesDir().toString() +"/"+ saveThumbnailFileName;
-                                FileUtils.downLoad(context, thumbnailurl, saveThumbnailFileName);
-                                me.setThumbnailPath(thumbnailSavedPath);
-
                                 String attachmenturl = me.getAttachmentPath();
                                 String originalFileName = attachmenturl.substring(attachmenturl.lastIndexOf("/")+1);
                                 String saveFileName = time+"_"+originalFileName;
@@ -440,6 +550,25 @@ public class ConversationListViewModel extends AndroidViewModel {
                                 FileUtils.downLoad(context, attachmenturl, saveFileName);
                                 me.setAttachmentPath(attachmentSavedPath);
 
+                                String thumbnailurl = me.getThumbnailPath();
+                                Log.i("Junwang", "thumbnailurl="+thumbnailurl);
+                                if(thumbnailurl == null){
+                                    if(me.getMessageType() == MessageConstants.CONTENT_TYPE_VIDEO){
+                                        Bitmap b = VideoUtil.getVideoThumb(attachmenturl);
+                                        if(b != null){
+                                            thumbnailurl = VideoUtil.bitmap2File(context, b, "thumb_"+ SystemClock.currentThreadTimeMillis());
+                                            me.setThumbnailPath(thumbnailurl);
+                                        }
+                                    }else if(me.getMessageType() == MessageConstants.CONTENT_TYPE_IMAGE){
+                                        me.setThumbnailPath(me.getAttachmentPath());
+                                    }
+                                }else{
+                                    String originalThumbnailFileName = thumbnailurl.substring(thumbnailurl.lastIndexOf("/")+1);
+                                    String saveThumbnailFileName = "thumbnail"+time+"_"+originalThumbnailFileName;
+                                    String thumbnailSavedPath = context.getFilesDir().toString() +"/"+ saveThumbnailFileName;
+                                    FileUtils.downLoad(context, thumbnailurl, saveThumbnailFileName);
+                                    me.setThumbnailPath(thumbnailSavedPath);
+                                }
                             }else{
                                 me.setAttachmentPath(null);
                             }
@@ -453,7 +582,7 @@ public class ConversationListViewModel extends AndroidViewModel {
                             ce.setUnreadCount(getUnreadCount(convId));
                             Log.i("Junwang", "update ce sender address = "+ce.getSenderAddress());
                             updateConversation(ce);
-                            if(true){
+                            if(/*true*/false){
                                 UserInfoEntity userInfoEntity = new UserInfoEntity();
 //            userInfoEntity.setUri(destination);
                                 userInfoEntity.setUri(ce.getSenderAddress());
@@ -546,9 +675,10 @@ public class ConversationListViewModel extends AndroidViewModel {
                                 userInfoEntity.setPortrait("http://sms-agent.oss-cn-hangzhou.aliyuncs.com/sms_agent_temp/51/xhs.png");
                                 mRepository.insertUserInfo(userInfoEntity);
                             }else{
-                                getChatbotInfo(ce.getSenderAddress());
+                                getChatbotInfo(context, ce.getSenderAddress());
                             }
-                            sendStatusReport(me, ce.getSenderAddress(), me.getMessageId(), MessageConstants.DELIVEREDTOTERMINAL);
+                            sendStatusReport(me, ce.getSenderAddress(), ce.getDestinationAddress(), me.getMessageId(), MessageConstants.DELIVEREDTOTERMINAL);
+                            NetworkUtil.showNotification(context, ce);
                         }
                     } else {
                         Log.i("Junwang", "get message failed, reson = " + chatbotMessageBodyResultBean.getMsg());
@@ -1115,15 +1245,18 @@ public class ConversationListViewModel extends AndroidViewModel {
         return me;
     }
 
-    public MessageEntity saveMsg(Context context, String content, String destination, boolean isReceived, String attachmentpath, String thumbnail, int messageType){
-        long convId = DataRepository.getInstance(AppDatabase.getInstance(context)).getConversationId(destination);
+    //发送保存
+    public MessageEntity /*LiveData<MessageEntity>*/ saveMsg(Context context, String content, String to, String from, String conversationId, boolean isReceived, String attachmentpath, String thumbnail, int messageType,  ConversationEntity ce, String attachmentType){
+        long convId = DataRepository.getInstance(AppDatabase.getInstance(context)).getConversationId(to);
         Log.i("Junwang", "addMessage query conversation Id = "+ convId);
 
         final long time = System.currentTimeMillis();
-        ConversationEntity ce = new ConversationEntity();
+//        ConversationEntity ce = new ConversationEntity();
         ce.setLastTimestamp(time);
-        ce.setSenderAddress(destination);
-//        ce.setNormalizedDestination(destination);
+        ce.setSenderAddress(to);
+        ce.setDestinationAddress(from);
+        ce.setConversationID(conversationId);
+//        ce.setNormalizedDestination(to);
         if(convId == 0){
             convId = insertConversation(ce);
         }
@@ -1149,6 +1282,7 @@ public class ConversationListViewModel extends AndroidViewModel {
         if(attachmentpath != null){
             me.setAttachmentPath(attachmentpath);
             me.setThumbnailPath(thumbnail);
+            me.setAttachmentType(attachmentType);
         }else if(isReceived
                 &&(me.getMessageType() == MessageConstants.CONTENT_TYPE_IMAGE
                 || me.getMessageType() == MessageConstants.CONTENT_TYPE_AUDIO
@@ -1185,7 +1319,7 @@ public class ConversationListViewModel extends AndroidViewModel {
         updateConversation(ce);
         if(isReceived){
             UserInfoEntity userInfoEntity = new UserInfoEntity();
-//            userInfoEntity.setUri(destination);
+//            userInfoEntity.setUri(to);
             userInfoEntity.setUri(ce.getSenderAddress());
 //            userInfoEntity.setName("中国移动");
             userInfoEntity.setName("新华社");
@@ -1278,6 +1412,7 @@ public class ConversationListViewModel extends AndroidViewModel {
         }
 //        loadConversations();
         return me;
+//        return mRepository.getMessage(messageId);
     }
 
     //need to implement

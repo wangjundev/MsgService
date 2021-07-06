@@ -62,44 +62,46 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public void setMessageList(final List<MessageEntity> messageList) {
         messages = messageList;
+        if(messages != null){
+            List<UiMessage> uiMessageList = new ArrayList<>();
+            for(MessageEntity me : messageList){
+                uiMessageList.add(new UiMessage(false, me));
+            }
 
-        List<UiMessage> uiMessageList = new ArrayList<>();
-        for(MessageEntity me : messageList){
-            uiMessageList.add(new UiMessage(false, me));
-        }
+            if (uiMessages == null) {
+                uiMessages = uiMessageList;
+                notifyItemRangeInserted(0, uiMessageList.size());
+            } else {
+                DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                    @Override
+                    public int getOldListSize() {
+                        return uiMessages.size();
+                    }
 
-        if (uiMessages == null) {
-            uiMessages = uiMessageList;
-            notifyItemRangeInserted(0, uiMessageList.size());
-        } else {
-            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
-                @Override
-                public int getOldListSize() {
-                    return uiMessages.size();
-                }
+                    @Override
+                    public int getNewListSize() {
+                        return uiMessageList.size();
+                    }
 
-                @Override
-                public int getNewListSize() {
-                    return uiMessageList.size();
-                }
+                    @Override
+                    public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                        return (uiMessages.get(oldItemPosition).message.getId() ==
+                                uiMessageList.get(newItemPosition).message.getId());
+//                                && (uiMessages.get(oldItemPosition).message.getMessageStatus() == uiMessageList.get(newItemPosition).message.getMessageStatus());
+                    }
 
-                @Override
-                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return uiMessages.get(oldItemPosition).message.getId() ==
-                            uiMessageList.get(newItemPosition).message.getId();
-                }
-
-                @Override
-                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    MessageEntity newMessage = uiMessageList.get(newItemPosition).message;
-                    MessageEntity oldMessage = uiMessages.get(oldItemPosition).message;
-                    return newMessage.getId() == oldMessage.getId()
-                            && newMessage.getContent() == oldMessage.getContent()
-                            && newMessage.getMessageStatus() == oldMessage.getMessageStatus();
-                }
-            });
-            uiMessages = uiMessageList;
-            result.dispatchUpdatesTo(this);
+                    @Override
+                    public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                        MessageEntity newMessage = uiMessageList.get(newItemPosition).message;
+                        MessageEntity oldMessage = uiMessages.get(oldItemPosition).message;
+                        return newMessage.getId() == oldMessage.getId()
+                                && newMessage.getContent() == oldMessage.getContent()
+                                && newMessage.getMessageStatus() == oldMessage.getMessageStatus();
+                    }
+                });
+                uiMessages = uiMessageList;
+                result.dispatchUpdatesTo(this);
+            }
         }
 
 //        if (messages == null) {
@@ -231,11 +233,17 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         if (message == null) {
             return;
         }
-        if (contains(message)) {
-            updateMessage(message);
-            return;
+//        if (contains(message)) {
+//            updateMessage(message);
+//            return;
+//        }
+        if(messages == null){
+            messages = new ArrayList<>();
         }
         messages.add(message);
+        if(uiMessages == null){
+            uiMessages = new ArrayList<>();
+        }
         uiMessages.add(new UiMessage(false, message));
         Log.i("Junwang", "addNewMessage");
         notifyItemInserted(messages.size() - 1);
@@ -696,6 +704,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     public Message getItem(int position) {
         return messages.get(position);
     }
+
 
     public void highlightFocusMessage(int position) {
 //        messages.get(position).isFocus = true;

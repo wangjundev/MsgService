@@ -15,7 +15,7 @@ import androidx.room.Update;
 @Dao
 public interface MessageDao {
     @Query("SELECT * FROM messages where id = :messageId")
-    LiveData<MessageEntity> getMessage(int messageId);
+    LiveData<MessageEntity> getMessage(long messageId);
 
     @Query("SELECT * FROM messages where conversation_id = :conversationId ORDER BY id ASC")
     LiveData<List<MessageEntity>> getMessages(long conversationId);

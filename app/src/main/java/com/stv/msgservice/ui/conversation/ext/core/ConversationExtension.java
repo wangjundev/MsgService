@@ -79,12 +79,12 @@ public class ConversationExtension {
     }
 
 
-    public void bind(MessageViewModel messageViewModel, Conversation conversation) {
+    public void bind(MessageViewModel messageViewModel, Conversation conversation, String chatbotId) {
         this.conversation = conversation;
         setupExtViewPager(extViewPager);
 
         for (int i = 0; i < exts.size(); i++) {
-            exts.get(i).onBind(fragment, messageViewModel, conversation, this, i);
+            exts.get(i).onBind(fragment, messageViewModel, conversation, this, i, chatbotId);
         }
     }
 

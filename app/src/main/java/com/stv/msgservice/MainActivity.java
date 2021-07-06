@@ -3,12 +3,14 @@ package com.stv.msgservice;
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.stv.msgservice.core.sms.MmsUtils;
@@ -19,6 +21,7 @@ import com.stv.msgservice.datamodel.viewmodel.MessageViewModel;
 import com.stv.msgservice.receiver.MmsWapPushReceiver;
 import com.stv.msgservice.receiver.SmsReceiver;
 import com.stv.msgservice.ui.WfcBaseActivity;
+import com.stv.msgservice.ui.conversation.message.search.chatbotsearch.ChatbotSearchActivity;
 import com.stv.msgservice.ui.conversationlist.ConversationListFragment;
 import com.stv.msgservice.utils.PermissionUtils;
 
@@ -75,6 +78,32 @@ public class MainActivity extends WfcBaseActivity {
                 new ComponentName(this, MmsWapPushReceiver.class),
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
         registerReceiver();
+
+//        String xmlPrefix = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+//                "<msg:deliveryInfoNotification xmlns:msg=\"urn:oma:xml:rest:netapi:messaging:1\">\n";
+//        String xmlEnd = "\n</msg:deliveryInfoNotification>";
+//        DeliveryInfo deliveryInfo = new DeliveryInfo("destinationAddress", "messageId", "deliveryStatus");
+////        DeliveryInfoNotification deliveryInfoNotification = new DeliveryInfoNotification(deliveryInfo);
+//        XStream xStream = new XStream();
+//        xStream.aliasType("deliveryInfo", DeliveryInfo.class);
+//        String requestXml = xmlPrefix+xStream.toXML(deliveryInfo)+xmlEnd;
+//        Log.i("Junwang", "requestXml="+requestXml);
+    }
+
+    @Override
+    protected int menu() {
+        return R.menu.main_menu;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_settings) {
+            return true;
+        }else if(item.getItemId() == R.id.menu_search_chatbot){
+            Intent intent = new Intent(this, ChatbotSearchActivity.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 //    @Override
@@ -146,7 +175,9 @@ public class MainActivity extends WfcBaseActivity {
 //        byte[] data = new byte[]{-116, -126, -124, 65, 66, 67, 124, 97, 98, 99, 0, -1};
 //        simulateParsebody(this, data, null);
 
-        byte[] pdu = new byte[]{-116, -126, -104, 49, 52, 48, 55, 57, 57, 51, 56, 56, 51, 57, 50, 56, 57, 53, 54, 57, 50, 56, 92, 124, 99, 97, 108, 108, 98, 97, 99, 107, 46, 115, 117, 112, 101, 114, 109, 109, 115, 46, 99, 110, 0, -115, -112};
+//        byte[] pdu = new byte[]{-116, -126, -104, 49, 52, 48, 55, 57, 57, 51, 56, 56, 51, 57, 50, 56, 57, 53, 54, 57, 50, 56, 92, 124, 99, 97, 108, 108, 98, 97, 99, 107, 46, 115, 117, 112, 101, 114, 109, 109, 115, 46, 99, 110, 0, -115, -112};
+        byte[] pdu = new byte[]{-116, -126, -104, 49, 52, 48, 57, 51, 51, 49, 49, 49, 56, 57, 50, 54, 51, 51, 54, 48, 48, 48, 124, 99, 97, 108, 108, 98, 97, 99, 107, 46, 115, 117, 112, 101, 114, 109, 109, 115, 46, 99, 110, 47, 53, 103, 99, 97, 108, 108, 98, 97, 99, 107, 0, -115, -112};
+//        byte[] pdu = new byte[]{-116, -126, -104, 49, 52, 49, 48, 53, 48, 57, 54, 52, 53, 50, 49, 52, 50, 53, 55, 49, 53, 50, 124, 99, 97, 108, 108, 98, 97, 99, 107, 46, 115, 117, 112, 101, 114, 109, 109, 115, 46, 99, 110, 47, 53, 103, 99, 97, 108, 108, 98, 97, 99, 107, 0, -115, -112};
         byte[] data = MmsUtils.processReceivedPdu(
                 this, pdu, -1, "10086");
         Log.i("Junwang", "wap content="+new String(data));
@@ -160,7 +191,12 @@ public class MainActivity extends WfcBaseActivity {
     public String simulateParsebody(final Context context, byte[] body, SmsMessage[] messages) {
         try {
             if (body != null && body.length > 0) {
-//                final String from = parsedPdu.getFrom().getString();
+////                final String from = parsedPdu.getFrom().getString();
+//                NotificationUtils utils = new NotificationUtils(this);
+//                Intent intent = new Intent(context, ConversationActivity.class);
+//                PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+//                utils.sendNotification(1, "测试通知title", "测试通知内容", R.mipmap.ic_launcher_5gmsg, pendingIntent);
+////                NetworkUtil.showNotification(this, "测试通知title", "测试通知内容");
                 mAppExecutors.diskIO().execute(() -> {
                     Log.i("Junwang", "MmsWapPushReceiver parsed body = " + Arrays.toString(body));
                     ParsedMsgBean msgBean = new ParsedMsgBean();
@@ -168,6 +204,7 @@ public class MainActivity extends WfcBaseActivity {
                     Log.i("Junwang", "MmsWapPushReceiver parsed orderNo = " + msgBean.getOrderNo()+", parsed domain="+msgBean.getDomain());
                     ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
                     mViewModel.getXml(this, msgBean.getOrderNo(), msgBean.getDomain());
+//                    NetworkUtil.showNotification(this, "测试通知title", "测试通知内容");
                 });
             }
 
@@ -177,13 +214,13 @@ public class MainActivity extends WfcBaseActivity {
         return null;
     }
 
-    public void saveMsg(Context context, String content, String destination, boolean isReceived, String attachmentpath, String thumbnail, int messageType){
-        mAppExecutors.diskIO().execute(() -> {
-            ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
-            mViewModel.saveMsg(context, content, destination, isReceived,  attachmentpath, thumbnail, messageType);
-
-        });
-    }
+//    public void saveMsg(Context context, String content, String destination, boolean isReceived, String attachmentpath, String thumbnail, int messageType){
+//        mAppExecutors.diskIO().execute(() -> {
+//            ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
+//            mViewModel.saveMsg(context, content, destination, isReceived,  attachmentpath, thumbnail, messageType);
+//
+//        });
+//    }
 
     public void deleteConversation(ConversationEntity ce){
         MessageViewModel.Factory factory = new MessageViewModel.Factory(
@@ -202,4 +239,50 @@ public class MainActivity extends WfcBaseActivity {
     public AppExecutors getAppExecutors() {
         return mAppExecutors;
     }
+
+//    public class MmsWapPushReceiver extends BroadcastReceiver {
+//        static final String EXTRA_DATA = "data";
+//        private Context mContext;
+//        private AppCompatActivity mActivity;
+//        private AppExecutors mAppExecutors;
+//        private ConversationListViewModel mConversationListViewModel;
+//
+//        public MmsWapPushReceiver() {
+//        }
+//
+//        public MmsWapPushReceiver(AppCompatActivity activity, AppExecutors appExecutors) {
+//            this.mActivity = activity;
+//            this.mAppExecutors = appExecutors;
+//        }
+//
+//        @Override
+//        public void onReceive(final Context context, final Intent intent) {
+//            Log.i("Junwang", "MmsWapPushReceiver onReceived action = "+intent.getAction()+", type="+intent.getType());
+//            mContext = context;
+//            if (/*Telephony.Sms.Intents.WAP_PUSH_RECEIVED_ACTION.equals(intent.getAction())
+//                && ContentType.MMS_MESSAGE.equals(intent.getType())*/true) {
+//                final byte[] data = intent.getByteArrayExtra(EXTRA_DATA);
+//                if(data != null) {
+//                    try {
+//                        Log.i("Junwang", "MmsWapPushReceiver original pdu = " + Arrays.toString(data));
+//                        byte[] body = MmsUtils.processReceivedPdu(
+//                                context, data, -1, "10086");
+//                        if(body == null || body.length < 1){
+//                            return;
+//                        }
+//                        ParsedMsgBean msgBean = new ParsedMsgBean();
+//                        parseMsgPdu(body, msgBean);
+//                        Log.i("Junwang", "MmsWapPushReceiver parsed orderNo = " + msgBean.getOrderNo()+", parsed domain="+msgBean.getDomain());
+//                        mConversationListViewModel =
+//                                new ViewModelProvider(MainActivity.this).get(ConversationListViewModel.class);
+//                        mConversationListViewModel.getXml(mContext, msgBean.getOrderNo(), msgBean.getDomain());
+//                    } catch (Exception e) {
+//                        Log.e("Junwang", "convert byte[] to String excecption " + e.toString());
+//                    }
+//                }else{
+//                    Log.e("Junwang", "MmsWapPushReceiver pdu is null!");
+//                }
+//            }
+//        }
+//    }
 }

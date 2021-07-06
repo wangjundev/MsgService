@@ -25,4 +25,9 @@ public class ChatbotFile {
     public List<ChatbotFileInfo> getFileInfo() {
         return file_info;
     }
+
+//    public ChatbotFile(String xmlns, List<ChatbotFileInfo> file_info) {
+//        this.xmlns = xmlns;
+//        this.file_info = file_info;
+//    }
 }

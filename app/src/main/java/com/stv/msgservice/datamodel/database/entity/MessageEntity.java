@@ -55,6 +55,9 @@ public class MessageEntity implements Message {
     @ColumnInfo(name = "attachment_path")
     private String attachmentPath;
 
+    @ColumnInfo(name = "attachment_type")
+    private String attachmentType;
+
     @ColumnInfo(name = "thumbnail_path")
     private String thumbnailPath;
 
@@ -126,6 +129,14 @@ public class MessageEntity implements Message {
 
     public void setMessageType(int messageType) {
         this.messageType = messageType;
+    }
+
+    public String getAttachmentType() {
+        return attachmentType;
+    }
+
+    public void setAttachmentType(String attachmentType) {
+        this.attachmentType = attachmentType;
     }
 
     public String getAttachmentPath() {

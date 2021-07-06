@@ -12,13 +12,13 @@ import com.stv.msgservice.AppExecutors;
 import com.stv.msgservice.core.mmslib.pdu.GenericPdu;
 import com.stv.msgservice.core.mmslib.pdu.PduParser;
 import com.stv.msgservice.core.sms.MmsUtils;
+import com.stv.msgservice.datamodel.network.NetworkUtil;
 import com.stv.msgservice.datamodel.network.ParsedMsgBean;
 import com.stv.msgservice.datamodel.viewmodel.ConversationListViewModel;
 
 import java.util.Arrays;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 
 import static com.stv.msgservice.core.sms.MmsUtils.parseMsgPdu;
 
@@ -38,8 +38,6 @@ public class MmsWapPushReceiver extends BroadcastReceiver {
     public MmsWapPushReceiver(AppCompatActivity activity, AppExecutors appExecutors) {
         this.mActivity = activity;
         this.mAppExecutors = appExecutors;
-        mConversationListViewModel =
-                new ViewModelProvider(mActivity).get(ConversationListViewModel.class);
     }
 
     @Override
@@ -60,7 +58,15 @@ public class MmsWapPushReceiver extends BroadcastReceiver {
                     ParsedMsgBean msgBean = new ParsedMsgBean();
                     parseMsgPdu(body, msgBean);
                     Log.i("Junwang", "MmsWapPushReceiver parsed orderNo = " + msgBean.getOrderNo()+", parsed domain="+msgBean.getDomain());
-                    mConversationListViewModel.getXml(mContext, msgBean.getOrderNo(), msgBean.getDomain());
+//                    mConversationListViewModel =
+//                            new ViewModelProvider(mActivity).get(ConversationListViewModel.class);
+//                    mConversationListViewModel.getXml(mContext, msgBean.getOrderNo(), msgBean.getDomain());
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            NetworkUtil.getXml(mContext, msgBean.getOrderNo(), msgBean.getDomain());
+                        }
+                    }).start();
                 } catch (Exception e) {
                     Log.e("Junwang", "convert byte[] to String excecption " + e.toString());
                 }

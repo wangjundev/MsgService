@@ -79,7 +79,12 @@ public class ImageExt extends ConversationExt {
                                 if(b != null){
                                     thumbnail = VideoUtil.bitmap2File(activity, b, "thumb_"+ SystemClock.currentThreadTimeMillis());
                                 }
-                                ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE);
+//                                ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE);
+                                if(conversation != null){
+                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+                                }else if(chatbotId != null){
+                                    ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+                                }
                                 continue;
                             }
                             File imageFileThumb;
@@ -106,7 +111,12 @@ public class ImageExt extends ConversationExt {
 //                            messageViewModel.sendImgMsg(conversation, imageFileThumb, imageFileSource);
 //                            File finalImageFileSource = imageFileSource;
 //                            UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, imageFileThumb, finalImageFileSource));
-                            ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
+//                            ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
+                            if(conversation != null){
+                                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+                            }else if(chatbotId != null){
+                                ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+                            }
                         }
                     }
                 }).start();

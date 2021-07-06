@@ -55,4 +55,12 @@ public class ChatbotFileInfo {
     public String getType() {
         return type;
     }
+
+//    public ChatbotFileInfo(String type, long file_size, String file_name, String content_type, ChatbotFileData data) {
+//        this.type = type;
+//        this.file_size = file_size;
+//        this.file_name = file_name;
+//        this.content_type = content_type;
+//        this.data = data;
+//    }
 }

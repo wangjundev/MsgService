@@ -104,6 +104,13 @@ public class FileUtils {
                     @Override
                     public void accept(Object o) throws Exception {
                         if(callback != null){
+                            Log.i("Junwang", "FileUtils uploadChatbotFile Successful.");
+//                            ResultBean<String> result = (ResultBean<String>)o;
+//                            if(result != null){
+//                                callback.onSuccess(result.getData());
+//                            }else{
+//                                callback.onSuccess(null);
+//                            }
                             callback.onSuccess(null);
                         }
                     }
@@ -113,6 +120,7 @@ public class FileUtils {
                         if(callback != null){
                             callback.onFail(-1);
                         }
+                        Log.e("Junwang", "uploadChatbotFile "+throwable.toString());
                     }
                 });
     }

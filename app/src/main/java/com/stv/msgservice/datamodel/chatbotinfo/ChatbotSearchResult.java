@@ -1,12 +1,14 @@
 package com.stv.msgservice.datamodel.chatbotinfo;
 
+import java.util.ArrayList;
+
 public class ChatbotSearchResult {
-    SearchedBot[] bots;
+    ArrayList<SearchedBot> bots;
     int itemsReturned;
     int startIndex;
     int totalItems;
 
-    public SearchedBot[] getBots() {
+    public ArrayList<SearchedBot> getBots() {
         return bots;
     }
 

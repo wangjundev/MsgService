@@ -22,4 +22,6 @@ public interface Message {
     void setMessageId(String messageId);
     String getDeliveryStatus();
     void setDeliveryStatus(String deliveryStatus);
+    void setAttachmentType(String attachmentType);
+    String getAttachmentType();
 }

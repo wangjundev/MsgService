@@ -6,6 +6,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class InboundMessage {
     private String destinationAddress;
     private String senderAddress;
+//    private String origUser;
     private String imFormat;
     private String messageId;
     private String bodyText;
@@ -18,6 +19,7 @@ public class InboundMessage {
     public InboundMessage(String destinationAddress, String senderAddress, String imFormat, String messageId, String bodyText, String contentType, String contentEncoding, ServiceCapability serviceCapability, String conversationID, String contributionId) {
         this.destinationAddress = destinationAddress;
         this.senderAddress = senderAddress;
+//        this.origUser = senderAddress;
         this.imFormat = imFormat;
         this.messageId = messageId;
         this.bodyText = bodyText;

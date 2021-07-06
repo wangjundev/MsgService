@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -54,17 +55,32 @@ public class ShootExt extends ConversationExt {
             }
             if (data.getBooleanExtra("take_photo", true)) {
                 //照片
-                ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, ImageUtils.genThumbImgFile(path).getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
+//                ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, ImageUtils.genThumbImgFile(path).getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
 //                messageViewModel.sendImgMsg(conversation, ImageUtils.genThumbImgFile(path), new File(path));
-            } else {
-                //小视频
-                Bitmap b = VideoUtil.getVideoThumb(path);
-                String thumbnail = null;
-                if(b != null){
-                    thumbnail = VideoUtil.bitmap2File(activity, b, "thumb_"+ SystemClock.currentThreadTimeMillis());
+                if(conversation != null){
+                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, path, ImageUtils.genThumbImgFile(path).getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+                }else if(chatbotId != null){
+                    ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, path, ImageUtils.genThumbImgFile(path).getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
                 }
-                ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO);
+            } else {
+                String thumbnail = null;
+                try{
+                    //小视频
+                    Bitmap b = VideoUtil.getVideoThumb(path);
+                    if(b != null){
+                        thumbnail = VideoUtil.bitmap2File(activity, b, "thumb_"+ SystemClock.currentThreadTimeMillis());
+                    }
+                }catch (Exception e){
+                    Log.i("Junwang", "getVideoThumb "+e.toString());
+                }
+
+//                ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO);
 //                messageViewModel.sendVideoMsg(conversation, new File(path));
+                if(conversation != null){
+                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
+                }else if(chatbotId != null){
+                    ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
+                }
             }
             ((ConversationActivity)activity).getConversationFragment().getConversationInputPanel().closeConversationInputPanel();
         }

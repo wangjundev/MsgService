@@ -86,7 +86,7 @@ public class DataRepository {
 //        return mDatabase.messageDao().getPageMessages(conversationId);
 //    }
 
-    public LiveData<MessageEntity> getMessage(final int messageId){
+    public LiveData<MessageEntity> getMessage(final long messageId){
         return mDatabase.messageDao().getMessage(messageId);
     }
 

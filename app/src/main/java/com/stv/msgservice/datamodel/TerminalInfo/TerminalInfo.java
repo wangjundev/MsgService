@@ -3,8 +3,12 @@ package com.stv.msgservice.datamodel.TerminalInfo;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+import android.util.Log;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
 
@@ -165,6 +169,23 @@ public class TerminalInfo {
         return verName;
     }
 
+    public static String getMEID() {
+        try {
+            Class clazz = Class.forName("android.os.SystemProperties");
+            Method method = clazz.getMethod("get", String.class, String.class);
+
+            String meid = (String) method.invoke(null, "ril.cdma.meid", "");
+            if (!TextUtils.isEmpty(meid)) {
+                Log.d("Junwang", "getMEID meid: " + meid);
+                return meid;
+            }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
+            e.printStackTrace();
+            Log.w("Junwang", "getMEID error : " + e.getMessage());
+        }
+        return "";
+    }
+
     public static String getMEID(Context context){
         //实例化TelephonyManager对象
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
@@ -182,5 +203,35 @@ public class TerminalInfo {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 获得设备的AndroidId
+     *
+     * @param context 上下文
+     * @return 设备的AndroidId
+     */
+    public static String getAndroidId(Context context) {
+        try {
+            return Settings.Secure.getString(context.getContentResolver(),
+                    Settings.Secure.ANDROID_ID);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return "";
+    }
+
+    /**
+     * 获得设备序列号（如：WTK7N16923005607）, 个别设备无法获取
+     *
+     * @return 设备序列号
+     */
+    public static String getSERIAL() {
+        try {
+            return Build.SERIAL;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return "";
     }
 }

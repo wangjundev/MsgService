@@ -4,10 +4,8 @@ import android.util.Log;
 import android.view.View;
 
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.stv.msgservice.MainActivity;
 import com.stv.msgservice.R;
 import com.stv.msgservice.annotation.EnableContextMenu;
-import com.stv.msgservice.datamodel.constants.MessageConstants;
 import com.stv.msgservice.datamodel.model.Conversation;
 import com.stv.msgservice.datamodel.viewmodel.UserInfoViewModel;
 import com.stv.msgservice.ui.GlideApp;
@@ -31,7 +29,7 @@ public class SingleConversationViewHolder extends ConversationViewHolder {
 
     @Override
     public void sendTextMsg(String destination, String text) {
-        ((MainActivity)(mFragment.getActivity())).saveMsg(fragment.getContext(), text, destination, false, null, null, MessageConstants.CONTENT_TYPE_TEXT);
+//        ((MainActivity)(mFragment.getActivity())).saveMsg(fragment.getContext(), text, destination, false, null, null, MessageConstants.CONTENT_TYPE_TEXT);
     }
 
     @Override
