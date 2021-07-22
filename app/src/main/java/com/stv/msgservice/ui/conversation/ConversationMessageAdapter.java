@@ -371,7 +371,6 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             View view = LayoutInflater.from(fragment.getContext()).inflate(R.layout.conversation_item_loading, parent, false);
             return new LoadingViewHolder(view);
         }
-        Log.i("Junwang", "onCreateViewHolder viewType="+viewType);
         int direction = viewType >> 24;
         int messageType = viewType & 0x7FFFFF;
         Log.i("Junwang", "onCreateViewHolder viewType="+viewType+", direction="+direction+", messageType="+messageType);
@@ -655,7 +654,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
         Message msg = getItem(position);
 //        return msg.getMessageType();
-        Log.i("Junwang", "getItemViewType direction="+msg.getDirection()+", messageType="+msg.getMessageType());
+//        Log.i("Junwang", "getItemViewType direction="+msg.getDirection()+", messageType="+msg.getMessageType());
         return msg.getDirection() << 24 | msg.getMessageType();
     }
 

@@ -61,7 +61,9 @@ import okhttp3.RequestBody;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ChatbotSearchActivity extends BaseNoToolbarActivity implements AdapterView.OnItemClickListener{
+//import com.stv.msgservice.ui.conversation.message.search.SearchView;
+
+public class ChatbotSearchActivity extends BaseNoToolbarActivity/*WfcBaseActivity*/ implements AdapterView.OnItemClickListener{
     private ListView mChatbotListView;
     private SearchView mSearchView;
     private ChatbotListAdapter mAdapter;

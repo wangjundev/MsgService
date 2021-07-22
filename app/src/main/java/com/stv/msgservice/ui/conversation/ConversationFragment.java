@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,9 +21,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.google.gson.GsonBuilder;
 import com.stv.msgservice.R;
 import com.stv.msgservice.R2;
+import com.stv.msgservice.datamodel.constants.MessageConstants;
 import com.stv.msgservice.datamodel.database.entity.MessageEntity;
 import com.stv.msgservice.datamodel.model.Conversation;
 import com.stv.msgservice.datamodel.model.Message;
@@ -134,14 +137,6 @@ public class ConversationFragment extends Fragment implements
     private boolean isFromSearch;
     private LinearLayoutManager layoutManager;
     private String chatbotId;
-
-    // for group
-//    private GroupInfo groupInfo;
-//    private GroupMember groupMember;
-//    private boolean showGroupMemberName = false;
-//    private Observer<List<GroupMember>> groupMembersUpdateLiveDataObserver;
-//    private Observer<List<GroupInfo>> groupInfosUpdateLiveDataObserver;
-//    private Observer<Object> settingUpdateLiveDataObserver;
 
     private Observer<MessageEntity> messageLiveDataObserver = new Observer<MessageEntity>() {
         @Override
@@ -548,10 +543,25 @@ public class ConversationFragment extends Fragment implements
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+                Log.i("Junwang", "recyclerview newState="+newState);
+                boolean IsScrolling = false;
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING || newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                    IsScrolling = true;
+                    Log.i("Junwang", "glide pauseRequests.");
+                    Glide.with(getActivity()).pauseRequests();
+                    return;
+                } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    if (IsScrolling == true) {
+//                        Glide.with(getActivity()).resumeRequests();
+                    }
+                    IsScrolling = false;
+                    return;
+                }
                 // 向上滑动，不在底部，收到消息时，不滑动到底部, 发送消息时，可以强制置为true
                 if (newState != RecyclerView.SCROLL_STATE_IDLE) {
                     return;
                 }
+                Log.i("Junwang", "recyclerView.canScrollVertically");
                 if (!recyclerView.canScrollVertically(1)) {
                     moveToBottom = true;
                     if ((initialFocusedMessageId != -1 || firstUnreadMessageId != 0) && !loadingNewMessage && shouldContinueLoadNewMessage) {
@@ -1046,6 +1056,29 @@ public class ConversationFragment extends Fragment implements
             toggleConversationMode();
         } else {
             consumed = false;
+        }
+        Editable content = inputPanel.editText.getText();
+        if (TextUtils.isEmpty(content)) {
+            if(conversation.getDraftSnippetText() != null){
+                conversation.setDraftSnippetText(null);
+                ((ConversationActivity)(getActivity())).updateDraft(null);
+            }
+            return false;
+        }
+//        messageViewModel.searchMessages(content.toString().trim()).observe(fragment, messageEntityList -> {
+//            if(messageEntityList != null && messageEntityList.size() > 0){
+//                for(int i=0; i<messageEntityList.size(); i++){
+//                    Log.i("Junwang", "matched messageid="+messageEntityList.get(i).getId()+", content="+messageEntityList.get(i).getContent());
+//                }
+//            }
+//        });
+        if(conversation.getDraftSnippetText() != null){
+            ((ConversationActivity)(getActivity())).updateDraft(content.toString().trim());
+        }
+        else if(conversation != null){
+            ((ConversationActivity)(getActivity())).saveDraft(getContext(), content.toString().trim(), conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, null, null, MessageConstants.CONTENT_TYPE_TEXT, null);
+        }else if(chatbotId != null){
+            ((ConversationActivity)(getActivity())).saveDraft(getContext(), content.toString().trim(), null, chatbotId, null,false, null, null, MessageConstants.CONTENT_TYPE_TEXT, null);
         }
         return consumed;
     }

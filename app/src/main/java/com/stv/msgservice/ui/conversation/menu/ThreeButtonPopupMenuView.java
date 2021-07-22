@@ -291,7 +291,7 @@ public class ThreeButtonPopupMenuView extends LinearLayout {
             i++;
             if(i == 1){
                 if(menuitem.getMenu() != null){
-                    Log.i("Junwang", "22222 name="+menuitem.getMenu().getDisplayText());
+//                    Log.i("Junwang", "22222 name="+menuitem.getMenu().getDisplayText());
                     mMenuButton1.setText(menuitem.getMenu().getDisplayText());
                     SuggestionActionWrapper[] childMenu = menuitem.getMenu().getEntries();
                     if(childMenu != null){

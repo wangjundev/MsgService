@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.SystemClock;
@@ -16,6 +17,7 @@ import com.baronzhang.retrofit2.converter.FastJsonConverterFactory;
 import com.cjt2325.cameralibrary.util.LogUtil;
 import com.google.gson.Gson;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import com.stv.msgservice.LenientGsonConverterFactory;
 import com.stv.msgservice.R;
 import com.stv.msgservice.datamodel.TerminalInfo.DeviceIdUtil;
 import com.stv.msgservice.datamodel.TerminalInfo.TerminalInfo;
@@ -96,6 +98,27 @@ public class NetworkUtil {
         return strEntity;
     }
 
+    public static String getLocalPhoneNo(Context context){
+        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("5GMsg", Context.MODE_PRIVATE);
+        String localPhoneNo = sharedPreferences.getString("localPhoneNo", null);
+        if(localPhoneNo == null){
+            Log.i("Junwang", "获取不到本机号码");
+//            SmsManager smsManager = SmsManager.getDefault();
+//            smsManager.sendTextMessage("+8615958120627", null, "abcdefg", null, null);
+        }
+        return localPhoneNo;
+    }
+
+    private static void saveLocalPhoneNo(Context context, String phoneNo){
+        SharedPreferences sharedPreferences = context.getApplicationContext().getSharedPreferences("5GMsg", Context.MODE_PRIVATE);
+        String localPhoneNo = sharedPreferences.getString("localPhoneNo", null);
+        if(localPhoneNo == null) {
+            sharedPreferences.edit()
+                    .putString("localPhoneNo", phoneNo)
+                    .apply();
+        }
+    }
+
     @SuppressLint("CheckResult")
     public static ChatbotMessageBody getXml(Context context, String orderNo, String domain){
         DataRepository mRepository = DataRepository.getInstance(AppDatabase.getInstance(context));
@@ -108,7 +131,8 @@ public class NetworkUtil {
                 .baseUrl("http://"+domain+"/api/catherine/")
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
 //                .addConverterFactory(SimpleXmlConverterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
+//                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(LenientGsonConverterFactory.create())
                 .build();
 
         String postBody = getPostBodyJson(context, null, orderNo, null);
@@ -127,7 +151,7 @@ public class NetworkUtil {
                         String xmlContent = chatbotMessageBodyResultBean.getData();
                         Log.i("Junwang", "get xmlContent="+xmlContent);
                         Serializer serializer=new Persister();
-                        ChatbotMessageBody chatbotMessageBody=(ChatbotMessageBody )serializer.read(ChatbotMessageBody.class, xmlContent);
+                        ChatbotMessageBody chatbotMessageBody=(ChatbotMessageBody)serializer.read(ChatbotMessageBody.class, xmlContent);
                         if(chatbotMessageBody != null){
                             String sender = chatbotMessageBody.getSenderAddress();
                             Log.i("Junwang", "accept sender address = "+ sender);
@@ -154,11 +178,11 @@ public class NetworkUtil {
                             String bodyText = chatbotMessageBody.getOutboundIMMessage().getBodyText();
                             String destination = chatbotMessageBody.getDestinationAddress();
                             Log.i("Junwang", "received xml destination="+destination);
-                            if(destination != null && destination.startsWith("tel:")){
-                                ce.setDestinationAddress(destination.substring(4));
-                            }else {
-                                ce.setDestinationAddress(destination);
-                            }
+//                            if(destination != null && destination.startsWith("tel:")){
+//                                ce.setDestinationAddress(destination.substring(4));
+//                            }else {
+//                                ce.setDestinationAddress(destination);
+//                            }
                             me.setContributionID(chatbotMessageBody.getOutboundIMMessage().getContributionID());
                             me.setConversationID(chatbotMessageBody.getOutboundIMMessage().getConversationID());
                             me.setMessageId(chatbotMessageBody.getOutboundIMMessage().getMessageId());
@@ -453,6 +477,7 @@ public class NetworkUtil {
                             }
                             sendStatusReport(mRepository, context, me, ce.getSenderAddress(), ce.getDestinationAddress(), me.getMessageId(), MessageConstants.DELIVEREDTOTERMINAL);
                             showNotification(context, ce);
+                            saveLocalPhoneNo(context, destination);
                         }
                     } else {
                         Log.i("Junwang", "get message failed, reson = " + chatbotMessageBodyResultBean.getMsg());

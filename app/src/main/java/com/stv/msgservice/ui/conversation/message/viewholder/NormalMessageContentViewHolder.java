@@ -347,7 +347,6 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
                 .get(UserInfoViewModel.class);
         userInfoViewModel.getUserInfoByConversationId(item.getConversationId()).observe(fragment, userInfo -> {
             if(userInfo != null){
-                Log.i("Junwang", "222222");
                 if(item.getDirection() == MessageConstants.DIRECTION_IN){
                     String name = userInfo.getName();
                     String portrait = userInfo.getPortrait();

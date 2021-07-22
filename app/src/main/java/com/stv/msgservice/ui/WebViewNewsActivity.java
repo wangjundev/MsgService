@@ -103,6 +103,7 @@ public class WebViewNewsActivity extends WfcBaseActivity implements View.OnClick
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         Toast.makeText(WebViewNewsActivity.this, "没有找到应用可以打开，请到应用市场下载！", Toast.LENGTH_LONG);
                     }
                 });

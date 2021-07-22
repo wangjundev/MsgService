@@ -1,6 +1,5 @@
 package com.stv.msgservice.ui.conversation.message.search;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -64,7 +63,6 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         userInfoViewModel.getUserInfoByConversationId(message.getConversationId()).observe(fragment, userInfo -> {
             if(userInfo != null){
                 if(message.getDirection() == MessageConstants.DIRECTION_IN){
-                    Log.i("Junwang", "1111111");
                     String name = userInfo.getName();
                     String portrait = userInfo.getPortrait();
                     GlideApp.with(fragment)

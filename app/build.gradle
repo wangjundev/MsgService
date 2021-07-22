@@ -68,6 +68,7 @@ dependencies {
     implementation 'com.hyman:flowlayout-lib:1.1.2'
     implementation 'com.github.BaronZ88:Retrofit2-FastJson-Converter:1.2'
 //    implementation 'org.apache.commons:commons-lang3:3.7'
+    implementation 'com.permissionx.guolindev:permissionx:1.4.0'
 
 
 //    implementation 'com.squareup.retrofit2:converter-jaxb:2.6.0'
@@ -90,13 +91,17 @@ dependencies {
     implementation 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.8'
     implementation 'com.github.ctiao:DanmakuFlameMaster:0.9.25'
     implementation 'com.github.ctiao:ndkbitmap-armv7a:0.9.21'
+//    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.6.1'
 
     implementation project(':EasyRxRetrofitlib')
     implementation project(':emojilibrary')
     implementation project(':imagepicker')
+//    implementation project(':pictureSelectorlibrary')
+    implementation project(':picture_library')
     implementation project(':SwipeRecyclerView')
 //    implementation project(':immersionbar')
     implementation 'cjt.library.wheel:camera:1.1.9'
+
     api 'com.blankj:utilcodex:1.30.5'
 
     api 'com.jakewharton:butterknife:10.2.1'

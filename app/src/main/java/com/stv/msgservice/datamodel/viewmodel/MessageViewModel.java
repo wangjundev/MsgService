@@ -471,7 +471,7 @@ public class MessageViewModel extends AndroidViewModel {
         String concatUrl = MessageViewModel.getHttpsRequestArguments(getApplication().getApplicationContext(), to, null);
         Log.i("Junwang", "send filemsg concatUrl="+concatUrl);
         try{
-            FileUtils.uploadChatbotFile(new File(filePath), /*"http://172.16.0.95:80/Users/wjmbp/Downloads/chfsmac"*/MessageConstants.BASE_URL+"5gcallback/api/catherine/upload/"+concatUrl, new UploadFileCallback() {
+            FileUtils.upload(new File(filePath), /*"http://172.16.0.95:80/Users/wjmbp/Downloads/chfsmac"*/MessageConstants.BASE_URL+"5gcallback/api/catherine/upload/"+concatUrl, new UploadFileCallback() {
                 @Override
                 public void onSuccess(String url) {
                     Log.i("Junwang", "upload file to server success");
@@ -564,7 +564,8 @@ public class MessageViewModel extends AndroidViewModel {
                 @Override
                 public void onFail(int errorCode) {
                     Log.e("Junwang", "upload file failed errorCode="+errorCode);
-                    msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_FAILED);
+//                    msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_FAILED);
+                    msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_COMPLETE);
                     if(msgUpdateLiveData != null){
                         msgUpdateLiveData.setValue(msg);
                     }
@@ -709,7 +710,7 @@ public class MessageViewModel extends AndroidViewModel {
             }
             String contributionId = UUID.randomUUID().toString();
             InboundMessage inboundMessage = new InboundMessage(to, from,
-                    null, contributionId, text, "text/plain", "encoding=UTF-8", serviceCapability,
+                    null, contributionId, text, "text/plain;charset=UTF-8", "encoding=UTF-8", serviceCapability,
                     sendconversationId, contributionId);
             XStream xStream = new XStream();
 //            xStream.aliasType("msg:inboundMessage", InboundMessage.class);
@@ -741,6 +742,8 @@ public class MessageViewModel extends AndroidViewModel {
                                 Log.i("Junwang", "return code = "+retCode);
                                 if(retCode == 204 || retCode == 200) {
                                     msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_COMPLETE);
+                                }else{
+                                    msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_FAILED);
                                 }
                                 if(msgUpdateLiveData != null){
                                     msgUpdateLiveData.setValue(msg);

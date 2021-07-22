@@ -24,4 +24,5 @@ public interface Message {
     void setDeliveryStatus(String deliveryStatus);
     void setAttachmentType(String attachmentType);
     String getAttachmentType();
+    String getDraftContent();
 }

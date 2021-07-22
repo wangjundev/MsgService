@@ -1,12 +1,10 @@
 package com.lqr.imagepicker;
 
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import androidx.fragment.app.FragmentActivity;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.CursorLoader;
-import androidx.loader.content.Loader;
 
 import com.lqr.imagepicker.bean.ImageFolder;
 import com.lqr.imagepicker.bean.ImageItem;
@@ -14,6 +12,13 @@ import com.lqr.imagepicker.bean.ImageItem;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
+
 
 public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -26,7 +31,83 @@ public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
             MediaStore.Images.Media.WIDTH,          //图片的宽度，int型  1920
             MediaStore.Images.Media.HEIGHT,         //图片的高度，int型  1080
             MediaStore.Images.Media.MIME_TYPE,      //图片的类型     image/jpeg
-            MediaStore.Images.Media.DATE_ADDED};    //图片被添加的时间，long型  1450518608
+            MediaStore.Images.Media.DATE_ADDED,     //图片被添加的时间，long型  1450518608
+            MediaStore.Files.FileColumns._ID};
+    //add by junwang start
+    private static final Uri QUERY_URI = MediaStore.Files.getContentUri("external");
+    private static final String ORDER_BY = MediaStore.Files.FileColumns._ID + " DESC";
+    private static final String DURATION = "duration";
+    private static final String NOT_GIF = "!='image/gif'";
+    private static final int AUDIO_DURATION = 500;// 过滤掉小于500毫秒的录音
+    private boolean isGif;
+    private long videoMaxS = 0;
+    private long videoMinS = 0;
+
+    // 媒体文件数据库字段
+    private static final String[] PROJECTION = {
+            MediaStore.Files.FileColumns._ID,
+            MediaStore.MediaColumns.DATA,
+            MediaStore.MediaColumns.MIME_TYPE,
+            MediaStore.MediaColumns.WIDTH,
+            MediaStore.MediaColumns.HEIGHT,
+            DURATION};
+    // 图片
+    private static final String SELECTION = MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
+            + " AND " + MediaStore.MediaColumns.SIZE + ">0";
+
+    private static final String SELECTION_NOT_GIF = MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
+            + " AND " + MediaStore.MediaColumns.SIZE + ">0"
+            + " AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF;
+
+    // 查询条件(音视频)
+    private static String getSelectionArgsForSingleMediaCondition(String time_condition) {
+        return MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
+                + " AND " + MediaStore.MediaColumns.SIZE + ">0"
+                + " AND " + time_condition;
+    }
+
+    // 全部模式下条件
+    private static String getSelectionArgsForAllMediaCondition(String time_condition, boolean isGif) {
+        String condition = "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
+                + (isGif ? "" : " AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF)
+                + " OR "
+                + (MediaStore.Files.FileColumns.MEDIA_TYPE + "=? AND " + time_condition) + ")"
+                + " AND " + MediaStore.MediaColumns.SIZE + ">0";
+        return condition;
+    }
+
+    // 获取图片or视频
+    private static final String[] SELECTION_ALL_ARGS = {
+            String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
+            String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO),
+    };
+
+    /**
+     * 获取指定类型的文件
+     *
+     * @param mediaType
+     * @return
+     */
+    private static String[] getSelectionArgsForSingleMediaType(int mediaType) {
+        return new String[]{String.valueOf(mediaType)};
+    }
+
+    /**
+     * 获取视频(最长或最小时间)
+     *
+     * @param exMaxLimit
+     * @param exMinLimit
+     * @return
+     */
+    private String getDurationCondition(long exMaxLimit, long exMinLimit) {
+        long maxS = videoMaxS == 0 ? Long.MAX_VALUE : videoMaxS;
+        if (exMaxLimit != 0) maxS = Math.min(maxS, exMaxLimit);
+
+        return String.format(Locale.CHINA, "%d <%s duration and duration <= %d",
+                Math.max(exMinLimit, videoMinS),
+                Math.max(exMinLimit, videoMinS) == 0 ? "" : "=",
+                maxS);
+    }
 
     private FragmentActivity activity;
     private OnImageLoadListener loadedListener;                     //图片加载完成的回调接口
@@ -58,13 +139,41 @@ public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
         //扫描所有图片
         if (id == LOADER_ALL) {
             cursorLoader = new CursorLoader(activity, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION, null, null, IMAGE_PROJECTION[6] + " DESC");
+//            String all_condition = getSelectionArgsForAllMediaCondition(getDurationCondition(0, 0), true);
+//            cursorLoader = new CursorLoader(
+//                    activity, QUERY_URI,
+//                    PROJECTION, all_condition,
+//                    SELECTION_ALL_ARGS, ORDER_BY);
         }
         //扫描某个图片文件夹
         if (id == LOADER_CATEGORY) {
             cursorLoader = new CursorLoader(activity, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION, IMAGE_PROJECTION[1] + " like '%" + args.getString("path") + "%'", null, IMAGE_PROJECTION[6] + " DESC");
+            // 只获取图片
+//            String[] MEDIA_TYPE_IMAGE = getSelectionArgsForSingleMediaType(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
+//            cursorLoader = new CursorLoader(
+//                    activity, QUERY_URI,
+//                    PROJECTION, true ? SELECTION : SELECTION_NOT_GIF, MEDIA_TYPE_IMAGE
+//                    , ORDER_BY);
         }
 
         return cursorLoader;
+    }
+
+    private boolean isAndroidQ(){
+        if(Build.VERSION.SDK_INT >= /*Build.VERSION_CODES.Q*/29){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 适配Android Q
+     *
+     * @param id
+     * @return
+     */
+    private String getRealPathAndroid_Q(long id) {
+        return QUERY_URI.buildUpon().appendPath(Long.toString(id)).build().toString();
     }
 
     @Override
@@ -81,6 +190,25 @@ public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
                 int imageHeight = data.getInt(data.getColumnIndexOrThrow(IMAGE_PROJECTION[4]));
                 String imageMimeType = data.getString(data.getColumnIndexOrThrow(IMAGE_PROJECTION[5]));
                 long imageAddTime = data.getLong(data.getColumnIndexOrThrow(IMAGE_PROJECTION[6]));
+                //add by junwang
+//                long id = data.getLong(data.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID));
+//                String imagePath = isAndroidQ() ? getRealPathAndroid_Q(id) : data.getString(data.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
+//
+//
+////                                        String path = data.getString
+////                                                (data.getColumnIndexOrThrow(PROJECTION[1]));
+//
+//                String pictureType = data.getString
+//                        (data.getColumnIndexOrThrow(PROJECTION[2]));
+//
+//                int w = data.getInt
+//                        (data.getColumnIndexOrThrow(PROJECTION[3]));
+//
+//                int h = data.getInt
+//                        (data.getColumnIndexOrThrow(PROJECTION[4]));
+//
+//                int duration = data.getInt
+//                        (data.getColumnIndexOrThrow(PROJECTION[5]));
                 //封装实体
                 ImageItem imageItem = new ImageItem();
                 imageItem.name = imageName;
@@ -90,6 +218,12 @@ public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
                 imageItem.height = imageHeight;
                 imageItem.mimeType = imageMimeType;
                 imageItem.createTime = imageAddTime;
+
+//                imageItem.path = imagePath;
+//                imageItem.width = w;
+//                imageItem.height = h;
+//                imageItem.mimeType = pictureType;
+
                 allImages.add(imageItem);
                 //根据父路径分类存放图片
                 File imageFile = new File(imagePath);

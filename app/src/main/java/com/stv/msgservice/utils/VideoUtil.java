@@ -3,13 +3,15 @@ package com.stv.msgservice.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
+
+import static com.stv.msgservice.app.BaseApp.getContext;
 
 public class VideoUtil {
     /**
@@ -26,7 +28,8 @@ public class VideoUtil {
 //        retriever.setDataSource(path, new HashMap());
         try {
             //根据url获取缩略图
-            retriever.setDataSource(path, new HashMap());
+//            retriever.setDataSource(path, new HashMap());
+            retriever.setDataSource(getContext(), Uri.parse(path));
             //获得第一帧图片
             bitmap = retriever.getFrameAtTime();
         } catch (IllegalArgumentException e) {

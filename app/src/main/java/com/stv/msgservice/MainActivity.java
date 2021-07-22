@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
@@ -13,6 +14,11 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.permissionx.guolindev.PermissionX;
+import com.permissionx.guolindev.callback.ExplainReasonCallback;
+import com.permissionx.guolindev.callback.ForwardToSettingsCallback;
+import com.permissionx.guolindev.request.ExplainScope;
+import com.permissionx.guolindev.request.ForwardScope;
 import com.stv.msgservice.core.sms.MmsUtils;
 import com.stv.msgservice.datamodel.database.entity.ConversationEntity;
 import com.stv.msgservice.datamodel.network.ParsedMsgBean;
@@ -26,6 +32,7 @@ import com.stv.msgservice.ui.conversationlist.ConversationListFragment;
 import com.stv.msgservice.utils.PermissionUtils;
 
 import java.util.Arrays;
+import java.util.List;
 
 import androidx.lifecycle.ViewModelProvider;
 import butterknife.BindView;
@@ -40,6 +47,7 @@ public class MainActivity extends WfcBaseActivity {
     TextView toolbarTitle;
 
     private final String[] BASIC_PERMISSIONS = new String[]{
+            Manifest.permission.SEND_SMS,
             Manifest.permission.RECEIVE_SMS,
             Manifest.permission.RECEIVE_MMS,
             Manifest.permission.RECEIVE_WAP_PUSH,
@@ -50,6 +58,7 @@ public class MainActivity extends WfcBaseActivity {
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION
     };
+
     private static final int PERMISSION_REQUEST_CODE = 100001;
 
     @Override
@@ -67,7 +76,7 @@ public class MainActivity extends WfcBaseActivity {
         mAppExecutors = new AppExecutors();
 //        RetrofitManager
 //                .init(new MsgRetrofitBuilder());
-        initPermission();
+//        initPermission();
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbarTitle.setText(/*"msgservice"*/"5G消息");
         final PackageManager packageManager = this.getPackageManager();
@@ -78,6 +87,28 @@ public class MainActivity extends WfcBaseActivity {
                 new ComponentName(this, MmsWapPushReceiver.class),
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
         registerReceiver();
+        PermissionX.init(this)
+                .permissions(BASIC_PERMISSIONS)
+                .onExplainRequestReason(new ExplainReasonCallback() {
+                    @Override
+                    public void onExplainReason(ExplainScope scope, List<String> deniedList) {
+                        scope.showRequestReasonDialog(deniedList, "需要您同意以下权限才能正常使用", "确定", "取消");
+                    }
+                })
+                .onForwardToSettings(new ForwardToSettingsCallback() {
+                    @Override
+                    public void onForwardToSettings(ForwardScope scope, List<String> deniedList) {
+                        scope.showForwardToSettingsDialog(deniedList, "您需要去应用程序设置当中手动开启权限", "我已明白", "取消");
+                    }
+                })
+                .setDialogTintColor(Color.parseColor("#008577"), Color.parseColor("#83e8dd"))
+                .request((allGranted, grantedList, deniedList) -> {
+                    if(allGranted){
+                        Log.i("Junwang", "all permission granted.");
+                    }else{
+                        Log.i("Junwang", "These permissions denied "+ deniedList.toString());
+                    }
+                });
 
 //        String xmlPrefix = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 //                "<msg:deliveryInfoNotification xmlns:msg=\"urn:oma:xml:rest:netapi:messaging:1\">\n";
@@ -185,6 +216,8 @@ public class MainActivity extends WfcBaseActivity {
             return;
         }
         simulateParsebody(this, data, null);
+//        SmsManager smsManager = SmsManager.getDefault();
+//        smsManager.sendTextMessage("+8615958120627", null, "abcdefg", null, null);
     }
 
 

@@ -19,4 +19,6 @@ public interface Conversation{
     void setDestinationAddress(String destinationAddress);
     String getConversationID();
     void setConversationID(String conversationID);
+    String getDraftSnippetText();
+    void setDraftSnippetText(String draftSnippetText);
 }

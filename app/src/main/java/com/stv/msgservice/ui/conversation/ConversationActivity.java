@@ -26,6 +26,8 @@ import java.util.List;
 import androidx.lifecycle.ViewModelProvider;
 import butterknife.BindView;
 
+import static com.stv.msgservice.datamodel.network.NetworkUtil.getLocalPhoneNo;
+
 public class ConversationActivity extends WfcBaseActivity {
     private boolean isInitialized = false;
     private ConversationFragment conversationFragment;
@@ -125,14 +127,56 @@ public class ConversationActivity extends WfcBaseActivity {
         });
     }
 
-    public void saveMsg(Context context, String content, String from, String to, String conversationId, boolean isReceived, String attachmentpath, String thumbnail, int messageType, String attachmentType){
-        conversationFragment.setInitialFocusedMessageId(-1);
+    public void updateDraft(String draftString){
         mAppExecutors.diskIO().execute(() -> {
             ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
             if(conversation == null){
                 conversation = new ConversationEntity();
             }
-            MessageEntity me = mViewModel.saveMsg(context, content, to, from, conversationId, isReceived,  attachmentpath, thumbnail, messageType, (ConversationEntity) conversation, attachmentType);
+            conversation.setDraftSnippetText(draftString);
+            mViewModel.updateConversation((ConversationEntity)conversation);
+        });
+    }
+
+    public void saveDraft(Context context, String content, String from, String to, String conversationId, boolean isReceived, String attachmentpath, String thumbnail, int messageType, String attachmentType){
+        conversationFragment.setInitialFocusedMessageId(-1);
+        mAppExecutors.diskIO().execute(() -> {
+            String localPhoneNo = null;
+            if(from == null){
+                localPhoneNo = getLocalPhoneNo(context);
+            }else{
+                localPhoneNo = from;
+            }
+
+            ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
+            if(conversation == null){
+                conversation = new ConversationEntity();
+            }
+            mViewModel.saveDraft(context, content, to, localPhoneNo, conversationId, (ConversationEntity) conversation);
+        });
+    }
+
+    public void saveMsg(Context context, String content, String from, String to, String conversationId, boolean isReceived, String attachmentpath, String thumbnail, int messageType, String attachmentType){
+        conversationFragment.setInitialFocusedMessageId(-1);
+        mAppExecutors.diskIO().execute(() -> {
+            String localPhoneNo = null;
+            if(from == null){
+                localPhoneNo = getLocalPhoneNo(context);
+            }else{
+                localPhoneNo = from;
+            }
+            if(localPhoneNo != null){
+                if(!localPhoneNo.startsWith("tel:")){
+                    String temp = "tel:"+localPhoneNo;
+                    localPhoneNo = temp;
+                }
+            }
+            Log.i("Junwang", "localPhoneNo="+localPhoneNo);
+            ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
+            if(conversation == null){
+                conversation = new ConversationEntity();
+            }
+            MessageEntity me = mViewModel.saveMsg(context, content, to, localPhoneNo, conversationId, isReceived,  attachmentpath, thumbnail, messageType, (ConversationEntity) conversation, attachmentType, false);
             if(conversationFragment.msgLiveData != null) {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -142,33 +186,18 @@ public class ConversationActivity extends WfcBaseActivity {
                 });
             }
             if(content != null && content.length() > 0){
+                if(conversation.getDraftSnippetText() != null){
+                    conversation.setDraftSnippetText(null);
+                    updateDraft(null);
+                }
                 mMessageViewModel.sendTextmsg(context, from, to, conversationId, me, content, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
-//                mMessageViewModel.updateMessageSendStatus(me);
             }else if(attachmentpath != null){
                 mMessageViewModel.sendFilemsg(me, from, to, conversationId, attachmentpath, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
-//                mMessageViewModel.updateMessageSendStatus(me);
             }
         });
     }
-
-//    public void saveMsg(Context context, String content, String destination, boolean isReceived, String attachmentpath, String thumbnail, int messageType){
-//        conversationFragment.setInitialFocusedMessageId(-1);
-//        mAppExecutors.diskIO().execute(() -> {
-//            ConversationListViewModel mViewModel = new ViewModelProvider(this).get(ConversationListViewModel.class);
-//            MessageEntity me = mViewModel.saveMsg(context, content, destination, isReceived,  attachmentpath, thumbnail, messageType);
-//            if(content != null && content.length() > 0){
-//                mMessageViewModel.sendTextmsg(context, conversation, me, content, null);
-//                Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
-//                mMessageViewModel.updateMessageSendStatus(me);
-//            }else if(attachmentpath != null){
-//                mMessageViewModel.sendFilemsg(me, attachmentpath, null);
-//                Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
-//                mMessageViewModel.updateMessageSendStatus(me);
-//            }
-//        });
-//    }
 
     public void resendMsg(MessageEntity messageEntity){
         deleteMsg(messageEntity);
@@ -178,7 +207,7 @@ public class ConversationActivity extends WfcBaseActivity {
             String content = messageEntity.getContent();
             String attachmentpath = messageEntity.getAttachmentPath();
             String thumbnail = messageEntity.getThumbnailPath();
-            MessageEntity me = mViewModel.saveMsg(this, content, conversation.getSenderAddress(), conversation.getDestinationAddress(), conversation.getConversationID(), false,  attachmentpath, thumbnail, messageEntity.getMessageType(), (ConversationEntity) conversation, messageEntity.getAttachmentType());
+            MessageEntity me = mViewModel.saveMsg(this, content, conversation.getSenderAddress(), conversation.getDestinationAddress(), conversation.getConversationID(), false,  attachmentpath, thumbnail, messageEntity.getMessageType(), (ConversationEntity) conversation, messageEntity.getAttachmentType(), false);
             if(conversationFragment.msgLiveData != null) {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -190,11 +219,9 @@ public class ConversationActivity extends WfcBaseActivity {
             if(content != null && content.length() > 0){
                 mMessageViewModel.sendTextmsg(this, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), me, content, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
-//                mMessageViewModel.updateMessageSendStatus(me);
             }else if(attachmentpath != null){
                 mMessageViewModel.sendFilemsg(me, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), attachmentpath, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
-//                mMessageViewModel.updateMessageSendStatus(me);
             }
         });
     }

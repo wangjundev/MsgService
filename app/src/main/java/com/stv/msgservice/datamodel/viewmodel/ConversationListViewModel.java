@@ -12,6 +12,7 @@ import com.baronzhang.retrofit2.converter.FastJsonConverterFactory;
 import com.cjt2325.cameralibrary.util.LogUtil;
 import com.google.gson.Gson;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import com.stv.msgservice.LenientGsonConverterFactory;
 import com.stv.msgservice.datamodel.TerminalInfo.DeviceIdUtil;
 import com.stv.msgservice.datamodel.TerminalInfo.TerminalInfo;
 import com.stv.msgservice.datamodel.chatbotinfo.Botinfo;
@@ -335,7 +336,8 @@ public class ConversationListViewModel extends AndroidViewModel {
                 .baseUrl("http://"+domain+"/api/catherine/")
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
 //                .addConverterFactory(SimpleXmlConverterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
+//                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(LenientGsonConverterFactory.create())
                 .build();
 
         String postBody = getPostBodyJson(context, null, orderNo, null);
@@ -1107,6 +1109,37 @@ public class ConversationListViewModel extends AndroidViewModel {
         return null;
     }
 
+    public void saveDraft(Context context, String content, String to, String from, String conversationId, ConversationEntity ce){
+        long convId = DataRepository.getInstance(AppDatabase.getInstance(context)).getConversationId(to);
+        Log.i("Junwang", "addMessage query conversation Id = "+ convId);
+
+        final long time = System.currentTimeMillis();
+//        ConversationEntity ce = new ConversationEntity();
+        ce.setLastTimestamp(time);
+        ce.setSenderAddress(to);
+        ce.setDestinationAddress(from);
+        ce.setConversationID(conversationId);
+//        ce.setNormalizedDestination(to);
+        if(convId == 0){
+            convId = insertConversation(ce);
+        }
+        ce.setId(convId);
+
+//        MessageEntity me = new MessageEntity();
+//        me.setConversationId(convId);
+
+
+//        me.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_DRAFT);
+//        long messageId = mRepository.insertMessage(me);
+//        Log.i("Junwang", "insert messageId="+messageId);
+//        me.setId(messageId);
+//        ce.setLatestMessageId(messageId);
+//        ce.setSnippetText("[草稿]"+content);
+        ce.setDraftSnippetText(content);
+        Log.i("Junwang", "update ce sender address = "+ce.getSenderAddress());
+        updateConversation(ce);
+    }
+
     public MessageEntity saveLocationMsg(Context context, String content, String destination, boolean isReceived, int messageType, LocationData locationData){
         long convId = DataRepository.getInstance(AppDatabase.getInstance(context)).getConversationId(destination);
         Log.i("Junwang", "addMessage query conversation Id = "+ convId);
@@ -1246,7 +1279,7 @@ public class ConversationListViewModel extends AndroidViewModel {
     }
 
     //发送保存
-    public MessageEntity /*LiveData<MessageEntity>*/ saveMsg(Context context, String content, String to, String from, String conversationId, boolean isReceived, String attachmentpath, String thumbnail, int messageType,  ConversationEntity ce, String attachmentType){
+    public MessageEntity /*LiveData<MessageEntity>*/ saveMsg(Context context, String content, String to, String from, String conversationId, boolean isReceived, String attachmentpath, String thumbnail, int messageType,  ConversationEntity ce, String attachmentType, boolean isDraft){
         long convId = DataRepository.getInstance(AppDatabase.getInstance(context)).getConversationId(to);
         Log.i("Junwang", "addMessage query conversation Id = "+ convId);
 
@@ -1306,7 +1339,12 @@ public class ConversationListViewModel extends AndroidViewModel {
             me.setAttachmentPath(null);
         }
         me.setLocationData(null);
-        me.setMessageStatus(isReceived ? MessageConstants.BUGLE_STATUS_INCOMING_COMPLETE : MessageConstants.BUGLE_STATUS_OUTGOING_SENDING);
+        if(isDraft){
+            me.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_DRAFT);
+            me.setDraftContent(content);
+        }else{
+            me.setMessageStatus(isReceived ? MessageConstants.BUGLE_STATUS_INCOMING_COMPLETE : MessageConstants.BUGLE_STATUS_OUTGOING_SENDING);
+        }
         long messageId = mRepository.insertMessage(me);
         Log.i("Junwang", "insert messageId="+messageId);
         me.setId(messageId);

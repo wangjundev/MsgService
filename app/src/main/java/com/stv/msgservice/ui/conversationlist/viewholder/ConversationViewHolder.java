@@ -187,7 +187,10 @@ public abstract class ConversationViewHolder extends RecyclerView.ViewHolder {
                     statusImageView.setVisibility(View.GONE);
                     break;
             }
-            if(conversationInfo.getSnippetText() != null){
+            if(conversationInfo.getDraftSnippetText() != null){
+                contentTextView.setText("[草稿]" + conversationInfo.getDraftSnippetText());
+            }
+            else if(conversationInfo.getSnippetText() != null){
                 contentTextView.setText(conversationInfo.getSnippetText());
             }else {
                 contentTextView.setText("");

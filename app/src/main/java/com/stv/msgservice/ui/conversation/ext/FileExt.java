@@ -80,10 +80,14 @@ public class FileExt extends ConversationExt {
                     File imageFileThumb = ImageUtils.genThumbImgFile(path);
 //                    ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
 //                    messageViewModel.sendImgMsg(conversation, imageFileThumb, file);
+                    String thumbPath = null;
+                    if(imageFileThumb != null){
+                        thumbPath = imageFileThumb.getPath();
+                    }
                     if(conversation != null){
-                        ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, path, imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/"+type.substring(1));
+                        ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, path, thumbPath, MessageConstants.CONTENT_TYPE_IMAGE, "image/"+type.substring(1));
                     }else if(chatbotId != null){
-                        ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, path, imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE,"image/"+type.substring(1));
+                        ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, path, thumbPath, MessageConstants.CONTENT_TYPE_IMAGE,"image/"+type.substring(1));
                     }
                     break;
                 case ".3gp":

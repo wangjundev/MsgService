@@ -1,5 +1,6 @@
 package com.stv.msgservice.third.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,6 +9,7 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,7 +29,44 @@ public class ImageUtils {
     private static final int IMG_WIDTH = 480; //超過此寬、高則會 resize圖片
     private static final int IMG_HIGHT = 800;
     private static final int COMPRESS_QUALITY = 70; //壓縮 JPEG使用的品質(70代表壓縮率為 30%)
+    //add by junwang
+    public static File genThumbImgFile(Context context, String srcImgPath) {
+        File thumbImgDir = new File(THUMB_IMG_DIR_PATH);
+        if (!thumbImgDir.exists()) {
+            thumbImgDir.mkdirs();
+        }
+        String thumbImgName = SystemClock.currentThreadTimeMillis() + FileUtils.getFileNameFromPath(srcImgPath);
+        File imageFileThumb = null;
 
+        try {
+            ContentResolver contentResolver = context.getApplicationContext().getContentResolver();
+            ParcelFileDescriptor fd = contentResolver.openFileDescriptor(Uri.parse(srcImgPath), "r");
+            Bitmap bitmap = null;
+            if (fd != null) {
+                bitmap = BitmapFactory.decodeFileDescriptor(fd.getFileDescriptor());
+                fd.close();
+            }
+            if(bitmap == null){
+                return null;
+            }
+            InputStream is = contentResolver.openInputStream(Uri.parse(srcImgPath));
+            Bitmap bmpSource = BitmapFactory.decodeStream(is);
+            Bitmap bmpTarget = ThumbnailUtils.extractThumbnail(/*bitmap*/bmpSource, 200, 200, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+            if (bmpTarget == null) {
+                return null;
+            }
+            imageFileThumb = new File(thumbImgDir, thumbImgName);
+            imageFileThumb.createNewFile();
+
+            FileOutputStream fosThumb = new FileOutputStream(imageFileThumb);
+
+            bmpTarget.compress(Bitmap.CompressFormat.JPEG, 100, fosThumb);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imageFileThumb;
+    }
 
     public static File genThumbImgFile(String srcImgPath) {
         File thumbImgDir = new File(THUMB_IMG_DIR_PATH);
