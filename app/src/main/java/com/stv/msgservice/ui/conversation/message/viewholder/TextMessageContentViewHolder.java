@@ -71,7 +71,7 @@ public class TextMessageContentViewHolder extends NormalMessageContentViewHolder
     @OnClick(R2.id.contentTextView)
     public void onClick(View view) {
 //        String content = ((TextMessageContent) message.content).getContent();
-        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", /*content*/message.getContent());
+//        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", /*content*/message.getContent());
     }
 
 //    @OnClick(R2.id.refTextView)

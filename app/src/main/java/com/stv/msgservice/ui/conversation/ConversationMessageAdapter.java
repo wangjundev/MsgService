@@ -96,6 +96,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                         MessageEntity oldMessage = uiMessages.get(oldItemPosition).message;
                         return newMessage.getId() == oldMessage.getId()
                                 && newMessage.getContent() == oldMessage.getContent()
+                                && newMessage.getAttachmentPath() == oldMessage.getAttachmentPath()
                                 && newMessage.getMessageStatus() == oldMessage.getMessageStatus();
                     }
                 });

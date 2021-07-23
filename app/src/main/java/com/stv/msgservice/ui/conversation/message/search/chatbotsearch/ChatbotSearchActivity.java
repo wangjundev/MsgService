@@ -142,6 +142,7 @@ public class ChatbotSearchActivity extends BaseNoToolbarActivity/*WfcBaseActivit
 //                .client(httpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
+//                .addConverterFactory(LenientGsonConverterFactory.create())
                 .build();
 
         String postBody = ConversationListViewModel.getPostBodyJson(this, keyWord, null, null);

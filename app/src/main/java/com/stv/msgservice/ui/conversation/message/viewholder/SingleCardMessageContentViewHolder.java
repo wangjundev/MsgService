@@ -27,7 +27,6 @@ import com.stv.msgservice.datamodel.network.chatbot.MultiCardChatbotMsg;
 import com.stv.msgservice.datamodel.network.chatbot.SuggestionAction;
 import com.stv.msgservice.datamodel.network.chatbot.SuggestionActionWrapper;
 import com.stv.msgservice.ui.WebViewNewsActivity;
-import com.stv.msgservice.ui.WfcWebViewActivity;
 import com.stv.msgservice.ui.conversation.ConversationFragment;
 import com.stv.msgservice.ui.conversation.message.SingleCardMessageContent;
 import com.stv.msgservice.utils.NativeFunctionUtil;
@@ -174,7 +173,7 @@ public class SingleCardMessageContentViewHolder extends MediaMessageContentViewH
     @OnClick(R2.id.card_layout)
     public void onClick(View view) {
 //        String content = ((TextMessageContent) message.content).getContent();
-        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", /*content*/message.getContent());
+//        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", /*content*/message.getContent());
     }
 
 //    @OnClick(R2.id.refTextView)

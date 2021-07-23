@@ -17,7 +17,6 @@ import com.baronzhang.retrofit2.converter.FastJsonConverterFactory;
 import com.cjt2325.cameralibrary.util.LogUtil;
 import com.google.gson.Gson;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import com.stv.msgservice.LenientGsonConverterFactory;
 import com.stv.msgservice.R;
 import com.stv.msgservice.datamodel.TerminalInfo.DeviceIdUtil;
 import com.stv.msgservice.datamodel.TerminalInfo.TerminalInfo;
@@ -131,8 +130,8 @@ public class NetworkUtil {
                 .baseUrl("http://"+domain+"/api/catherine/")
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
 //                .addConverterFactory(SimpleXmlConverterFactory.create())
-//                .addConverterFactory(GsonConverterFactory.create())
-                .addConverterFactory(LenientGsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+//                .addConverterFactory(LenientGsonConverterFactory.create())
                 .build();
 
         String postBody = getPostBodyJson(context, null, orderNo, null);
@@ -227,6 +226,8 @@ public class NetworkUtil {
                                                     cmb.setContent_type(line.substring(14));
                                                 }else if(line.startsWith("Content-Length: ")){
                                                     cmb.setContent_length(line.substring(16));
+                                                }else if(line.startsWith("Content-Disposition:")){
+
                                                 }else{
                                                     strbuf.append(line+"\r\n");
                                                 }

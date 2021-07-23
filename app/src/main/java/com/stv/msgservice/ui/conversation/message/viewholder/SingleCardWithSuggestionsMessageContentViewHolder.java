@@ -30,7 +30,6 @@ import com.stv.msgservice.datamodel.network.chatbot.SuggestionAction;
 import com.stv.msgservice.datamodel.network.chatbot.SuggestionActionWrapper;
 import com.stv.msgservice.datamodel.network.chatbot.Suggestions;
 import com.stv.msgservice.ui.WebViewNewsActivity;
-import com.stv.msgservice.ui.WfcWebViewActivity;
 import com.stv.msgservice.ui.conversation.ConversationFragment;
 import com.stv.msgservice.ui.conversation.message.SingleCardWithSuggestionsMessageContent;
 import com.stv.msgservice.utils.NativeFunctionUtil;
@@ -77,6 +76,70 @@ public class SingleCardWithSuggestionsMessageContentViewHolder extends MediaMess
         Log.i("Junwang", "suggestionJson="+suggestionJson);
         Suggestions suggestions = new Gson().fromJson(suggestionJson, Suggestions.class);
         SuggestionActionWrapper[] saw = suggestions.getSuggestions();
+        if(saw != null && saw.length>0){
+            if(cardLayout.getChildCount() > 6){
+                return;
+            }
+            int i = 0;
+            TextView tv1;
+            Log.i("Junwang", "setSuggestionsView length="+saw.length);
+            for(; i<saw.length; i++){
+                if(saw[i].action != null) {
+                    tv1 = new TextView(context);
+                    tv1.setText(saw[i].action.displayText);
+                    tv1.setBackgroundResource(R.drawable.border_textview);
+                    tv1.setGravity(Gravity.CENTER);
+                    tv1.setPadding(0, 15, 0, 15);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    lp.setMargins(100,12,100,12);
+//                    cardLayout.addView(tv1, j, lp);
+                    Log.i("Junwang", "add view i="+i);
+                    cardLayout.addView(tv1, lp);
+                    SuggestionAction sa = saw[i].action;
+                    if ((sa != null) && (sa.urlAction != null)) {
+                        tv1.setOnClickListener(new View.OnClickListener(){
+                            @Override
+                            public void onClick(View v) {
+//                                WfcWebViewActivity.loadUrl(context, "", sa.urlAction.openUrl.url);
+                                WebViewNewsActivity.start(context, sa.urlAction.openUrl.url);
+                            }
+                        });
+                    }else if((sa != null) && (sa.dialerAction != null)){
+                        tv1.setOnClickListener(new View.OnClickListener(){
+                            @Override
+                            public void onClick(View v) {
+                                NativeFunctionUtil.callNativeFunction(MessageConstants.NativeActionType.PHONE_CALL, context,
+                                        null, null, sa.dialerAction.dialPhoneNumber.phoneNumber);
+                            }
+                        });
+                    }else if((sa != null) && (sa.mapAction != null)){
+                        tv1.setOnClickListener(new View.OnClickListener(){
+                            @Override
+                            public void onClick(View v) {
+                                NativeFunctionUtil.openLocation(sa.mapAction.showLocation.location.label, sa.mapAction.showLocation.location.latitude,
+                                        sa.mapAction.showLocation.location.longitude, context);
+                            }
+                        });
+                    }
+                }
+                if(saw[i].reply != null){
+                    tv1 = new TextView(context);
+                    tv1.setText(saw[i].reply.displayText);
+                    tv1.setBackgroundResource(R.drawable.border_textview);
+                    tv1.setGravity(Gravity.CENTER);
+                    tv1.setPadding(0, 15, 0, 15);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    lp.setMargins(100,12,100,12);
+//                    cardLayout.addView(tv1, j, lp);
+                    Log.i("Junwang", "add view1 i="+i);
+                    cardLayout.addView(tv1, lp);
+                }
+            }
+        }
+    }
+
+    private void setSuggestionsView(Context context, CardContent cardcontent){
+        SuggestionActionWrapper[] saw = cardcontent.getSuggestionActionWrapper();
         if(saw != null && saw.length>0){
             if(cardLayout.getChildCount() > 3){
                 return;
@@ -155,6 +218,8 @@ public class SingleCardWithSuggestionsMessageContentViewHolder extends MediaMess
                                 cmb.setContent_type(line.substring(14));
                             }else if(line.startsWith("Content-Length: ")){
                                 cmb.setContent_length(line.substring(16));
+                            }else if(line.startsWith("Content-Disposition:")){
+
                             }else{
                                 strbuf.append(line+"\r\n");
                             }
@@ -230,6 +295,7 @@ public class SingleCardWithSuggestionsMessageContentViewHolder extends MediaMess
                         });
                     }
                 }
+                setSuggestionsView(mFragment.getContext(), cardcontent);
                 addSuggestions(mFragment.getContext());
             }
         }
@@ -238,7 +304,7 @@ public class SingleCardWithSuggestionsMessageContentViewHolder extends MediaMess
     @OnClick(R2.id.card_layout)
     public void onClick(View view) {
 //        String content = ((TextMessageContent) message.content).getContent();
-        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", /*content*/message.getContent());
+//        WfcWebViewActivity.loadHtmlContent(fragment.getActivity(), "消息内容", /*content*/message.getContent());
     }
 
 //    @OnClick(R2.id.refTextView)

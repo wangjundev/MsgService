@@ -196,7 +196,9 @@ public class ConversationFragment extends Fragment implements
 //                adapter.updateMessage(uiMessage);
 //            }
             Log.i("Junwang", "messageUpdateLiveDatObserver onChanged");
-            adapter.updateMessage(uiMessage);
+            if(conversation == null){
+                adapter.updateMessage(uiMessage);
+            }
             ((ConversationActivity)getActivity()).updateMesasge(uiMessage);
         }
     };
@@ -1059,7 +1061,7 @@ public class ConversationFragment extends Fragment implements
         }
         Editable content = inputPanel.editText.getText();
         if (TextUtils.isEmpty(content)) {
-            if(conversation.getDraftSnippetText() != null){
+            if((conversation != null) && (conversation.getDraftSnippetText() != null)){
                 conversation.setDraftSnippetText(null);
                 ((ConversationActivity)(getActivity())).updateDraft(null);
             }
@@ -1072,7 +1074,7 @@ public class ConversationFragment extends Fragment implements
 //                }
 //            }
 //        });
-        if(conversation.getDraftSnippetText() != null){
+        if((conversation != null) && (conversation.getDraftSnippetText() != null)){
             ((ConversationActivity)(getActivity())).updateDraft(content.toString().trim());
         }
         else if(conversation != null){

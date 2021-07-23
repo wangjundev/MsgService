@@ -141,9 +141,11 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
         this.conversation = conversation;
         this.chatbotId = chatbotId;
         this.extension.bind(this.messageViewModel, conversation, chatbotId);
-        draftString = conversation.getDraftSnippetText();
-        if(draftString != null){
-            setDraft();
+        if(conversation != null){
+            draftString = conversation.getDraftSnippetText();
+            if(draftString != null){
+                setDraft();
+            }
         }
     }
 

@@ -190,10 +190,18 @@ public class ConversationActivity extends WfcBaseActivity {
                     conversation.setDraftSnippetText(null);
                     updateDraft(null);
                 }
-                mMessageViewModel.sendTextmsg(context, from, to, conversationId, me, content, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
+                if(from == null){
+                    mMessageViewModel.sendTextmsg(context, from, to, conversationId, me, content, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
+                }else{
+                    mMessageViewModel.sendTextmsg(context, from, to, conversationId, me, content, null, null, conversationFragment.msgUpdateLiveData);
+                }
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
             }else if(attachmentpath != null){
-                mMessageViewModel.sendFilemsg(me, from, to, conversationId, attachmentpath, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
+                if(from == null){
+                    mMessageViewModel.sendFilemsg(me, from, to, conversationId, attachmentpath, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
+                }else{
+                    mMessageViewModel.sendFilemsg(me, from, to, conversationId, attachmentpath, null, /*conversationFragment.msgLiveData*/null, conversationFragment.msgUpdateLiveData);
+                }
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
             }
         });

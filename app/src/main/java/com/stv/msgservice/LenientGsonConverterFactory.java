@@ -1,5 +1,7 @@
 package com.stv.msgservice;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
@@ -72,6 +74,8 @@ public class LenientGsonConverterFactory extends Converter.Factory {
 
         @Override
         public T convert(ResponseBody value) throws IOException {
+            String responsevalue = value.string();
+            Log.i("Junwang", "responsevalue="+responsevalue);
             JsonReader jsonReader = gson.newJsonReader(value.charStream());
             jsonReader.setLenient(true);
             try {

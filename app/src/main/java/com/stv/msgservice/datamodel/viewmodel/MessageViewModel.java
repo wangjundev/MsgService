@@ -566,9 +566,9 @@ public class MessageViewModel extends AndroidViewModel {
                     Log.e("Junwang", "upload file failed errorCode="+errorCode);
 //                    msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_FAILED);
                     msg.setMessageStatus(MessageConstants.BUGLE_STATUS_OUTGOING_COMPLETE);
-                    if(msgUpdateLiveData != null){
-                        msgUpdateLiveData.setValue(msg);
-                    }
+//                    if(msgUpdateLiveData != null){
+//                        msgUpdateLiveData.setValue(msg);
+//                    }
                 }
             });
         }catch (Exception e){

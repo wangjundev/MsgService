@@ -1,6 +1,5 @@
 package com.stv.msgservice.ui.conversationlist;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,6 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -52,48 +50,48 @@ public class ConversationListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     public void setConversationInfos(List<ConversationEntity> converInfos) {
 //        submit(this.statusNotifications, conversationInfos);
-        if(converInfos != null){
-            if (conversationInfos == null) {
-                Log.i("Junwang", "conversationInfos == null");
-                this.conversationInfos = converInfos;
-//                notifyDataSetChanged();
-                notifyItemRangeInserted(0, conversationInfos.size());
-            } else {
-                DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
-                    @Override
-                    public int getOldListSize() {
-                        return conversationInfos.size();
-                    }
-
-                    @Override
-                    public int getNewListSize() {
-                        return conversationInfos.size();
-                    }
-
-                    @Override
-                    public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                        return (converInfos.get(oldItemPosition).getId() ==
-                                conversationInfos.get(newItemPosition).getId());
-//                                && (uiMessages.get(oldItemPosition).message.getMessageStatus() == uiMessageList.get(newItemPosition).message.getMessageStatus());
-                    }
-
-                    @Override
-                    public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                        ConversationEntity newConversation = converInfos.get(newItemPosition);
-                        ConversationEntity oldConversation = conversationInfos.get(oldItemPosition);
-                        return newConversation.getId() == oldConversation.getId()
-                                && newConversation.getLatestMessageId() == oldConversation.getLatestMessageId()
-                                && newConversation.getLatestMessageStatus() == oldConversation.getLatestMessageStatus()
-                                && newConversation.getSnippetText() == oldConversation.getSnippetText()
-                                && newConversation.getDraftSnippetText() == oldConversation.getDraftSnippetText();
-                    }
-                });
-                this.conversationInfos = converInfos;
-                result.dispatchUpdatesTo(this);
-            }
-        }
-//        this.conversationInfos = converInfos;
-//        notifyDataSetChanged();
+//        if(converInfos != null || (converInfos.size() == 0)){
+//            if (conversationInfos == null) {
+//                Log.i("Junwang", "conversationInfos == null");
+//                this.conversationInfos = converInfos;
+////                notifyDataSetChanged();
+//                notifyItemRangeInserted(0, conversationInfos.size());
+//            } else {
+//                DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+//                    @Override
+//                    public int getOldListSize() {
+//                        return conversationInfos.size();
+//                    }
+//
+//                    @Override
+//                    public int getNewListSize() {
+//                        return conversationInfos.size();
+//                    }
+//
+//                    @Override
+//                    public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+//                        return (converInfos.get(oldItemPosition).getId() ==
+//                                conversationInfos.get(newItemPosition).getId());
+////                                && (uiMessages.get(oldItemPosition).message.getMessageStatus() == uiMessageList.get(newItemPosition).message.getMessageStatus());
+//                    }
+//
+//                    @Override
+//                    public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+//                        ConversationEntity newConversation = converInfos.get(newItemPosition);
+//                        ConversationEntity oldConversation = conversationInfos.get(oldItemPosition);
+//                        return newConversation.getId() == oldConversation.getId()
+//                                && newConversation.getLatestMessageId() == oldConversation.getLatestMessageId()
+//                                && newConversation.getLatestMessageStatus() == oldConversation.getLatestMessageStatus()
+//                                && newConversation.getSnippetText() == oldConversation.getSnippetText()
+//                                && newConversation.getDraftSnippetText() == oldConversation.getDraftSnippetText();
+//                    }
+//                });
+//                this.conversationInfos = converInfos;
+//                result.dispatchUpdatesTo(this);
+//            }
+//        }
+        this.conversationInfos = converInfos;
+        notifyDataSetChanged();
     }
 
 //    private void submit(List<StatusNotification> notifications, List<ConversationInfo> conversationInfos) {
