@@ -63,8 +63,8 @@ public class FileUtils {
                     String url;
                     @Override
                     public void _onNext(ResultBean<FileBean> fileBeanResultBean) {
-                        url = fileBeanResultBean.getData().getUrl();
-                        Log.i("retrofit", "onNext=======>url:" + url);
+//                        url = fileBeanResultBean.getData().getUrl();
+                        Log.i("retrofit", "onNext=======>url:");
                     }
 
                     @Override

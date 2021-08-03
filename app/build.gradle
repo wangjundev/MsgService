@@ -92,6 +92,8 @@ dependencies {
     implementation 'com.github.ctiao:DanmakuFlameMaster:0.9.25'
     implementation 'com.github.ctiao:ndkbitmap-armv7a:0.9.21'
 //    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.6.1'
+    implementation 'com.zackratos.ultimatebarx:ultimatebarx:0.6.0'
+    implementation 'top.zibin:Luban:1.1.8'
 
     implementation project(':EasyRxRetrofitlib')
     implementation project(':emojilibrary')

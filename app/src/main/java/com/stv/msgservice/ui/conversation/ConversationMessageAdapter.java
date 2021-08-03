@@ -98,6 +98,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                                 && newMessage.getContent() == oldMessage.getContent()
                                 && newMessage.getAttachmentPath() == oldMessage.getAttachmentPath()
                                 && newMessage.getMessageStatus() == oldMessage.getMessageStatus();
+//                                && newMessage.getPercent() == oldMessage.getPercent();
                     }
                 });
                 uiMessages = uiMessageList;
@@ -409,6 +410,61 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             }
         }
 
+//        MessageContentViewHolder MsgViewHolder = null;
+//        switch (messageType){
+//            case MessageConstants.CONTENT_TYPE_TEXT:
+//                MsgViewHolder = new TextMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_TEXT_WITH_SUGGESTION:
+//                MsgViewHolder = new TextSuggestionMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_IMAGE:
+//                MsgViewHolder = new ImageMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_IMAGE_WITH_SUGGESTION:
+//                MsgViewHolder = new ImageSuggestionMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_AUDIO:
+//                MsgViewHolder = new AudioMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_AUDIO_WITH_SUGGESTION:
+//                MsgViewHolder = new AudioMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_VIDEO:
+//                MsgViewHolder = new VideoMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_VIDEO_WITH_SUGGESTION:
+//                MsgViewHolder = new VideoMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_LOCATION:
+//                MsgViewHolder = new LocationMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_LOCATION_WITH_SUGGESTION:
+//                MsgViewHolder = new LocationMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_FILE:
+//                MsgViewHolder = new FileMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_FILE_WITH_SUGGESTION:
+//                MsgViewHolder = new FileMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_SINGLE_CARD:
+//                MsgViewHolder = new SingleCardMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_SINGLE_CARD_WITH_SUGGESTION:
+//                MsgViewHolder = new SingleCardWithSuggestionsMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_MULTI_CARD:
+//                MsgViewHolder = new MultiCardMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            case MessageConstants.CONTENT_TYPE_MULTI_CARD_WITH_SUGGESTION:
+//                MsgViewHolder = new MultiCardMessageContentViewHolder(fragment, this, itemView);
+//                break;
+//            default:
+//                break;
+//        }
+//        return MsgViewHolder;
+
         try {
             if(viewHolderClazz == null){
                 return null;
@@ -614,6 +670,7 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             MessageContentViewHolder viewHolder = (MessageContentViewHolder) holder;
             ((MessageContentViewHolder) holder).onBind(getItem(position), position);
             MessageItemView itemView = (MessageItemView) holder.itemView;
+            itemView.setTag(messages.get(position));
             CheckBox checkBox = itemView.findViewById(R.id.checkbox);
             if (checkBox == null) {
                 return;

@@ -51,6 +51,7 @@ public class TakePhotoActivity extends AppCompatActivity {
 
         int mode = getIntent().getIntExtra(MODE, MODE_CAPTURE_AND_RECORDER);
         mJCameraView.setFeatures(mode);
+//        mJCameraView.setMediaQuality(JCameraView.MEDIA_QUALITY_LOW);
         mJCameraView.setSaveVideoPath(this.getFilesDir().toString()+Config.VIDEO_SAVE_DIR);
         mJCameraView.setJCameraLisenter(new JCameraListener() {
 

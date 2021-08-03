@@ -79,6 +79,8 @@ public class MessageEntity implements Message {
 
     private String domain;
 
+//    private int percent;
+
     public long getId() {
         return id;
     }
@@ -257,6 +259,14 @@ public class MessageEntity implements Message {
     public void setDomain(String domain) {
         this.domain = domain;
     }
+
+//    public int getPercent() {
+//        return percent;
+//    }
+//
+//    public void setPercent(int percent) {
+//        this.percent = percent;
+//    }
 
     @Override
     public boolean equals(@Nullable Object obj) {

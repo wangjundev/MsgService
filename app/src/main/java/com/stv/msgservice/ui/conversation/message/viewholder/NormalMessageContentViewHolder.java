@@ -158,7 +158,6 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
     @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_DELETE, confirm = false, priority = 11)
     public void removeMessage(View itemView, Message message) {
         new MaterialDialog.Builder(fragment.getContext())
-//                .items("删除本地消息", "删除远程消息")
                 .items("删除消息")
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override

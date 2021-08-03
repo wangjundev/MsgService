@@ -17,7 +17,6 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/emojilibrary" />
             <option value="$PROJECT_DIR$/imagepicker" />
-            <option value="$PROJECT_DIR$/immersionbar" />
             <option value="$PROJECT_DIR$/picture_library" />
           </set>
         </option>
@@ -25,5 +24,6 @@
         <option name="useQualifiedModuleNames" value="true" />
       </GradleProjectSettings>
     </option>
+    <option name="offlineMode" value="true" />
   </component>
 </project>

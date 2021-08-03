@@ -1,17 +1,20 @@
 package com.stv.msgservice.ui.conversation.message.search;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.stv.msgservice.R;
 import com.stv.msgservice.R2;
+import com.zackratos.ultimatebarx.ultimatebarx.UltimateBarX;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//import androidx.appcompat.widget.SearchView;
 import butterknife.BindView;
 import butterknife.OnClick;
+
+//import androidx.appcompat.widget.SearchView;
 
 public abstract class SearchActivity extends BaseNoToolbarActivity {
     private SearchFragment searchFragment;
@@ -43,6 +46,11 @@ public abstract class SearchActivity extends BaseNoToolbarActivity {
     }
 
     protected void afterViews() {
+        UltimateBarX.with(this)
+                .fitWindow(true)
+                .light(true)
+                .lvLightColor(Color.GRAY)
+                .applyStatusBar();
         initSearchView();
         initSearchFragment();
         String initialKeyword = getIntent().getStringExtra("keyword");

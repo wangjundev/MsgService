@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 用于设置消息UI({@link cn.wildfire.chat.kit.conversation.message.viewholder.MessageContentViewHolder})和消息体({@link MessageContent})对应关系
+ * 用于设置消息UI({@link MessageContentViewHolder})和消息体({@link MessageContent})对应关系
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

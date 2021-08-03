@@ -1,8 +1,5 @@
 package com.stv.msgservice.ui.conversation.message.viewholder;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
@@ -11,7 +8,6 @@ import com.stv.msgservice.R;
 import com.stv.msgservice.R2;
 import com.stv.msgservice.annotation.EnableContextMenu;
 import com.stv.msgservice.annotation.MessageContentType;
-import com.stv.msgservice.annotation.MessageContextMenuItem;
 import com.stv.msgservice.datamodel.model.Message;
 import com.stv.msgservice.datamodel.network.chatbot.CardContent;
 import com.stv.msgservice.datamodel.network.chatbot.ChatbotStdMultiCard;
@@ -94,16 +90,16 @@ public class MultiCardStdMessageContentViewHolder  extends MediaMessageContentVi
 //        }
 //    }
 
-    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CLIP, confirm = false, priority = 12)
-    public void clip(View itemView, Message message) {
-        ClipboardManager clipboardManager = (ClipboardManager) fragment.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        if (clipboardManager == null) {
-            return;
-        }
-//        TextMessageContent content = (TextMessageContent) message.content;
-        ClipData clipData = ClipData.newPlainText("messageContent", message.getContent());
-        clipboardManager.setPrimaryClip(clipData);
-    }
+//    @MessageContextMenuItem(tag = MessageContextMenuItemTags.TAG_CLIP, confirm = false, priority = 12)
+//    public void clip(View itemView, Message message) {
+//        ClipboardManager clipboardManager = (ClipboardManager) fragment.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+//        if (clipboardManager == null) {
+//            return;
+//        }
+////        TextMessageContent content = (TextMessageContent) message.content;
+//        ClipData clipData = ClipData.newPlainText("messageContent", message.getContent());
+//        clipboardManager.setPrimaryClip(clipData);
+//    }
 
 
 //    @Override

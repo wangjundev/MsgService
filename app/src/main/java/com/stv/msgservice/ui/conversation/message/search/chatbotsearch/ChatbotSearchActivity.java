@@ -42,6 +42,7 @@ import com.stv.msgservice.datamodel.viewmodel.UserInfoViewModel;
 import com.stv.msgservice.ui.conversation.ConversationActivity;
 import com.stv.msgservice.ui.conversation.message.search.BaseNoToolbarActivity;
 import com.stv.msgservice.ui.conversation.santilayout.ExpandLayout;
+import com.zackratos.ultimatebarx.ultimatebarx.UltimateBarX;
 import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
 import com.zhy.view.flowlayout.TagFlowLayout;
@@ -132,6 +133,11 @@ public class ChatbotSearchActivity extends BaseNoToolbarActivity/*WfcBaseActivit
     @Override
     protected void afterViews() {
 //        setStatusBar();
+        UltimateBarX.with(this)
+                .fitWindow(true)
+                .light(true)
+                .lvLightColor(Color.GRAY)
+                .applyStatusBar();
         init();
         initView();
     }

@@ -1,7 +1,6 @@
 package com.stv.msgservice.ui.conversation.message.viewholder;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
@@ -65,18 +64,18 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
             MediaEntry entry = new MediaEntry();
             if (msg.getMessageType() == MessageConstants.CONTENT_TYPE_IMAGE) {
                 entry.setType(MediaEntry.TYPE_IMAGE);
-                Bitmap bitmap = BitmapFactory.decodeFile(msg.getThumbnailPath());
-                entry.setThumbnail(bitmap);
+//                Bitmap bitmap = BitmapFactory.decodeFile(msg.getThumbnailPath());
+//                entry.setThumbnail(bitmap);
 
             } else {
                 entry.setType(MediaEntry.TYPE_VIDEO);
-                Bitmap bitmap;
-                if(msg.getThumbnailPath() == null || msg.getThumbnailPath().length() == 0){
-                    bitmap = BitmapFactory.decodeFile(msg.getAttachmentPath());
-                }else{
-                    bitmap = BitmapFactory.decodeFile(msg.getThumbnailPath());
-                }
-                entry.setThumbnail(bitmap);
+//                Bitmap bitmap;
+//                if(msg.getThumbnailPath() == null || msg.getThumbnailPath().length() == 0){
+//                    bitmap = BitmapFactory.decodeFile(msg.getAttachmentPath());
+//                }else{
+//                    bitmap = BitmapFactory.decodeFile(msg.getThumbnailPath());
+//                }
+//                entry.setThumbnail(bitmap);
 //                entry.setThumbnail(((VideoMessageContent) msg.message.content).getThumbnail());
             }
             entry.setMediaUrl(msg.getAttachmentPath());
@@ -93,6 +92,20 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
             return;
         }
         MMPreviewActivity.previewMedia(fragment.getContext(), entries, current);
+    }
+
+    protected void loadImage(String thumbnailPath, String originalPath, ImageView imageView){
+        if(thumbnailPath != null){
+            Glide.with(fragment)
+                    .load(thumbnailPath)
+                    .apply(placeholderOptions)
+                    .into(imageView);
+        }else{
+            Glide.with(fragment)
+                    .load(originalPath)
+                    .apply(placeholderOptions)
+                    .into(imageView);
+        }
     }
 
     /**

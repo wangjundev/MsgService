@@ -4,9 +4,6 @@ import android.content.pm.ActivityInfo;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.StyleRes;
-
 import com.luck.picture.lib.R;
 import com.luck.picture.lib.camera.CustomCameraView;
 import com.luck.picture.lib.engine.CacheResourcesEngine;
@@ -29,6 +26,9 @@ import com.yalantis.ucrop.UCrop;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.StyleRes;
 
 /**
  * @author：luck
@@ -475,7 +475,7 @@ public final class PictureSelectionConfig implements Parcelable {
         cropWidth = 0;
         cropHeight = 0;
         isCameraAroundState = false;
-        isWithVideoImage = false;
+        isWithVideoImage = true;
         isAndroidQTransform = false;
         isCamera = true;
         isGif = false;

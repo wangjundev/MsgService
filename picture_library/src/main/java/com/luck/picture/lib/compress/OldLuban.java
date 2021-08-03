@@ -24,8 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class Luban {
-    private static final String TAG = "Luban";
+public class OldLuban {
+    private static final String TAG = "OldLuban";
 
     private String mTargetDir;
     private final String mNewFileName;
@@ -43,7 +43,7 @@ public class Luban {
     private final int dataCount;
     private final boolean isAutoRotating;
 
-    private Luban(Builder builder) {
+    private OldLuban(Builder builder) {
         this.mPaths = builder.mPaths;
         this.mediaList = builder.mediaList;
         this.dataCount = builder.dataCount;
@@ -91,6 +91,19 @@ public class Luban {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return new File(cacheBuilder);
+    }
+
+    private File getImageCacheFile(Context context, String suffix) {
+        if (TextUtils.isEmpty(mTargetDir)) {
+            mTargetDir = getImageCacheDir(context).getAbsolutePath();
+        }
+
+        String cacheBuilder = mTargetDir + "/" +
+                System.currentTimeMillis() +
+                (int) (Math.random() * 1000) +
+                (TextUtils.isEmpty(suffix) ? ".jpg" : suffix);
 
         return new File(cacheBuilder);
     }
@@ -206,7 +219,7 @@ public class Luban {
      */
     private File get(InputStreamProvider input, Context context) throws IOException {
         try {
-            return new Engine(context, input, getImageCacheFile(context, input, Checker.SINGLE.extSuffix(input.getMedia().getMimeType())), focusAlpha, compressQuality, isAutoRotating).compress();
+            return new Engine(context, input, getImageCacheFile(context, /*input,*/ Checker.SINGLE.extSuffix(input/*.getMedia().getMimeType()*/)), focusAlpha, compressQuality, isAutoRotating).compress();
         } finally {
             input.close();
         }
@@ -398,8 +411,8 @@ public class Luban {
             this.mStreamProviders = new ArrayList<>();
         }
 
-        private Luban build() {
-            return new Luban(this);
+        private OldLuban build() {
+            return new OldLuban(this);
         }
 
         public Builder load(InputStreamProvider inputStreamProvider) {
@@ -428,7 +441,6 @@ public class Luban {
          * 扩展符合PictureSelector的压缩策略
          *
          * @param media LocalMedia对象
-         * @param <T>
          * @return
          */
         private Builder load(final LocalMedia media) {

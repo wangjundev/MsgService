@@ -1,5 +1,6 @@
+//include ':immersionbar_lib'
 include ':picture_library'
-include ':immersionbar'
+//include ':immersionbar'
 include ':SwipeRecyclerView'
 include ':imagepicker'
 include ':emojilibrary'

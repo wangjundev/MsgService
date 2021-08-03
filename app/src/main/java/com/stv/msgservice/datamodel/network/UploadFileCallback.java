@@ -4,4 +4,6 @@ public interface UploadFileCallback {
     void onSuccess(String url);
 
     void onFail(int errorCode);
+
+//    void onProgress(int percent);
 }

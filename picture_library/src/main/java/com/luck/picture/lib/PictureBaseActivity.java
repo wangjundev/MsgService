@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.luck.picture.lib.app.PictureAppMaster;
-import com.luck.picture.lib.compress.Luban;
+import com.luck.picture.lib.compress.OldLuban;
 import com.luck.picture.lib.compress.OnCompressListener;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
@@ -361,7 +361,7 @@ public abstract class PictureBaseActivity extends AppCompatActivity {
 
                 @Override
                 public List<LocalMedia> doInBackground() throws Exception {
-                    return Luban.with(getContext())
+                    return OldLuban.with(getContext())
                             .loadMediaData(result)
                             .isCamera(config.camera)
                             .setTargetDir(config.compressSavePath)
@@ -378,7 +378,7 @@ public abstract class PictureBaseActivity extends AppCompatActivity {
                 }
             });
         } else {
-            Luban.with(this)
+            OldLuban.with(this)
                     .loadMediaData(result)
                     .ignoreBy(config.minimumCompressSize)
                     .isCamera(config.camera)

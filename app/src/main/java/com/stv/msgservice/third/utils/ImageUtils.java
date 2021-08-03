@@ -79,7 +79,35 @@ public class ImageUtils {
         try {
             InputStream is = new FileInputStream(srcImgPath);
             Bitmap bmpSource = BitmapFactory.decodeStream(is);
-            Bitmap bmpTarget = ThumbnailUtils.extractThumbnail(bmpSource, 200, 200, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+            Bitmap bmpTarget = ThumbnailUtils.extractThumbnail(bmpSource, bmpSource.getWidth()/*200*/, /*200*/bmpSource.getHeight(), ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+            if (bmpTarget == null) {
+                return null;
+            }
+            imageFileThumb = new File(thumbImgDir, thumbImgName);
+            imageFileThumb.createNewFile();
+
+            FileOutputStream fosThumb = new FileOutputStream(imageFileThumb);
+
+            bmpTarget.compress(Bitmap.CompressFormat.JPEG, 100, fosThumb);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imageFileThumb;
+    }
+
+    public static File genThumbImgFile(String srcImgPath, int width, int height) {
+        File thumbImgDir = new File(THUMB_IMG_DIR_PATH);
+        if (!thumbImgDir.exists()) {
+            thumbImgDir.mkdirs();
+        }
+        String thumbImgName = SystemClock.currentThreadTimeMillis() + FileUtils.getFileNameFromPath(srcImgPath);
+        File imageFileThumb = null;
+
+        try {
+            InputStream is = new FileInputStream(srcImgPath);
+            Bitmap bmpSource = BitmapFactory.decodeStream(is);
+            Bitmap bmpTarget = ThumbnailUtils.extractThumbnail(bmpSource, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
             if (bmpTarget == null) {
                 return null;
             }
@@ -103,6 +131,7 @@ public class ImageUtils {
         try {
             ExifInterface exif = new ExifInterface(srcImgPath);
             int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            Log.i("Junwang", "compressImage orientation="+orientation);
             switch (orientation) {
                 case ExifInterface.ORIENTATION_ROTATE_90:
                     rotate = 90;

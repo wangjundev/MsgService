@@ -1,5 +1,6 @@
 package com.luck.picture.lib.compress;
 
+import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -18,7 +19,7 @@ enum Checker {
 
     public final static String MIME_TYPE_HEIC = "image/heic";
 
-    private static final String TAG = "Luban";
+    private static final String TAG = "OldLuban";
 
     private static final String JPG = ".jpg";
 
@@ -154,6 +155,17 @@ enum Checker {
 
         Log.e(TAG, "Orientation not found");
         return 0;
+    }
+
+    String extSuffix(InputStreamProvider input) {
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(input.open(), null, options);
+            return options.outMimeType.replace("image/", ".");
+        } catch (Exception e) {
+            return JPG;
+        }
     }
 
     String extSuffix(String mimeType) {

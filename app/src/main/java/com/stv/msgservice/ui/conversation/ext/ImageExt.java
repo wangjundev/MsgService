@@ -29,10 +29,12 @@ import com.stv.msgservice.R;
 import com.stv.msgservice.annotation.ExtContextMenuItem;
 import com.stv.msgservice.datamodel.constants.MessageConstants;
 import com.stv.msgservice.datamodel.model.Conversation;
+import com.stv.msgservice.third.utils.FileUtils;
 import com.stv.msgservice.third.utils.ImageUtils;
 import com.stv.msgservice.ui.conversation.ConversationActivity;
 import com.stv.msgservice.ui.conversation.GlideEngine;
 import com.stv.msgservice.ui.conversation.ext.core.ConversationExt;
+import com.stv.msgservice.utils.UIUtils;
 import com.stv.msgservice.utils.VideoUtil;
 
 import java.io.File;
@@ -41,6 +43,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import top.zibin.luban.Luban;
 
 public class ImageExt extends ConversationExt {
     public static final String TAG = "Junwang";
@@ -125,8 +129,8 @@ public class ImageExt extends ConversationExt {
 
                         // TODO 可以通过PictureSelectorExternalUtils.getExifInterface();方法获取一些额外的资源信息，如旋转角度、经纬度等信息
 
-                        boolean isGif = isGifFile(media.getPath());
-                        if (isGif) {
+//                        boolean isGif = isGifFile(media.getPath());
+                        if (/*isGif*/false) {
                             Bitmap b = VideoUtil.getVideoThumb(media.getRealPath());
                             String thumbnail = null;
                             if(b != null){
@@ -142,8 +146,22 @@ public class ImageExt extends ConversationExt {
                         File imageFileThumb = null;
                         File imageFileSource = null;
                         // FIXME: 2018/11/29 压缩, 不是发原图的时候，大图需要进行压缩
-                        if (/*compress*/false) {
-                            imageFileSource = ImageUtils.compressImage(media.getRealPath());
+                        if (/*compress*/PictureMimeType.isHasImage(media.getMimeType())) {
+//                            imageFileSource = ImageUtils.compressImage(media.getRealPath());
+
+                            String THUMB_IMG_DIR_PATH = UIUtils.getContext().getCacheDir().getAbsolutePath();
+                            File tempImgDir = new File(THUMB_IMG_DIR_PATH);
+                            if (!tempImgDir.exists()) {
+                                tempImgDir.mkdirs();
+                            }
+                            String compressedImgName = SystemClock.currentThreadTimeMillis() + FileUtils.getFileNameFromPath(media.getPath());
+//                            imageFileSource = new File(tempImgDir, compressedImgName);
+                            try{
+//                                imageFileSource = OldLuban.with(activity).get(media.getPath());
+                                imageFileSource = Luban.with(activity).get(/*media.getPath()*/media.getRealPath());
+                            }catch (Exception e){
+                                Log.i("Junwang", "Luban compress exception "+e.toString());
+                            }
                         }
                         imageFileSource = imageFileSource == null ? new File(media.getRealPath()) : imageFileSource;
                         if (PictureMimeType.isHasImage(media.getMimeType())){
@@ -161,13 +179,13 @@ public class ImageExt extends ConversationExt {
                         }
                         if(conversation != null){
                             if(PictureMimeType.isHasImage(media.getMimeType())){
-                                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+                                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileSource.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
                             }else if(PictureMimeType.isHasVideo(media.getMimeType())){
                                 ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
                             }
                         }else if(chatbotId != null){
                             if(PictureMimeType.isHasImage(media.getMimeType())){
-                                ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+                                ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageFileSource.getPath(), imageFileSource.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
                             }else if(PictureMimeType.isHasVideo(media.getMimeType())){
                                 ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
                             }

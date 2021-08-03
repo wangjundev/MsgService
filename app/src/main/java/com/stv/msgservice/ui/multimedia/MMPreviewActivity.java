@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -283,6 +284,7 @@ public class MMPreviewActivity extends Activity {
         }
 
         if (entry.getThumbnail() != null) {
+            Log.i("Junwang", "glide loadimage time="+ SystemClock.currentThreadTimeMillis());
             GlideApp.with(MMPreviewActivity.this).load(entry.getMediaUrl())
                     .placeholder(new BitmapDrawable(getResources(), entry.getThumbnail()))
                     .into(photoView);

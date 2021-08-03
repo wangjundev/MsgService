@@ -177,7 +177,7 @@ public class ConversationActivity extends WfcBaseActivity {
                 conversation = new ConversationEntity();
             }
             MessageEntity me = mViewModel.saveMsg(context, content, to, localPhoneNo, conversationId, isReceived,  attachmentpath, thumbnail, messageType, (ConversationEntity) conversation, attachmentType, false);
-            if(conversationFragment.msgLiveData != null) {
+            if((from == null) && (conversationFragment.msgLiveData != null)) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
