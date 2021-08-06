@@ -362,6 +362,13 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
         super.onViewRecycled(holder);
         if (holder instanceof MessageContentViewHolder) {
+//            if (holder instanceof ImageMessageContentViewHolder) {
+//                MessageItemView itemView = (MessageItemView) holder.itemView;
+//                ImageView iv = itemView.findViewById(R.id.imageView);
+//                GlideApp.with(fragment).clear(iv);
+//                iv.setImageResource(R.mipmap.ic_file);
+//
+//            }
             ((MessageContentViewHolder) holder).onViewRecycled();
         }
     }
@@ -616,7 +623,10 @@ public class ConversationMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 Collections.sort(contextMenus, (o1, o2) -> o1.contextMenuItem.priority() - o2.contextMenuItem.priority());
                 List<String> titles = new ArrayList<>(contextMenus.size());
                 for (ContextMenuItemWrapper itemWrapper : contextMenus) {
-                    titles.add(viewHolder.contextMenuTitle(fragment.getContext(), itemWrapper.contextMenuItem.tag()));
+                    String title = viewHolder.contextMenuTitle(fragment.getContext(), itemWrapper.contextMenuItem.tag());
+                    if(title != null && title.length() > 0){
+                        titles.add(viewHolder.contextMenuTitle(fragment.getContext(), itemWrapper.contextMenuItem.tag()));
+                    }
                 }
                 new MaterialDialog.Builder(fragment.getContext()).items(titles).itemsCallback(new MaterialDialog.ListCallback() {
                     @Override

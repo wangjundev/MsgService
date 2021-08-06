@@ -1109,6 +1109,7 @@ public class ConversationFragment extends Fragment implements
     }
 
     private void loadMoreOldMessages() {
+        Log.i("Junwang", "loadMoreOldMessages");
         long fromMessageId = Long.MAX_VALUE;
 //        long fromMessageUid = Long.MAX_VALUE;
         if (adapter.getMessages() != null && !adapter.getMessages().isEmpty()) {

@@ -81,6 +81,7 @@ public abstract class MediaMessageContentViewHolder extends NormalMessageContent
             entry.setMediaUrl(msg.getAttachmentPath());
 //            entry.setMediaLocalPath(((MediaMessageContent) msg.message.content).localPath);
             entry.setMediaLocalPath(msg.getAttachmentPath());
+            entry.setThumbnailUrl(msg.getThumbnailPath());
             entries.add(entry);
 
             if (message.getId() == msg.getId()) {

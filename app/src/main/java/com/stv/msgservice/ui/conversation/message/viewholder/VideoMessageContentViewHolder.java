@@ -44,7 +44,6 @@ public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder
 
     @Override
     public void onBind(Message message) {
-//        VideoMessageContent videoMessageContent = (VideoMessageContent) message.content;
         Bitmap thumbnail = BitmapFactory.decodeFile(message.getThumbnailPath());
 //        time_tv.setText(TimeConvertUtils.formatLongTime(videoMessageContent.getDuration()/1000));
         int width = 200;
@@ -67,6 +66,7 @@ public class VideoMessageContentViewHolder extends MediaMessageContentViewHolder
 //        }
         imagePath = message.getAttachmentPath();
         loadMedia(thumbnail,imagePath,imageView);
+//        loadImage(message.getThumbnailPath(), message.getAttachmentPath(), imageView);
 
     }
 

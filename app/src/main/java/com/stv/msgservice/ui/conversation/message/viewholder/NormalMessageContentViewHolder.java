@@ -240,6 +240,9 @@ public abstract class NormalMessageContentViewHolder extends MessageContentViewH
             case MessageContextMenuItemTags.TAG_FAV:
                 title = "收藏";
                 break;
+            case MessageContextMenuItemTags.TAG_QR:
+                title = null;
+                break;
             default:
                 break;
         }

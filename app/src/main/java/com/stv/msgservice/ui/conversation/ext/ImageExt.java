@@ -79,7 +79,8 @@ public class ImageExt extends ConversationExt {
                     if(allGranted){
                         Log.i("Junwang", "all permission granted.");
                         PictureSelector.create(activity)
-                                .openGallery(/*PictureMimeType.ofImage()*/PictureMimeType.ofAll())
+                                .openGallery(PictureMimeType.ofImage()/*PictureMimeType.ofAll()*/)
+                                .isCamera(false)
                                 .loadImageEngine(GlideEngine.createGlideEngine())
                                 .forResult(new MyResultCallback());
                     }else{

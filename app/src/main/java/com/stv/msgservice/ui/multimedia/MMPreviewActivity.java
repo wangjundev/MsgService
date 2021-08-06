@@ -3,6 +3,7 @@ package com.stv.msgservice.ui.multimedia;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -13,18 +14,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.cjt2325.cameralibrary.util.LogUtil;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.google.zxing.Result;
 import com.stv.msgservice.R;
 import com.stv.msgservice.datamodel.constants.Config;
 import com.stv.msgservice.third.utils.ImageUtils;
 import com.stv.msgservice.ui.GlideApp;
+import com.stv.msgservice.ui.WebViewNewsActivity;
 import com.stv.msgservice.ui.conversation.message.ImageMessageContent;
 import com.stv.msgservice.ui.conversation.message.VideoMessageContent;
+import com.stv.msgservice.ui.videoplayer.ijk.IjkPlayer;
+import com.stv.msgservice.ui.videoplayer.player.PlayerFactory;
+import com.stv.msgservice.ui.videoplayer.player.SantiVideoView;
+import com.stv.msgservice.ui.videoplayer.ui.StandardVideoController;
 import com.stv.msgservice.utils.DownloadManager;
 import com.stv.msgservice.utils.UIUtils;
 
@@ -36,6 +43,9 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import tv.danmaku.ijk.media.player.IjkMediaPlayer;
+
+import static com.stv.msgservice.ui.conversation.message.viewholder.ImageMessageContentViewHolder.parsePic;
 
 //import android.app.DownloadManager;
 
@@ -162,7 +172,8 @@ public class MMPreviewActivity extends Activity {
             GlideApp.with(photoView).load(entry.getThumbnailUrl()).into(photoView);
         }
 
-        VideoView videoView = view.findViewById(R.id.videoView);
+//        VideoView videoView = view.findViewById(R.id.videoView);
+        SantiVideoView videoView = (SantiVideoView)findViewById(R.id.videoView);
         videoView.setVisibility(View.INVISIBLE);
 
         ProgressBar loadingProgressBar = view.findViewById(R.id.loading);
@@ -226,9 +237,29 @@ public class MMPreviewActivity extends Activity {
     }
 
     private void playVideo(View view, String videoUrl) {
-        VideoView videoView = view.findViewById(R.id.videoView);
-        videoView.setMediaController(new MediaController(this));
-        videoView.setVisibility(View.INVISIBLE);
+//        VideoView videoView = view.findViewById(R.id.videoView);
+//        videoView.setMediaController(new MediaController(this));
+//        videoView.setVisibility(View.INVISIBLE);
+
+        SantiVideoView videoView = (SantiVideoView)findViewById(R.id.videoView);
+        StandardVideoController standardVideoController = new StandardVideoController(this);
+//        if(mTitle != null) {
+//            standardVideoController.setTitle(mTitle);
+//        }
+        videoView.setVideoController(standardVideoController);
+        videoView.setUrl(videoUrl);
+        videoView.setPlayerFactory(new PlayerFactory<IjkPlayer>() {
+            @Override
+            public IjkPlayer createPlayer() {
+                return new IjkPlayer() {
+                    @Override
+                    public void setOptions() {
+                        //精准seek
+                        mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "enable-accurate-seek", 1);
+                    }
+                };
+            }
+        });
 
         PhotoView photoView = view.findViewById(R.id.photoView);
         photoView.setVisibility(View.GONE);
@@ -242,13 +273,13 @@ public class MMPreviewActivity extends Activity {
         currentVideoView = view;
 
         videoView.setVisibility(View.VISIBLE);
-        videoView.setVideoPath(videoUrl);
-        videoView.setOnErrorListener((mp, what, extra) -> {
-            Toast.makeText(MMPreviewActivity.this, "play error", Toast.LENGTH_SHORT).show();
-            resetVideoView(view);
-            return true;
-        });
-        videoView.setOnCompletionListener(mp -> resetVideoView(view));
+//        videoView.setVideoPath(videoUrl);
+//        videoView.setOnErrorListener((mp, what, extra) -> {
+//            Toast.makeText(MMPreviewActivity.this, "play error", Toast.LENGTH_SHORT).show();
+//            resetVideoView(view);
+//            return true;
+//        });
+//        videoView.setOnCompletionListener(mp -> resetVideoView(view));
         videoView.start();
 
     }
@@ -293,6 +324,24 @@ public class MMPreviewActivity extends Activity {
                     .placeholder(new BitmapDrawable(getResources(), entry.getThumbnailUrl()))
                     .into(photoView);
         }
+        photoView.setOnLongClickListener(new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(View v) {
+                BitmapDrawable drawable = (BitmapDrawable)photoView.getDrawable();
+                if(drawable == null)
+                {
+                    return false;
+                }
+                Bitmap bitmap = drawable.getBitmap();
+                Result ret = parsePic(bitmap);
+                if (null == ret) {
+                } else {
+                    LogUtil.i("Junwang", "qrcode="+ret.toString());
+                    WebViewNewsActivity.start(MMPreviewActivity.this, ret.toString());
+                }
+                return false;
+            }
+        });
     }
 
     @Override

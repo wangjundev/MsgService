@@ -94,6 +94,7 @@ dependencies {
 //    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.6.1'
     implementation 'com.zackratos.ultimatebarx:ultimatebarx:0.6.0'
     implementation 'top.zibin:Luban:1.1.8'
+    implementation 'cn.yipianfengye.android:zxing-library:2.2'
 
     implementation project(':EasyRxRetrofitlib')
     implementation project(':emojilibrary')
