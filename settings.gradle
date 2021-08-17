@@ -2,7 +2,7 @@
 include ':picture_library'
 //include ':immersionbar'
 include ':SwipeRecyclerView'
-include ':imagepicker'
+//include ':imagepicker'
 include ':emojilibrary'
 include ':EasyRxRetrofitlib'
 include ':app'

@@ -1,6 +1,26 @@
 plugins {
+//    id 'com.android.library'
     id 'com.android.application'
 }
+
+apply plugin: 'maven'
+
+//apply from: 'https://gitee.com/rain_9155/hosting/raw/master/MavenPublishScript/publication.gradle'
+
+apply from: 'publish-maven.gradle'
+
+uploadArchives{
+    repositories.mavenDeployer{
+        // 配置本地仓库路径，项目根目录下的repository目录中
+        repository(url: uri('../repository'))
+        pom.groupId = "io.github.wangjundev"// 唯一标识（通常为模块包名，也可以任意）
+        pom.artifactId = "5GMSSDK" // 项目名称（通常为类库模块名称，也可以任意）
+        pom.version = "1.0.0" // 版本号
+    }
+}
+
+
+
 
 android {
     compileSdkVersion 29
@@ -33,6 +53,8 @@ android {
         enabled = true
     }
 
+    lintOptions { abortOnError false }
+
     configurations { all*.exclude group: 'xpp3', module: 'xpp3' }
 }
 
@@ -48,10 +70,10 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime:2.2.0'
     api 'com.afollestad.material-dialogs:core:0.9.6.0'
     implementation 'com.squareup.retrofit2:retrofit:2.6.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.+'
-    implementation 'com.squareup.retrofit2:converter-gson:2.+'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.+'
-    implementation 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.+'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    implementation 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'com.kyleduo.switchbutton:library:1.4.4'
     implementation 'androidx.multidex:multidex:2.0.1'
@@ -98,7 +120,7 @@ dependencies {
 
     implementation project(':EasyRxRetrofitlib')
     implementation project(':emojilibrary')
-    implementation project(':imagepicker')
+//    implementation project(':imagepicker')
 //    implementation project(':pictureSelectorlibrary')
     implementation project(':picture_library')
     implementation project(':SwipeRecyclerView')
@@ -125,3 +147,68 @@ dependencies {
 }
 
 apply plugin: 'com.jakewharton.butterknife'
+
+
+//publishing {
+//    publications {
+//        maven(MavenPublication) {
+//            groupId 'io.github.wangjundev' //开通maven central时候定义的
+//            artifactId '5GMSSDK' //资源名称
+//            version '1.0.0' //版本名称
+//            // 发布的 arr 的文件和源码文件
+//            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+//            pom {
+//                name = '5GMSSDK'
+//                description = '5g msg service sdk'
+//                url = 'https://github.com/wangjundev/MsgService'
+//                inceptionYear = '2021'
+//            }
+//            scm {
+//                url = 'https://github.com/wangjundev/MsgService.git'
+//                connection = 'scm:git@https://github.com/wangjundev/MsgService.git'
+//                developerConnection = 'https://github.com/wangjundev/MsgService.git'
+//            }
+//
+//            licenses {
+//                license {
+//                    name = 'The Apache Software License, Version 2.0'
+//                    url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//                    distribution = 'repo'
+//                    comments = 'A business-friendly OSS license'
+//                }
+//            }
+//
+//            developers {
+//                developer {
+//                    id = 'wangjun'
+//                    name = 'JW9527'
+//                    email = 'r9duncan@aliyun.com'
+//                    url = 'https://github.com/wangjundev/MsgService'
+//                }
+//            }
+//
+//            issueManagement {
+//                system = 'Github'
+//                url = 'https://github.com/wangjundev/MsgService'
+//            }
+//            artifact generateSourcesJar //需要上传的source jar
+//            artifact generateJavadoc //需要上传的java doc
+//            artifact makeJar //需要上传的资源jar路径或者是aar路径，这边可以填写一个生成jar的task，如makeJar方法就是一个生成jar的task
+//        }
+//    }
+//    repositories {
+//        maven {
+//            // 指定要上传的maven仓库
+//            url = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+//            //Maven仓库用户名和密码
+//            credentials {
+//                username 'JW9527'
+//                password '@Mavenpsw9527'
+//            }
+//        }
+//    }
+//}
+//
+//signing {
+//    sign publishing.publications //签名配置
+//}

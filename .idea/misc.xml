@@ -5,6 +5,34 @@
       <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
     </configurations>
   </component>
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/drawable/bg_menu.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/border_textview.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/channel_suggestion_background.xml" value="0.10740740740740741" />
+        <entry key="app/src/main/res/drawable/chatbot_introduce_background.xml" value="0.10740740740740741" />
+        <entry key="app/src/main/res/drawable/checkbox_style.xml" value="0.10740740740740741" />
+        <entry key="app/src/main/res/drawable/ios_back_drawable.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/listview_background.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/search_view_bg.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/selector_common_item.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_conversation_item_multi_card_receive.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_msg_item_view.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_multi_card_item_view.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_single_card_msg_item_view.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_suggestion_item_view.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_text_msg_item_view.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/chatbot_introduce_activity.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/conversation_activity.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/conversation_item_single_card_receive.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/conversationlist_frament.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/conversationlist_item_conversation.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/item_banner_image.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/ysyy_fragment.xml" value="0.1" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

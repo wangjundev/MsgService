@@ -1,0 +1,65 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId 'io.github.wangjundev' //开通maven central时候定义的
+            artifactId '5GMSSDK' //资源名称
+            version '1.0.0' //版本名称
+            pom {
+                name = '5GMSSDK'
+                description = '5g msg service sdk'
+                url = 'https://github.com/wangjundev/MsgService'
+                inceptionYear = '2021'
+            }
+            scm {
+                url = 'https://github.com/wangjundev/MsgService.git'
+                connection = 'scm:git@https://github.com/wangjundev/MsgService.git'
+                developerConnection = 'https://github.com/wangjundev/MsgService.git'
+            }
+
+            licenses {
+                license {
+                    name = 'The Apache Software License, Version 2.0'
+                    url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution = 'repo'
+                    comments = 'A business-friendly OSS license'
+                }
+            }
+
+            developers {
+                developer {
+                    id = 'wangjun'
+                    name = 'JW9527'
+                    email = 'r9duncan@aliyun.com'
+                    url = 'https://github.com/wangjundev/MsgService'
+                }
+            }
+
+            issueManagement {
+                system = 'Github'
+                url = 'https://github.com/wangjundev/MsgService'
+            }
+            artifact generateSourcesJar //需要上传的source jar
+            artifact generateJavadoc //需要上传的java doc
+            artifact makeJar //需要上传的资源jar路径或者是aar路径，这边可以填写一个生成jar的task，如makeJar方法就是一个生成jar的task
+        }
+    }
+    repositories {
+        maven {
+            // 指定要上传的maven仓库
+            url = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+            //Maven仓库用户名和密码
+            credentials {
+                username 'JW9527'
+                password '@Mavenpsw9527'
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.maven //签名配置
+}
+
+

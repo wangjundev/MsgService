@@ -41,6 +41,9 @@ public class UserInfoViewModel extends AndroidViewModel {
         return mRepository.getUsers();
     }
 
+    public LiveData<List<UserInfoEntity>> getLatestUsedChatbotList(){
+        return mRepository.getLatestUsedChatbotList();
+    }
 //    public void SearchChatbotList() {
 //        Retrofit retrofit = new Retrofit.Builder()
 //                .baseUrl(MessageConstants.BASE_URL)

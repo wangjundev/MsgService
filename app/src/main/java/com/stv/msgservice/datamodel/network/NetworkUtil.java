@@ -172,6 +172,7 @@ public class NetworkUtil {
                             me.setReceivedTimeStamp(time);
                             me.setRead(1);
                             me.setDomain(domain);
+                            me.setSenderAddress(sender);
 
                             String contentType = chatbotMessageBody.getOutboundIMMessage().getContentType();
                             String bodyText = chatbotMessageBody.getOutboundIMMessage().getBodyText();

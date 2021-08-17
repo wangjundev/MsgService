@@ -12,6 +12,7 @@ import com.stv.msgservice.datamodel.TerminalInfo.TerminalInfo;
 import com.stv.msgservice.datamodel.constants.MessageConstants;
 import com.stv.msgservice.datamodel.database.AppDatabase;
 import com.stv.msgservice.datamodel.database.entity.MessageEntity;
+import com.stv.msgservice.datamodel.database.entity.MessageUserInfoEntity;
 import com.stv.msgservice.datamodel.datarepository.DataRepository;
 import com.stv.msgservice.datamodel.model.Conversation;
 import com.stv.msgservice.datamodel.model.Message;
@@ -121,6 +122,10 @@ public class MessageViewModel extends AndroidViewModel {
     public LiveData<List<MessageEntity>> getMessages() {
         mObservableMessages = mRepository.getMessages(mConversationId);
         return mObservableMessages;
+    }
+
+    public LiveData<List<MessageUserInfoEntity>> getAllMessages(){
+        return mRepository.getAllMessages();
     }
 
     public List<MessageEntity> searchMessages(long conversationId, String query) {
@@ -505,7 +510,9 @@ public class MessageViewModel extends AndroidViewModel {
                         Log.i("Junwang", "sendFilemsg requestXml="+requestXml);
                         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/xml;charset=UTF-8"),requestXml);
 
+//                        OkHttpClient client = new OkHttpClient.Builder().addNetworkInterceptor(new DataEncryptInterceptor()).build();
                         Retrofit retrofit = new Retrofit.Builder()
+//                                .client(client)
                                 .baseUrl(MessageConstants.BASE_URL)
                                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                                 .addConverterFactory(GsonConverterFactory.create())
@@ -686,10 +693,10 @@ public class MessageViewModel extends AndroidViewModel {
 //            });
 //
 //            OkHttpClient httpClient = client.build();
-
+//            OkHttpClient client = new OkHttpClient.Builder().addNetworkInterceptor(new DataEncryptInterceptor()).build();
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(MessageConstants.BASE_URL)
-//                    .client(httpClient)
+//                    .client(client)
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();

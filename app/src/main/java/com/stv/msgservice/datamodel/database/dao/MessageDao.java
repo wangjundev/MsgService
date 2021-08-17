@@ -1,6 +1,7 @@
 package com.stv.msgservice.datamodel.database.dao;
 
 import com.stv.msgservice.datamodel.database.entity.MessageEntity;
+import com.stv.msgservice.datamodel.database.entity.MessageUserInfoEntity;
 
 import java.util.List;
 
@@ -66,4 +67,7 @@ public interface MessageDao {
 
     @Query("SELECT messages.* FROM messages WHERE messages.content LIKE :query AND message_type = 200")
     List<MessageEntity> searchAllMessages(String query);
+
+    @Query("SELECT messages.*, name, portrait FROM messages INNER JOIN userinfos ON messages.sender_address = userinfos.uri  ORDER BY id DESC")
+    LiveData<List<MessageUserInfoEntity>> getAllMessages();
 }

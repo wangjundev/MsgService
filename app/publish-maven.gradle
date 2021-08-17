@@ -1,0 +1,100 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set("sources")
+    from android.sourceSets.main.java.source
+    exclude "**/R.class"
+    exclude "**/BuildConfig.class"
+}
+afterEvaluate {
+    publishing {
+        // 定义发布什么
+        publications {
+            mavenJava(MavenPublication) {
+                // group id，发布后引用的依赖的 group id
+                groupId 'io.github.wangjundev' //开通maven central时候定义的
+                artifactId '5GMSSDK' //资源名称
+                version '1.0.0' //版本名称
+                // 发布的 arr 的文件和源码文件
+//                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+                artifact("$buildDir/outputs/aar/app-debug.aar")
+                artifact androidSourcesJar
+                pom {
+                    // 构件名称，可以自定义
+                    name = '5GMSSDK'
+                    description = '5g msg service sdk'
+                    url = 'https://github.com/wangjundev/MsgService'
+                    // 许可证名称和地址
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    // 开发者信息
+                    developers {
+                        developer {
+                            id = 'wangjun'
+                            name = 'JW9527'
+                            email = 'r9duncan@aliyun.com'
+                            url = 'https://github.com/wangjundev/MsgService'
+                        }
+                    }
+                    // 版本控制仓库地址
+                    scm {
+                        url = 'https://github.com/wangjundev/MsgService.git'
+                        connection = 'scm:git@https://github.com/wangjundev/MsgService.git'
+                        developerConnection = 'https://github.com/wangjundev/MsgService.git'
+                    }
+                    // 解决依赖关系
+                    withXml {
+                        def dependenciesNode = asNode().appendNode('dependencies')
+                        project.configurations.all { configuration ->
+                            def name = configuration.name
+                            if (name != "implementation" && name != "compile" && name != "api") {
+                                return
+                            }
+                            println(configuration)
+                            configuration.dependencies.each {
+                                println(it)
+                                if (it.name == "unspecified") {
+                                    // 忽略无法识别的
+                                    return
+                                }
+                                def dependencyNode = dependenciesNode.appendNode('dependency')
+                                dependencyNode.appendNode('groupId', it.group)
+                                dependencyNode.appendNode('artifactId', it.name)
+                                dependencyNode.appendNode('version', it.version)
+                                if (name == "api" || name == "compile") {
+                                    dependencyNode.appendNode("scope", "compile")
+                                } else { // implementation
+                                    dependencyNode.appendNode("scope", "runtime")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // 定义发布到哪里
+        repositories {
+            maven {
+                // 发布的位置，这里根据发布的版本区分了 SNAPSHOT 和最终版本两种情况
+                def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                credentials {
+                    // 这里就是之前在 issues.sonatype.org 注册的账号
+                    username 'JW9527'
+                    password '@Mavenpsw9527'
+                }
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications
+    }
+}
+

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.stv.msgservice.datamodel.database.AppDatabase;
 import com.stv.msgservice.datamodel.database.entity.ConversationEntity;
 import com.stv.msgservice.datamodel.database.entity.MessageEntity;
+import com.stv.msgservice.datamodel.database.entity.MessageUserInfoEntity;
 import com.stv.msgservice.datamodel.database.entity.UserInfoEntity;
 
 import java.util.List;
@@ -128,6 +129,10 @@ public class DataRepository {
         return mDatabase.userInfoDao().getUser(uri);
     }
 
+    public LiveData<List<UserInfoEntity>> getLatestUsedChatbotList(){
+        return mDatabase.userInfoDao().getLatestUsedChatbotList();
+    }
+
     public int getUnreadCount(long conversationId){
         return mDatabase.messageDao().getUnreadCount(conversationId);
     }
@@ -158,5 +163,9 @@ public class DataRepository {
 
     public LiveData<UserInfoEntity> getUserInfoByConversationId(final long conversationId){
         return mDatabase.userInfoDao().getUserInfoByConversationId(conversationId);
+    }
+
+    public LiveData<List<MessageUserInfoEntity>> getAllMessages(){
+        return mDatabase.messageDao().getAllMessages();
     }
 }

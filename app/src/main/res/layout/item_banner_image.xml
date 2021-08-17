@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.stv.msgservice.ui.banner.ShadowLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:hl_cornerRadius="10dp"
+    app:hl_dy="1dp"
+    app:hl_dx="1dp"
+    app:hl_shadowColor="#4D868686"
+    app:hl_shadowBackColor="#fff"
+    app:hl_shadowLimit="2dp">
+    <ImageView
+        android:id="@+id/channel_banner_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY" />
+    <TextView
+        android:id="@+id/channel_bannel_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="14dp"
+        android:paddingLeft="14dp"
+        android:paddingRight="14dp"
+        android:layout_gravity="bottom"
+        android:textSize="18sp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textColor="@android:color/white"
+        android:text="习近平“七一”重要讲话中的党史｜土地革命战争篇"/>
+
+</com.stv.msgservice.ui.banner.ShadowLayout>

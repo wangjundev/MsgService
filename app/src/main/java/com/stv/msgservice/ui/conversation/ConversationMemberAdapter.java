@@ -10,9 +10,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.stv.msgservice.R;
 import com.stv.msgservice.R2;
+import com.stv.msgservice.datamodel.database.entity.UserInfoEntity;
 import com.stv.msgservice.datamodel.model.Conversation;
 import com.stv.msgservice.datamodel.model.UserInfo;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,6 +39,16 @@ public class ConversationMemberAdapter extends RecyclerView.Adapter<Conversation
 
     public void setMembers(List<UserInfo> members) {
         this.members = members;
+    }
+
+    public void setMemberList(List<UserInfoEntity> users){
+        if(users != null  && users.size() > 0){
+            List<UserInfo> lists = new ArrayList<>();
+            for(UserInfoEntity entity : users){
+                lists.add((UserInfo) users);
+            }
+            this.members = lists;
+        }
     }
 
 

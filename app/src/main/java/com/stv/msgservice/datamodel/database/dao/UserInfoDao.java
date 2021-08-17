@@ -22,6 +22,9 @@ public interface UserInfoDao {
     void insertUserInfo(UserInfoEntity userInfoEntity);
 
     //使用内连接查询
-    @Query("SELECT user_id, domain, uri, expiry_time, etag, json, name, menu, portrait, category, description FROM userinfos INNER JOIN conversations ON userinfos.uri = conversations.sender_address WHERE conversations.id = :conversationId")
+    @Query("SELECT user_id, domain, uri, expiry_time, etag, json, name, menu, portrait, category, description, last_used_time FROM userinfos INNER JOIN conversations ON userinfos.uri = conversations.sender_address WHERE conversations.id = :conversationId")
     LiveData<UserInfoEntity> getUserInfoByConversationId(final long conversationId);
+
+    @Query("SELECT * FROM userinfos ORDER BY last_used_time DESC")
+    LiveData<List<UserInfoEntity>> getLatestUsedChatbotList();
 }

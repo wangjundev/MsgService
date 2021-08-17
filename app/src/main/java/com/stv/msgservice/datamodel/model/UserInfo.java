@@ -7,4 +7,6 @@ public interface UserInfo {
     String getMenu();
     void setName(String name);
     void setUri(String uri);
+    long getLastUsedTime();
+    void setLastUsedTime(long lastUsedTime);
 }

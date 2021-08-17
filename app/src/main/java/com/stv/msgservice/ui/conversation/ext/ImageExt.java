@@ -1,20 +1,15 @@
 package com.stv.msgservice.ui.conversation.ext;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 
-import com.lqr.imagepicker.ImagePicker;
-import com.lqr.imagepicker.bean.ImageItem;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.app.PictureAppMaster;
-import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.entity.MediaExtraInfo;
@@ -41,7 +36,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import top.zibin.luban.Luban;
@@ -225,153 +219,109 @@ public class ImageExt extends ConversationExt {
         return false;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i("Junwang", "ImageExt onActivityResult");
-        if (resultCode == Activity.RESULT_OK) {
-            if(requestCode == PictureConfig.CHOOSE_REQUEST){
-                List<LocalMedia> selectList = PictureSelector.obtainMultipleResult(data);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //是否发送原图
-                        boolean compress = false;//data.getBooleanExtra(ImagePicker.EXTRA_COMPRESS, true);
-                        for (LocalMedia imageItem : selectList) {
-                            boolean isGif = isGifFile(imageItem.getPath());
-                            if (isGif) {
-                                Bitmap b = VideoUtil.getVideoThumb(imageItem.getPath());
-                                String thumbnail = null;
-                                if(b != null){
-                                    thumbnail = VideoUtil.bitmap2File(activity, b, "thumb_"+ SystemClock.currentThreadTimeMillis());
-                                }
-                                if(conversation != null){
-                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageItem.getPath(), thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
-                                }else if(chatbotId != null){
-                                    ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageItem.getPath(), thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
-                                }
-                                continue;
-                            }
-                            File imageFileThumb = null;
-                            File imageFileSource = null;
-                            // FIXME: 2018/11/29 压缩, 不是发原图的时候，大图需要进行压缩
-                            if (compress) {
-                                imageFileSource = ImageUtils.compressImage(imageItem.getPath());
-                            }
-                            imageFileSource = imageFileSource == null ? new File(imageItem.getPath()) : imageFileSource;
-                            if (PictureMimeType.isHasImage(imageItem.getMimeType())){
-                                imageFileThumb = ImageUtils.genThumbImgFile(imageItem.getPath());
-                            }else if(PictureMimeType.isHasVideo(imageItem.getMimeType())){
-                                Bitmap bitmap = VideoUtil.getVideoThumb(imageItem.getPath());
-                                if(bitmap != null){
-                                    String filePath = VideoUtil.bitmap2File(activity, bitmap, "thumb_"+ SystemClock.currentThreadTimeMillis());
-                                    imageFileThumb = new File(filePath);
-                                }
-                            }
-                            if (imageFileThumb == null) {
-                                Log.e("ImageExt", "gen image thumb fail");
-                                return;
-                            }
-                            if(conversation != null){
-                                if(PictureMimeType.isHasImage(imageItem.getMimeType())){
-                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
-                                }else if(PictureMimeType.isHasVideo(imageItem.getMimeType())){
-                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
-                                }
-                            }else if(chatbotId != null){
-                                if(PictureMimeType.isHasImage(imageItem.getMimeType())){
-                                    ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
-                                }else if(PictureMimeType.isHasVideo(imageItem.getMimeType())){
-                                    ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
-                                }
-                            }
-                        }
-                    }
-                }).start();
-                ((ConversationActivity)activity).getConversationFragment().getConversationInputPanel().closeConversationInputPanel();
-            }
-            else
-            if (data != null) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //是否发送原图
-                        boolean compress = data.getBooleanExtra(ImagePicker.EXTRA_COMPRESS, true);
-                        ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
-                        for (ImageItem imageItem : images) {
-                            boolean isGif = isGifFile(imageItem.path);
-                            if (isGif) {
-//                                UIUtils.postTaskSafely(() -> messageViewModel.sendStickerMsg(conversation, imageItem.path, null));
-                                Bitmap b = VideoUtil.getVideoThumb(imageItem.path);
-                                String thumbnail = null;
-                                if(b != null){
-                                    thumbnail = VideoUtil.bitmap2File(activity, b, "thumb_"+ SystemClock.currentThreadTimeMillis());
-                                }
-//                                ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE);
-                                if(conversation != null){
-                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
-                                }else if(chatbotId != null){
-                                    ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
-                                }
-                                continue;
-                            }
-                            File imageFileThumb;
-                            File imageFileSource = null;
-                            // FIXME: 2018/11/29 压缩, 不是发原图的时候，大图需要进行压缩
-                            if (compress) {
-                                imageFileSource = ImageUtils.compressImage(imageItem.path);
-                            }
-                            imageFileSource = imageFileSource == null ? new File(imageItem.path) : imageFileSource;
-//                    if (isOrig) {
-//                    imageFileSource = new File(imageItem.path);
-                            imageFileThumb = ImageUtils.genThumbImgFile(imageItem.path);
-                            if (imageFileThumb == null) {
-                                Log.e("ImageExt", "gen image thumb fail");
-                                return;
-                            }
-//                    } else {
-//                        //压缩图片
-//                        // TODO  压缩的有问题
-//                        imageFileSource = ImageUtils.genThumbImgFileEx(imageItem.path);
-//                        //imageFileThumb = ImageUtils.genThumbImgFile(imageFileSource.getAbsolutePath());
-//                        imageFileThumb = imageFileSource;
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        Log.i("Junwang", "ImageExt onActivityResult");
+//        if (resultCode == Activity.RESULT_OK) {
+//            if(requestCode == PictureConfig.CHOOSE_REQUEST){
+//                List<LocalMedia> selectList = PictureSelector.obtainMultipleResult(data);
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        //是否发送原图
+//                        boolean compress = false;//data.getBooleanExtra(ImagePicker.EXTRA_COMPRESS, true);
+//                        for (LocalMedia imageItem : selectList) {
+//                            boolean isGif = isGifFile(imageItem.getPath());
+//                            if (isGif) {
+//                                Bitmap b = VideoUtil.getVideoThumb(imageItem.getPath());
+//                                String thumbnail = null;
+//                                if(b != null){
+//                                    thumbnail = VideoUtil.bitmap2File(activity, b, "thumb_"+ SystemClock.currentThreadTimeMillis());
+//                                }
+//                                if(conversation != null){
+//                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageItem.getPath(), thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+//                                }else if(chatbotId != null){
+//                                    ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageItem.getPath(), thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+//                                }
+//                                continue;
+//                            }
+//                            File imageFileThumb = null;
+//                            File imageFileSource = null;
+//                            // FIXME: 2018/11/29 压缩, 不是发原图的时候，大图需要进行压缩
+//                            if (compress) {
+//                                imageFileSource = ImageUtils.compressImage(imageItem.getPath());
+//                            }
+//                            imageFileSource = imageFileSource == null ? new File(imageItem.getPath()) : imageFileSource;
+//                            if (PictureMimeType.isHasImage(imageItem.getMimeType())){
+//                                imageFileThumb = ImageUtils.genThumbImgFile(imageItem.getPath());
+//                            }else if(PictureMimeType.isHasVideo(imageItem.getMimeType())){
+//                                Bitmap bitmap = VideoUtil.getVideoThumb(imageItem.getPath());
+//                                if(bitmap != null){
+//                                    String filePath = VideoUtil.bitmap2File(activity, bitmap, "thumb_"+ SystemClock.currentThreadTimeMillis());
+//                                    imageFileThumb = new File(filePath);
+//                                }
+//                            }
+//                            if (imageFileThumb == null) {
+//                                Log.e("ImageExt", "gen image thumb fail");
+//                                return;
+//                            }
+//                            if(conversation != null){
+//                                if(PictureMimeType.isHasImage(imageItem.getMimeType())){
+//                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+//                                }else if(PictureMimeType.isHasVideo(imageItem.getMimeType())){
+//                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
+//                                }
+//                            }else if(chatbotId != null){
+//                                if(PictureMimeType.isHasImage(imageItem.getMimeType())){
+//                                    ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+//                                }else if(PictureMimeType.isHasVideo(imageItem.getMimeType())){
+//                                    ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
+//                                }
+//                            }
+//                        }
 //                    }
-//                            messageViewModel.sendImgMsg(conversation, imageFileThumb, imageFileSource);
-//                            File finalImageFileSource = imageFileSource;
-//                            UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, imageFileThumb, finalImageFileSource));
-//                            ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
-                            if(conversation != null){
-                                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
-                            }else if(chatbotId != null){
-                                ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
-                            }
-                        }
-                    }
-                }).start();
-                ((ConversationActivity)activity).getConversationFragment().getConversationInputPanel().closeConversationInputPanel();
-//                ChatManager.Instance().getWorkHandler().post(() -> {
-//                    //是否发送原图
-//                    boolean compress = data.getBooleanExtra(ImagePicker.EXTRA_COMPRESS, true);
-//                    ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
-//                    for (ImageItem imageItem : images) {
-//                        boolean isGif = isGifFile(imageItem.path);
-//                        if (isGif) {
-//                            UIUtils.postTaskSafely(() -> messageViewModel.sendStickerMsg(conversation, imageItem.path, null));
-//                            continue;
-//                        }
-//                        File imageFileThumb;
-//                        File imageFileSource = null;
-//                        // FIXME: 2018/11/29 压缩, 不是发原图的时候，大图需要进行压缩
-//                        if (compress) {
-//                            imageFileSource = ImageUtils.compressImage(imageItem.path);
-//                        }
-//                        imageFileSource = imageFileSource == null ? new File(imageItem.path) : imageFileSource;
+//                }).start();
+//                ((ConversationActivity)activity).getConversationFragment().getConversationInputPanel().closeConversationInputPanel();
+//            }
+//            else
+//            if (data != null) {
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        //是否发送原图
+//                        boolean compress = data.getBooleanExtra(ImagePicker.EXTRA_COMPRESS, true);
+//                        ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
+//                        for (ImageItem imageItem : images) {
+//                            boolean isGif = isGifFile(imageItem.path);
+//                            if (isGif) {
+////                                UIUtils.postTaskSafely(() -> messageViewModel.sendStickerMsg(conversation, imageItem.path, null));
+//                                Bitmap b = VideoUtil.getVideoThumb(imageItem.path);
+//                                String thumbnail = null;
+//                                if(b != null){
+//                                    thumbnail = VideoUtil.bitmap2File(activity, b, "thumb_"+ SystemClock.currentThreadTimeMillis());
+//                                }
+////                                ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE);
+//                                if(conversation != null){
+//                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+//                                }else if(chatbotId != null){
+//                                    ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+//                                }
+//                                continue;
+//                            }
+//                            File imageFileThumb;
+//                            File imageFileSource = null;
+//                            // FIXME: 2018/11/29 压缩, 不是发原图的时候，大图需要进行压缩
+//                            if (compress) {
+//                                imageFileSource = ImageUtils.compressImage(imageItem.path);
+//                            }
+//                            imageFileSource = imageFileSource == null ? new File(imageItem.path) : imageFileSource;
 ////                    if (isOrig) {
 ////                    imageFileSource = new File(imageItem.path);
-//                        imageFileThumb = ImageUtils.genThumbImgFile(imageItem.path);
-//                        if (imageFileThumb == null) {
-//                            Log.e("ImageExt", "gen image thumb fail");
-//                            return;
-//                        }
+//                            imageFileThumb = ImageUtils.genThumbImgFile(imageItem.path);
+//                            if (imageFileThumb == null) {
+//                                Log.e("ImageExt", "gen image thumb fail");
+//                                return;
+//                            }
 ////                    } else {
 ////                        //压缩图片
 ////                        // TODO  压缩的有问题
@@ -380,16 +330,60 @@ public class ImageExt extends ConversationExt {
 ////                        imageFileThumb = imageFileSource;
 ////                    }
 ////                            messageViewModel.sendImgMsg(conversation, imageFileThumb, imageFileSource);
-//                        File finalImageFileSource = imageFileSource;
-//                        UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, imageFileThumb, finalImageFileSource));
-//
+////                            File finalImageFileSource = imageFileSource;
+////                            UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, imageFileThumb, finalImageFileSource));
+////                            ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
+//                            if(conversation != null){
+//                                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+//                            }else if(chatbotId != null){
+//                                ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+//                            }
+//                        }
 //                    }
+//                }).start();
+//                ((ConversationActivity)activity).getConversationFragment().getConversationInputPanel().closeConversationInputPanel();
+////                ChatManager.Instance().getWorkHandler().post(() -> {
+////                    //是否发送原图
+////                    boolean compress = data.getBooleanExtra(ImagePicker.EXTRA_COMPRESS, true);
+////                    ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
+////                    for (ImageItem imageItem : images) {
+////                        boolean isGif = isGifFile(imageItem.path);
+////                        if (isGif) {
+////                            UIUtils.postTaskSafely(() -> messageViewModel.sendStickerMsg(conversation, imageItem.path, null));
+////                            continue;
+////                        }
+////                        File imageFileThumb;
+////                        File imageFileSource = null;
+////                        // FIXME: 2018/11/29 压缩, 不是发原图的时候，大图需要进行压缩
+////                        if (compress) {
+////                            imageFileSource = ImageUtils.compressImage(imageItem.path);
+////                        }
+////                        imageFileSource = imageFileSource == null ? new File(imageItem.path) : imageFileSource;
+//////                    if (isOrig) {
+//////                    imageFileSource = new File(imageItem.path);
+////                        imageFileThumb = ImageUtils.genThumbImgFile(imageItem.path);
+////                        if (imageFileThumb == null) {
+////                            Log.e("ImageExt", "gen image thumb fail");
+////                            return;
+////                        }
+//////                    } else {
+//////                        //压缩图片
+//////                        // TODO  压缩的有问题
+//////                        imageFileSource = ImageUtils.genThumbImgFileEx(imageItem.path);
+//////                        //imageFileThumb = ImageUtils.genThumbImgFile(imageFileSource.getAbsolutePath());
+//////                        imageFileThumb = imageFileSource;
+//////                    }
+//////                            messageViewModel.sendImgMsg(conversation, imageFileThumb, imageFileSource);
+////                        File finalImageFileSource = imageFileSource;
+////                        UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, imageFileThumb, finalImageFileSource));
+////
+////                    }
+////
+////                });
 //
-//                });
-
-            }
-        }
-    }
+//            }
+//        }
+//    }
 
     @Override
     public int priority() {

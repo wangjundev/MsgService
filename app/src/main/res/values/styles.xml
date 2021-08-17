@@ -51,17 +51,7 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <style name="IosSwitch">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="kswBackDrawable">@drawable/ios_back_drawable</item>
-        <item name="kswBackMeasureRatio">1.5</item>
-        <item name="kswThumbDrawable">@drawable/ios_thumb_selector</item>
-        <item name="kswThumbMarginBottom">-8dp</item>
-        <item name="kswThumbMarginLeft">-5dp</item>
-        <item name="kswThumbMarginRight">-5dp</item>
-        <item name="kswThumbMarginTop">-2dp</item>
-    </style>
+
 
     <!--选项条目样式-->
     <style name="OptionItem">
@@ -105,4 +95,28 @@
         </item>
         <item name="android:progressDrawable">@drawable/shape_progressbar_mini</item>
     </style>
+
+    <declare-styleable name="ShadowLayout">
+        <!--阴影的圆角大小-->
+        <attr format="dimension" name="hl_cornerRadius"/>
+        <!--阴影的扩散范围(也可以理解为扩散程度)-->
+        <attr format="dimension" name="hl_shadowLimit"/>
+        <attr format="color" name="hl_shadowColor"/>
+        <attr format="color" name="hl_shadowBackColor"/>
+        <attr format="color" name="hl_shadowBackColorClicked"/>
+        <!--x轴的偏移量-->
+        <attr format="dimension" name="hl_dx"/>
+        <!--y轴的偏移量-->
+        <attr format="dimension" name="hl_dy"/>
+        <!--左边是否显示阴影-->
+        <attr format="boolean" name="hl_leftShow"/>
+        <!--右边是否显示阴影-->
+        <attr format="boolean" name="hl_rightShow"/>
+        <!--上边是否显示阴影-->
+        <attr format="boolean" name="hl_topShow"/>
+        <!--下面是否显示阴影-->
+        <attr format="boolean" name="hl_bottomShow"/>
+
+
+    </declare-styleable>
 </resources>

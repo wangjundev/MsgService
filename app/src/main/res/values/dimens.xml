@@ -34,4 +34,8 @@
     <dimen name="delete_icon">48dp</dimen>
 
     <dimen name="conversation_list_contact_icon_size">48dp</dimen>
+
+    <dimen name="dp_0">0dp</dimen>
+    <dimen name="dp_15">15dp</dimen>
+    <dimen name="dp_5">5dp</dimen>
 </resources>

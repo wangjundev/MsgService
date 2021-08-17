@@ -376,6 +376,7 @@ public class ConversationListViewModel extends AndroidViewModel {
                             me.setReceivedTimeStamp(time);
                             me.setRead(1);
                             me.setDomain(domain);
+                            me.setSenderAddress(sender);
 
                             String contentType = chatbotMessageBody.getOutboundIMMessage().getContentType();
                             String bodyText = chatbotMessageBody.getOutboundIMMessage().getBodyText();
@@ -1172,6 +1173,7 @@ public class ConversationListViewModel extends AndroidViewModel {
             me.setRead(0);
         }
         me.setLocationData(locationData);
+        me.setSenderAddress(destination);
         me.setAttachmentPath(null);
         me.setMessageStatus(isReceived ? MessageConstants.BUGLE_STATUS_INCOMING_COMPLETE : MessageConstants.BUGLE_STATUS_OUTGOING_SENDING);
         long messageId = mRepository.insertMessage(me);
@@ -1298,6 +1300,7 @@ public class ConversationListViewModel extends AndroidViewModel {
 
         MessageEntity me = new MessageEntity();
         me.setConversationId(convId);
+        me.setSenderAddress(to);
         if(isReceived){
 //            getJson(content, me);
 //            getXml(content, me, ce);

@@ -39,14 +39,14 @@ public class DataEncryptInterceptor implements Interceptor {
             //构造新的request
             request = request.newBuilder()
                     .headers(headers)
-                    .addHeader("Device-Key", key)
+                    .addHeader("Device-Key", /*key*/aesKey)
                     .method(request.method(), newBody)
                     .build();
 //            request = request.newBuilder().header("Content-Type", newBody.contentType()
 //                    .toString()).header("Content-Length", String.valueOf(newBody.contentLength()))
 //                    .method(request.method(), newBody).build();
         }catch (Exception e){
-
+            Log.i("Junwang", "DataEncryptInterceptor exception "+e.toString());
         }
         return chain.proceed(request);
 //        //响应

@@ -22,6 +22,8 @@ public class UserInfoEntity implements UserInfo {
     private String portrait;
     private String category;
     private String description;
+    @ColumnInfo(name = "last_used_time")
+    private long lastUsedTime;
 
     public long getUser_id() {
         return user_id;
@@ -109,6 +111,14 @@ public class UserInfoEntity implements UserInfo {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public long getLastUsedTime() {
+        return lastUsedTime;
+    }
+
+    public void setLastUsedTime(long lastUsedTime) {
+        this.lastUsedTime = lastUsedTime;
     }
 
     //    public UserInfoEntity(String name, String portrait) {

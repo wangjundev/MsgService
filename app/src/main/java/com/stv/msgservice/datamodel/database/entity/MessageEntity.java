@@ -79,6 +79,9 @@ public class MessageEntity implements Message {
 
     private String domain;
 
+    @ColumnInfo(name = "sender_address")
+    private String senderAddress;
+
 //    private int percent;
 
     public long getId() {
@@ -260,7 +263,15 @@ public class MessageEntity implements Message {
         this.domain = domain;
     }
 
-//    public int getPercent() {
+    public String getSenderAddress() {
+        return senderAddress;
+    }
+
+    public void setSenderAddress(String senderAddress) {
+        this.senderAddress = senderAddress;
+    }
+
+    //    public int getPercent() {
 //        return percent;
 //    }
 //

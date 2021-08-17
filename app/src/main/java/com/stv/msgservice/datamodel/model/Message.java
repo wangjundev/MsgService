@@ -25,6 +25,8 @@ public interface Message {
     void setAttachmentType(String attachmentType);
     String getAttachmentType();
     String getDraftContent();
+    String getSenderAddress();
+    void setSenderAddress(String senderAddress);
 //    int getPercent();
 //    void setPercent(int percent);
 }

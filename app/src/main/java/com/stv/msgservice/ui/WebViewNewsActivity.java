@@ -486,13 +486,14 @@ public class WebViewNewsActivity extends WfcBaseActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.iv_back:
-                finish();
-                break;
-            default:
-                break;
-        }
+//        switch (v.getId()){
+//            case R.id.iv_back:
+//                finish();
+//                break;
+//            default:
+//                break;
+//        }
+        finish();
     }
 
     public static void start(Context context, String url) {

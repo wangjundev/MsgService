@@ -27,8 +27,8 @@ import com.stv.msgservice.datamodel.viewmodel.MessageViewModel;
 import com.stv.msgservice.receiver.MmsWapPushReceiver;
 import com.stv.msgservice.receiver.SmsReceiver;
 import com.stv.msgservice.ui.WfcBaseActivity;
+import com.stv.msgservice.ui.channel.ChannelMainFragment;
 import com.stv.msgservice.ui.conversation.message.search.chatbotsearch.ChatbotSearchActivity;
-import com.stv.msgservice.ui.conversationlist.ConversationListFragment;
 import com.stv.msgservice.utils.PermissionUtils;
 
 import java.util.Arrays;
@@ -71,7 +71,7 @@ public class MainActivity extends WfcBaseActivity {
         getToolbar().setNavigationIcon(null);
 //        super.afterViews();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, ConversationListFragment.newInstance())
+                .replace(R.id.container, /*ConversationListFragment.newInstance()*/ChannelMainFragment.newInstance())
                 .commitNow();
         mAppExecutors = new AppExecutors();
 //        RetrofitManager

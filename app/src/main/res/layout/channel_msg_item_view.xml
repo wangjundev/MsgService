@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:id="@+id/channel_msg_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="12dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="12dp">
+        <!--头像-->
+        <ImageView
+            android:id="@+id/channel_chatbot_portraitImageView"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/ic_launcher" />
+        <!--昵称-->
+        <TextView
+            android:id="@+id/channel_chatbot_nameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="12dp"
+            android:layout_toRightOf="@id/channel_chatbot_portraitImageView"
+            android:layout_centerVertical="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="焦点访谈"
+            android:textColor="@color/black1"
+            android:textSize="15sp" />
+        <TextView
+            android:id="@+id/channel_chatbot_timeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="12:01"
+            android:textColor="@color/gray11"
+            android:textSize="12sp" />
+    </RelativeLayout>
+    <ViewStub
+        android:id="@+id/contentViewStub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/channel_msg_header"
+        />
+</RelativeLayout>

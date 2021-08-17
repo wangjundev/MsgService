@@ -167,28 +167,28 @@ public class ChatbotIntroduceActivity extends AppCompatActivity implements View.
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch (id){
-            case R.id.iv_back:
-                finish();
-                break;
-            case R.id.goto_icon:
-            case R.id.read_conversation:
-                mConversationListViewModel.getConversationByChatbotId(chatbotId).observe(ChatbotIntroduceActivity.this, conversationEntity -> {
-                    if(conversationEntity != null) {
-                        Intent intent = new Intent(this, ConversationActivity.class);
-                        intent.putExtra("conversation", conversationEntity);
-                        this.startActivity(intent);
-                    }else{
-                        Intent intent = new Intent(this, ConversationActivity.class);
-                        intent.putExtra("chatbotId", chatbotId);
-                        intent.putExtra("conversationTitle", chatbotName);
-                        this.startActivity(intent);
-                    }
-                });
-                break;
-            default:
-                break;
-        }
+//        switch (id){
+//            case R.id.iv_back1:
+//                finish();
+//                break;
+//            case R.id.goto_icon:
+//            case R.id.read_conversation:
+//                mConversationListViewModel.getConversationByChatbotId(chatbotId).observe(ChatbotIntroduceActivity.this, conversationEntity -> {
+//                    if(conversationEntity != null) {
+//                        Intent intent = new Intent(this, ConversationActivity.class);
+//                        intent.putExtra("conversation", conversationEntity);
+//                        this.startActivity(intent);
+//                    }else{
+//                        Intent intent = new Intent(this, ConversationActivity.class);
+//                        intent.putExtra("chatbotId", chatbotId);
+//                        intent.putExtra("conversationTitle", chatbotName);
+//                        this.startActivity(intent);
+//                    }
+//                });
+//                break;
+//            default:
+//                break;
+//        }
     }
 
     private void setStatusBarTransparent(Activity activity){
