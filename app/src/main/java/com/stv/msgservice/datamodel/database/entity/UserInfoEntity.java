@@ -24,6 +24,12 @@ public class UserInfoEntity implements UserInfo {
     private String description;
     @ColumnInfo(name = "last_used_time")
     private long lastUsedTime;
+    @ColumnInfo(name = "pcc_type")
+    private String pccType;
+    @ColumnInfo(name = "verification_signatures")
+    private String verificationSignatures;
+    @ColumnInfo(name = "is_attentioned")
+    private int isAttentioned;
 
     public long getUser_id() {
         return user_id;
@@ -119,6 +125,30 @@ public class UserInfoEntity implements UserInfo {
 
     public void setLastUsedTime(long lastUsedTime) {
         this.lastUsedTime = lastUsedTime;
+    }
+
+    public String getPccType() {
+        return pccType;
+    }
+
+    public void setPccType(String pccType) {
+        this.pccType = pccType;
+    }
+
+    public String getVerificationSignatures() {
+        return verificationSignatures;
+    }
+
+    public void setVerificationSignatures(String verificationSignatures) {
+        this.verificationSignatures = verificationSignatures;
+    }
+
+    public int isAttentioned() {
+        return isAttentioned;
+    }
+
+    public void setIsAttentioned(int isAttentioned) {
+        this.isAttentioned = isAttentioned;
     }
 
     //    public UserInfoEntity(String name, String portrait) {

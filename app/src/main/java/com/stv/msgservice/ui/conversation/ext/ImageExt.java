@@ -132,7 +132,7 @@ public class ImageExt extends ConversationExt {
                                 thumbnail = VideoUtil.bitmap2File(activity, b, "thumb_"+ SystemClock.currentThreadTimeMillis());
                             }
                             if(conversation != null){
-                                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, media.getRealPath(), thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+                                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, media.getRealPath(), thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
                             }else if(chatbotId != null){
                                 ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, media.getRealPath(), thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
                             }
@@ -174,9 +174,9 @@ public class ImageExt extends ConversationExt {
                         }
                         if(conversation != null){
                             if(PictureMimeType.isHasImage(media.getMimeType())){
-                                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileSource.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+                                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, imageFileSource.getPath(), imageFileSource.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
                             }else if(PictureMimeType.isHasVideo(media.getMimeType())){
-                                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
+                                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
                             }
                         }else if(chatbotId != null){
                             if(PictureMimeType.isHasImage(media.getMimeType())){
@@ -239,7 +239,7 @@ public class ImageExt extends ConversationExt {
 //                                    thumbnail = VideoUtil.bitmap2File(activity, b, "thumb_"+ SystemClock.currentThreadTimeMillis());
 //                                }
 //                                if(conversation != null){
-//                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageItem.getPath(), thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+//                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, imageItem.getPath(), thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
 //                                }else if(chatbotId != null){
 //                                    ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageItem.getPath(), thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
 //                                }
@@ -267,9 +267,9 @@ public class ImageExt extends ConversationExt {
 //                            }
 //                            if(conversation != null){
 //                                if(PictureMimeType.isHasImage(imageItem.getMimeType())){
-//                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+//                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
 //                                }else if(PictureMimeType.isHasVideo(imageItem.getMimeType())){
-//                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
+//                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
 //                                }
 //                            }else if(chatbotId != null){
 //                                if(PictureMimeType.isHasImage(imageItem.getMimeType())){
@@ -302,7 +302,7 @@ public class ImageExt extends ConversationExt {
 //                                }
 ////                                ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE);
 //                                if(conversation != null){
-//                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+//                                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
 //                                }else if(chatbotId != null){
 //                                    ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageItem.path, thumbnail, MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
 //                                }
@@ -334,7 +334,7 @@ public class ImageExt extends ConversationExt {
 ////                            UIUtils.postTaskSafely(() -> messageViewModel.sendImgMsg(conversation, imageFileThumb, finalImageFileSource));
 ////                            ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
 //                            if(conversation != null){
-//                                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+//                                ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
 //                            }else if(chatbotId != null){
 //                                ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, imageFileSource.getPath(), imageFileThumb.getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
 //                            }

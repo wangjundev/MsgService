@@ -66,10 +66,10 @@ public class MessageEntity implements Message {
     private LocationData locationData;
 
     @ColumnInfo(name = "conversation_uuid")
-    private String conversationID;
+    private String conversationUUID;
 
-    @ColumnInfo(name = "contribution_id")
-    private String contributionID;
+    @ColumnInfo(name = "contribution_uuid")
+    private String contributionUUID;
 
     @ColumnInfo(name = "message_id")
     private String messageId;
@@ -81,6 +81,15 @@ public class MessageEntity implements Message {
 
     @ColumnInfo(name = "sender_address")
     private String senderAddress;
+
+    @ColumnInfo(name = "destination_address")
+    private String destinationAddress;
+
+    @ColumnInfo(name = "is_favorited")
+    private int isFavorited;
+
+    @ColumnInfo(name = "favorited_timestamp")
+    private long favoritedTimestamp;
 
 //    private int percent;
 
@@ -223,20 +232,20 @@ public class MessageEntity implements Message {
         this.locationData = locationData;
     }
 
-    public String getConversationID() {
-        return conversationID;
+    public String getConversationUUID() {
+        return conversationUUID;
     }
 
-    public void setConversationID(String conversationID) {
-        this.conversationID = conversationID;
+    public void setConversationUUID(String conversationUUID) {
+        this.conversationUUID = conversationUUID;
     }
 
-    public String getContributionID() {
-        return contributionID;
+    public String getContributionUUID() {
+        return contributionUUID;
     }
 
-    public void setContributionID(String contributionID) {
-        this.contributionID = contributionID;
+    public void setContributionUUID(String contributionUUID) {
+        this.contributionUUID = contributionUUID;
     }
 
     public String getMessageId() {
@@ -271,6 +280,14 @@ public class MessageEntity implements Message {
         this.senderAddress = senderAddress;
     }
 
+    public String getDestinationAddress() {
+        return destinationAddress;
+    }
+
+    public void setDestinationAddress(String destinationAddress) {
+        this.destinationAddress = destinationAddress;
+    }
+
     //    public int getPercent() {
 //        return percent;
 //    }
@@ -278,6 +295,23 @@ public class MessageEntity implements Message {
 //    public void setPercent(int percent) {
 //        this.percent = percent;
 //    }
+
+
+    public int isFavorited() {
+        return isFavorited;
+    }
+
+    public void setIsFavorited(int isFavorited) {
+        this.isFavorited = isFavorited;
+    }
+
+    public long getFavoritedTimestamp() {
+        return favoritedTimestamp;
+    }
+
+    public void setFavoritedTimestamp(long favoritedTimestamp) {
+        this.favoritedTimestamp = favoritedTimestamp;
+    }
 
     @Override
     public boolean equals(@Nullable Object obj) {

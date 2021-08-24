@@ -215,7 +215,7 @@ public class ConversationActivity extends WfcBaseActivity {
             String content = messageEntity.getContent();
             String attachmentpath = messageEntity.getAttachmentPath();
             String thumbnail = messageEntity.getThumbnailPath();
-            MessageEntity me = mViewModel.saveMsg(this, content, conversation.getSenderAddress(), conversation.getDestinationAddress(), conversation.getConversationID(), false,  attachmentpath, thumbnail, messageEntity.getMessageType(), (ConversationEntity) conversation, messageEntity.getAttachmentType(), false);
+            MessageEntity me = mViewModel.saveMsg(this, content, conversation.getSenderAddress(), conversation.getDestinationAddress(), conversation.getConversationUUID(), false,  attachmentpath, thumbnail, messageEntity.getMessageType(), (ConversationEntity) conversation, messageEntity.getAttachmentType(), false);
             if(conversationFragment.msgLiveData != null) {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -225,10 +225,10 @@ public class ConversationActivity extends WfcBaseActivity {
                 });
             }
             if(content != null && content.length() > 0){
-                mMessageViewModel.sendTextmsg(this, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), me, content, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
+                mMessageViewModel.sendTextmsg(this, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), me, content, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
             }else if(attachmentpath != null){
-                mMessageViewModel.sendFilemsg(me, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), attachmentpath, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
+                mMessageViewModel.sendFilemsg(me, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), attachmentpath, null, conversationFragment.msgLiveData, conversationFragment.msgUpdateLiveData);
                 Log.i("Junwang", "msgid = "+me.getId()+" update message status="+me.getMessageStatus());
             }
         });

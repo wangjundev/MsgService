@@ -1078,7 +1078,7 @@ public class ConversationFragment extends Fragment implements
             ((ConversationActivity)(getActivity())).updateDraft(content.toString().trim());
         }
         else if(conversation != null){
-            ((ConversationActivity)(getActivity())).saveDraft(getContext(), content.toString().trim(), conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, null, null, MessageConstants.CONTENT_TYPE_TEXT, null);
+            ((ConversationActivity)(getActivity())).saveDraft(getContext(), content.toString().trim(), conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, null, null, MessageConstants.CONTENT_TYPE_TEXT, null);
         }else if(chatbotId != null){
             ((ConversationActivity)(getActivity())).saveDraft(getContext(), content.toString().trim(), null, chatbotId, null,false, null, null, MessageConstants.CONTENT_TYPE_TEXT, null);
         }

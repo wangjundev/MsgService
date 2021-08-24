@@ -68,6 +68,12 @@ public interface MessageDao {
     @Query("SELECT messages.* FROM messages WHERE messages.content LIKE :query AND message_type = 200")
     List<MessageEntity> searchAllMessages(String query);
 
-    @Query("SELECT messages.*, name, portrait FROM messages INNER JOIN userinfos ON messages.sender_address = userinfos.uri  ORDER BY id DESC")
+    @Query("SELECT messages.*, name, portrait, description, verification_signatures, is_attentioned FROM messages INNER JOIN userinfos ON messages.sender_address = userinfos.uri  ORDER BY id DESC")
     LiveData<List<MessageUserInfoEntity>> getAllMessages();
+
+    @Query("SELECT messages.*, name, portrait, description, verification_signatures, is_attentioned FROM messages INNER JOIN userinfos ON messages.sender_address = userinfos.uri  WHERE messages.is_favorited = 1 ORDER BY id DESC")
+    LiveData<List<MessageUserInfoEntity>> getFavoritedMessages();
+
+    @Query("UPDATE messages SET is_favorited = :isFavorited, favorited_timestamp = :favoritedTimestamp WHERE id = :messageId")
+    void updateMessageFavoriteStatusById(long messageId, int isFavorited, long favoritedTimestamp);
 }

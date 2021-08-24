@@ -58,7 +58,7 @@ public class ShootExt extends ConversationExt {
 //                ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, ImageUtils.genThumbImgFile(path).getPath(), MessageConstants.CONTENT_TYPE_IMAGE);
 //                messageViewModel.sendImgMsg(conversation, ImageUtils.genThumbImgFile(path), new File(path));
                 if(conversation != null){
-                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, path, ImageUtils.genThumbImgFile(path).getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
+                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, path, ImageUtils.genThumbImgFile(path).getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
                 }else if(chatbotId != null){
                     ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, path, ImageUtils.genThumbImgFile(path).getPath(), MessageConstants.CONTENT_TYPE_IMAGE, "image/jpg");
                 }
@@ -77,7 +77,7 @@ public class ShootExt extends ConversationExt {
 //                ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO);
 //                messageViewModel.sendVideoMsg(conversation, new File(path));
                 if(conversation != null){
-                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
+                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
                 }else if(chatbotId != null){
                     ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO, "video/mp4");
                 }

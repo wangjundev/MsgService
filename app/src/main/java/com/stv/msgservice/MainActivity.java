@@ -28,7 +28,8 @@ import com.stv.msgservice.receiver.MmsWapPushReceiver;
 import com.stv.msgservice.receiver.SmsReceiver;
 import com.stv.msgservice.ui.WfcBaseActivity;
 import com.stv.msgservice.ui.channel.ChannelMainFragment;
-import com.stv.msgservice.ui.conversation.message.search.chatbotsearch.ChatbotSearchActivity;
+import com.stv.msgservice.ui.channel.activity.ChannelAttentionedChatbotListActivity;
+import com.stv.msgservice.ui.channel.activity.ChannelChatbotSearchActivity;
 import com.stv.msgservice.utils.PermissionUtils;
 
 import java.util.Arrays;
@@ -129,9 +130,12 @@ public class MainActivity extends WfcBaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_settings) {
-            return true;
+//            Intent intent = new Intent(this, ChannelFavoritedMsgActivity.class);
+            Intent intent = new Intent(this, ChannelAttentionedChatbotListActivity.class);
+            startActivity(intent);
+//            return true;
         }else if(item.getItemId() == R.id.menu_search_chatbot){
-            Intent intent = new Intent(this, ChatbotSearchActivity.class);
+            Intent intent = new Intent(this, ChannelChatbotSearchActivity.class);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

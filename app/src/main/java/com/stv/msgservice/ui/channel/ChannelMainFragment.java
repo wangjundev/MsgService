@@ -50,7 +50,7 @@ public class ChannelMainFragment extends Fragment {
     RecyclerView message_list;
     @BindView(R2.id.simulate_btn1)
     ImageButton simulate_btn1;
-    private LatestUsedChatbotListAdapter latestUsedChatbotListAdapter;
+    private ChannelLatestUsedChatbotListAdapter channelLatestUsedChatbotListAdapter;
     private ChannelChatbotMsgListAdapter chatbotMsgListAdapter;
 
     public static List<String> images = new ArrayList<String>(Arrays.asList(
@@ -99,8 +99,8 @@ public class ChannelMainFragment extends Fragment {
         final UserInfoViewModel userInfoViewModel = new ViewModelProvider(this, factory)
                 .get(UserInfoViewModel.class);
         userInfoViewModel.getLatestUsedChatbotList().observe(getViewLifecycleOwner(), userInfoEntities -> {
-            latestUsedChatbotListAdapter.setMembers(userInfoEntities);
-            recyclerview_latest_chatbot.setAdapter(latestUsedChatbotListAdapter);
+            channelLatestUsedChatbotListAdapter.setMembers(userInfoEntities);
+            recyclerview_latest_chatbot.setAdapter(channelLatestUsedChatbotListAdapter);
         });
 
         simulate_btn1.setOnClickListener(new View.OnClickListener(){
@@ -129,7 +129,7 @@ public class ChannelMainFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.i("Junwang", "ChannelMainFragment onCreate");
         super.onCreate(savedInstanceState);
-        latestUsedChatbotListAdapter = new LatestUsedChatbotListAdapter();
+        channelLatestUsedChatbotListAdapter = new ChannelLatestUsedChatbotListAdapter();
         chatbotMsgListAdapter = new ChannelChatbotMsgListAdapter(this);
     }
 

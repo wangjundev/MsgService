@@ -3,19 +3,20 @@ package com.stv.msgservice.ui.conversation.message.multimsg;
 import android.content.Context;
 
 import com.stv.msgservice.datamodel.model.Conversation;
-import com.stv.msgservice.ui.conversation.ConversationFragment;
 import com.stv.msgservice.ui.conversation.message.UiMessage;
 
 import java.util.List;
 
+import androidx.fragment.app.Fragment;
+
 public abstract class MultiMessageAction {
     protected Conversation conversation;
-    protected ConversationFragment fragment;
+    protected /*ConversationFragment*/ Fragment fragment;
 
     public MultiMessageAction() {
     }
 
-    public final void onBind(ConversationFragment fragment, Conversation conversation) {
+    public final void onBind(Fragment fragment, Conversation conversation) {
         this.fragment = fragment;
         this.conversation = conversation;
 

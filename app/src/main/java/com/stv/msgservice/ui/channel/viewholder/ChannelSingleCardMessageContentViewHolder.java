@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.ArrayUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.cjt2325.cameralibrary.util.LogUtil;
@@ -17,8 +18,8 @@ import com.stv.msgservice.datamodel.network.chatbot.ChatbotMessageBean;
 import com.stv.msgservice.datamodel.network.chatbot.ChatbotStdSingleCard;
 import com.stv.msgservice.datamodel.network.chatbot.GeneralPurposeCard;
 import com.stv.msgservice.datamodel.network.chatbot.SuggestionActionWrapper;
+import com.stv.msgservice.datamodel.network.chatbot.Suggestions;
 import com.stv.msgservice.ui.channel.ChannelCardSuggestionListAdapter;
-import com.stv.msgservice.ui.channel.ChannelMainFragment;
 import com.stv.msgservice.ui.channel.HorizontalItemDecoration;
 import com.stv.msgservice.ui.conversation.message.viewholder.RoundedCornerCenterCrop;
 
@@ -28,6 +29,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,18 +38,20 @@ public class ChannelSingleCardMessageContentViewHolder extends ChannelMsgItemVie
     ImageView channelSingleCardImage;
     ImageView channelSingleCardPlayImageView;
     RecyclerView channelSingleCardSuggestion;
-    ChannelMainFragment mFragment;
+    Fragment mFragment;
     String cardJson = null;
     String suggestionJson = null;
     ChannelCardSuggestionListAdapter adpter;
+    MessageUserInfoEntity messageUserInfoEntity;
 
-    public ChannelSingleCardMessageContentViewHolder(ChannelMainFragment fragment, RecyclerView.Adapter adapter, View itemView, View viewStubInflator) {
+    public ChannelSingleCardMessageContentViewHolder(Fragment fragment, RecyclerView.Adapter adapter, View itemView, View viewStubInflator, MessageUserInfoEntity messageUserInfoEntity) {
         super(fragment, adapter, itemView);
         mFragment = fragment;
         channelSingleCardDescription = viewStubInflator.findViewById(R.id.channel_singlecard_description);
         channelSingleCardImage = viewStubInflator.findViewById(R.id.channel_singlecard_image);
         channelSingleCardPlayImageView = viewStubInflator.findViewById(R.id.channel_singlecard_playImageView);
         channelSingleCardSuggestion = viewStubInflator.findViewById(R.id.channel_singlecard_suggestion);
+        this.messageUserInfoEntity = messageUserInfoEntity;
     }
 
     private void parseSingleCardWithSuggestion(String text){
@@ -108,70 +112,20 @@ public class ChannelSingleCardMessageContentViewHolder extends ChannelMsgItemVie
 
     private void setSuggestionsView(Context context, CardContent cardcontent){
         SuggestionActionWrapper[] saw = cardcontent.getSuggestionActionWrapper();
+        if(suggestionJson != null){
+            Suggestions suggestions = new Gson().fromJson(suggestionJson, Suggestions.class);
+            if(suggestions != null){
+                SuggestionActionWrapper[] saw1 = suggestions.getSuggestions();
+                saw = ArrayUtils.add(saw, saw1);
+            }
+        }
         LinearLayoutManager layoutManager = new LinearLayoutManager(mFragment.getContext(), LinearLayoutManager.HORIZONTAL, false);
         channelSingleCardSuggestion.setLayoutManager(layoutManager);
         channelSingleCardSuggestion.addItemDecoration(new HorizontalItemDecoration(12,mFragment.getContext()));//10表示10dp
         adpter = new ChannelCardSuggestionListAdapter();
-        adpter.setSuggestions(mFragment, saw);
+        adpter.setSuggestions(mFragment, saw, messageUserInfoEntity.getPortrait(), messageUserInfoEntity.getName(),
+                messageUserInfoEntity.getSenderAddress(), messageUserInfoEntity.isAttentioned());
         channelSingleCardSuggestion.setAdapter(adpter);
-
-//        if(saw != null && saw.length>0){
-//            int i = 0;
-//            TextView tv1;
-//            Log.i("Junwang", "setSuggestionsView length="+saw.length);
-//            for(; i<saw.length; i++){
-//                if(saw[i].action != null) {
-//                    tv1 = new TextView(context);
-//                    tv1.setText(saw[i].action.displayText);
-//                    tv1.setBackgroundResource(R.drawable.border_textview);
-//                    tv1.setGravity(Gravity.CENTER);
-//                    tv1.setPadding(0, 15, 0, 15);
-//                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//                    lp.setMargins(100,12,100,12);
-////                    cardLayout.addView(tv1, j, lp);
-//                    Log.i("Junwang", "add view i="+i);
-//                    cardLayout.addView(tv1, lp);
-//                    SuggestionAction sa = saw[i].action;
-//                    if ((sa != null) && (sa.urlAction != null)) {
-//                        tv1.setOnClickListener(new View.OnClickListener(){
-//                            @Override
-//                            public void onClick(View v) {
-////                                WfcWebViewActivity.loadUrl(context, "", sa.urlAction.openUrl.url);
-//                                WebViewNewsActivity.start(context, sa.urlAction.openUrl.url);
-//                            }
-//                        });
-//                    }else if((sa != null) && (sa.dialerAction != null)){
-//                        tv1.setOnClickListener(new View.OnClickListener(){
-//                            @Override
-//                            public void onClick(View v) {
-//                                NativeFunctionUtil.callNativeFunction(MessageConstants.NativeActionType.PHONE_CALL, context,
-//                                        null, null, sa.dialerAction.dialPhoneNumber.phoneNumber);
-//                            }
-//                        });
-//                    }else if((sa != null) && (sa.mapAction != null)){
-//                        tv1.setOnClickListener(new View.OnClickListener(){
-//                            @Override
-//                            public void onClick(View v) {
-//                                NativeFunctionUtil.openLocation(sa.mapAction.showLocation.location.label, sa.mapAction.showLocation.location.latitude,
-//                                        sa.mapAction.showLocation.location.longitude, context);
-//                            }
-//                        });
-//                    }
-//                }
-//                if(saw[i].reply != null){
-//                    tv1 = new TextView(context);
-//                    tv1.setText(saw[i].reply.displayText);
-//                    tv1.setBackgroundResource(R.drawable.border_textview);
-//                    tv1.setGravity(Gravity.CENTER);
-//                    tv1.setPadding(0, 15, 0, 15);
-//                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//                    lp.setMargins(100,12,100,12);
-////                    cardLayout.addView(tv1, j, lp);
-//                    Log.i("Junwang", "add view1 i="+i);
-//                    cardLayout.addView(tv1, lp);
-//                }
-//            }
-//        }
     }
 
     @Override

@@ -20,6 +20,7 @@ import com.stv.msgservice.ui.channel.ChannelMainFragment;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 import butterknife.BindView;
@@ -40,11 +41,11 @@ public class ChannelMultiCardStdMessageContentViewHolder extends ChannelMsgItemV
     //    private QuoteInfo quoteInfo;
 //    @BindView(R2.id.card_rv)
 //    RecyclerView cardRv;
-    ChannelMainFragment mFragment;
+    Fragment mFragment;
     @BindView(R2.id.stv_multicard_banner)
     Banner stv_multicard_banner;
 
-    public ChannelMultiCardStdMessageContentViewHolder(ChannelMainFragment fragment, RecyclerView.Adapter adapter, View itemView) {
+    public ChannelMultiCardStdMessageContentViewHolder(Fragment fragment, RecyclerView.Adapter adapter, View itemView) {
         super(fragment, adapter, itemView);
         mFragment = fragment;
     }

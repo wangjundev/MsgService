@@ -5,7 +5,7 @@ import com.stv.msgservice.third.activity.LocationData;
 import androidx.room.ColumnInfo;
 import androidx.room.PrimaryKey;
 
-public class MessageUserInfoEntity {
+public class MessageUserInfoEntity{
     @PrimaryKey(autoGenerate = true)
     private long id;
 
@@ -49,10 +49,10 @@ public class MessageUserInfoEntity {
     private LocationData locationData;
 
     @ColumnInfo(name = "conversation_uuid")
-    private String conversationID;
+    private String conversationUUID;
 
-    @ColumnInfo(name = "contribution_id")
-    private String contributionID;
+    @ColumnInfo(name = "contribution_uuid")
+    private String contributionUUID;
 
     @ColumnInfo(name = "message_id")
     private String messageId;
@@ -65,8 +65,21 @@ public class MessageUserInfoEntity {
     @ColumnInfo(name = "sender_address")
     private String senderAddress;
 
+    @ColumnInfo(name = "destination_address")
+    private String destinationAddress;
+
+    @ColumnInfo(name = "is_favorited")
+    private int isFavorited;
+
+    @ColumnInfo(name = "favorited_timestamp")
+    private long favoritedTimestamp;
+
     private String name;
     private String portrait;
+    @ColumnInfo(name = "verification_signatures")
+    private String verificationSignatures;
+    @ColumnInfo(name = "is_attentioned")
+    private int isAttentioned;
 
     public long getId() {
         return id;
@@ -180,20 +193,20 @@ public class MessageUserInfoEntity {
         this.locationData = locationData;
     }
 
-    public String getConversationID() {
-        return conversationID;
+    public String getConversationUUID() {
+        return conversationUUID;
     }
 
-    public void setConversationID(String conversationID) {
-        this.conversationID = conversationID;
+    public void setConversationUUID(String conversationUUID) {
+        this.conversationUUID = conversationUUID;
     }
 
-    public String getContributionID() {
-        return contributionID;
+    public String getContributionUUID() {
+        return contributionUUID;
     }
 
-    public void setContributionID(String contributionID) {
-        this.contributionID = contributionID;
+    public void setContributionUUID(String contributionUUID) {
+        this.contributionUUID = contributionUUID;
     }
 
     public String getMessageId() {
@@ -228,6 +241,30 @@ public class MessageUserInfoEntity {
         this.senderAddress = senderAddress;
     }
 
+    public String getDestinationAddress() {
+        return destinationAddress;
+    }
+
+    public void setDestinationAddress(String destinationAddress) {
+        this.destinationAddress = destinationAddress;
+    }
+
+    public int getIsFavorited() {
+        return isFavorited;
+    }
+
+    public void setIsFavorited(int isFavorited) {
+        this.isFavorited = isFavorited;
+    }
+
+    public long getFavoritedTimestamp() {
+        return favoritedTimestamp;
+    }
+
+    public void setFavoritedTimestamp(long favoritedTimestamp) {
+        this.favoritedTimestamp = favoritedTimestamp;
+    }
+
     public String getName() {
         return name;
     }
@@ -242,5 +279,21 @@ public class MessageUserInfoEntity {
 
     public void setPortrait(String portrait) {
         this.portrait = portrait;
+    }
+
+    public String getVerificationSignatures() {
+        return verificationSignatures;
+    }
+
+    public void setVerificationSignatures(String verificationSignatures) {
+        this.verificationSignatures = verificationSignatures;
+    }
+
+    public int isAttentioned() {
+        return isAttentioned;
+    }
+
+    public void setIsAttentioned(int isAttentioned) {
+        this.isAttentioned = isAttentioned;
     }
 }

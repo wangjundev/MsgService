@@ -3,12 +3,10 @@ package com.stv.msgservice.ui.conversation.message.search.chatbotsearch;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -136,7 +134,7 @@ public class ChatbotSearchActivity extends BaseNoToolbarActivity/*WfcBaseActivit
         UltimateBarX.with(this)
                 .fitWindow(true)
                 .light(true)
-                .lvLightColor(Color.GRAY)
+                .lvLightColor(Color.WHITE)
                 .applyStatusBar();
         init();
         initView();
@@ -335,30 +333,6 @@ public class ChatbotSearchActivity extends BaseNoToolbarActivity/*WfcBaseActivit
         mChatbotListView.setAdapter(mAdapter);
     }
 
-    protected boolean useThemestatusBarColor = true;//是否使用特殊的标题栏背景颜色，android5.0以上可以设置状态栏背景色，如果不使用则使用透明色值
-    protected boolean useStatusBarColor = true;//是否使用状态栏文字和图标为暗色，如果状态栏采用了白色系，则需要使状态栏和图标为暗色，android6.0以上可以设置
-
-    protected void setStatusBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {//5.0及以上
-            View decorView = getWindow().getDecorView();
-            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-            decorView.setSystemUiVisibility(option);
-            //根据上面设置是否对状态栏单独设置颜色
-            if (useThemestatusBarColor) {
-                getWindow().setStatusBarColor(getResources().getColor(R.color.action_bar_background_color));
-            } else {
-                getWindow().setStatusBarColor(Color.TRANSPARENT);
-            }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {//4.4到5.0
-            WindowManager.LayoutParams localLayoutParams = getWindow().getAttributes();
-            localLayoutParams.flags = (WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | localLayoutParams.flags);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && useStatusBarColor) {//android6.0以后可以对状态栏文字颜色和图标进行修改
-            getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        }
-    }
-
     class ChatbotListAdapter extends ArrayAdapter<SearchedBot> {
         public ChatbotListAdapter(@NonNull Context context) {
             super(context, R.layout.search_chatbot_itemview);
@@ -424,6 +398,7 @@ public class ChatbotSearchActivity extends BaseNoToolbarActivity/*WfcBaseActivit
                                 if(botinfo != null){
                                     Pcc pcc = botinfo.getPcc();
                                     if(pcc != null){
+                                        userInfoEntity.setPccType(pcc.getPcc_type());
                                         OrgDetails orgDetails = pcc.getOrg_details();
                                         if(orgDetails != null){
                                             MediaList mediaList = orgDetails.getMedia_list();

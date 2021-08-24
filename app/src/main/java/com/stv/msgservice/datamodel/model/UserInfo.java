@@ -9,4 +9,12 @@ public interface UserInfo {
     void setUri(String uri);
     long getLastUsedTime();
     void setLastUsedTime(long lastUsedTime);
+    void setDescription(String description);
+    String getDescription();
+    String getPccType();
+    void setPccType(String pccType);
+    int isAttentioned();
+    void setIsAttentioned(int attentioned);
+    String getVerificationSignatures();
+    void setVerificationSignatures(String verificationSignatures);
 }

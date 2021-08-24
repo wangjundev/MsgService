@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/channel_videoContentLayout"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <com.stv.msgservice.ui.videoplayer.player.SantiVideoView
+        android:id="@+id/channel_videomsg_videoview"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:background="@drawable/channel_video_image_style"
+        android:visibility="gone"
+        />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <!-- 图片 -->
+        <com.stv.msgservice.ui.widget.BubbleImageView
+            android:id="@+id/channel_video_msg_imageView"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            app:bubble_angle="4dp"
+            app:bubble_showText="false"
+            app:bubble_showArrow="false" />
+
+
+        <ImageView
+            android:id="@+id/playImageView"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignBottom="@id/channel_video_msg_imageView"
+            android:layout_alignStart="@id/channel_video_msg_imageView"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="12dp"
+            android:src="@mipmap/dkplayer_ic_action_play_arrow"
+            />
+
+        <TextView
+            android:id="@+id/channel_videomsg_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/channel_video_msg_imageView"
+            android:layout_alignEnd="@id/channel_video_msg_imageView"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="4dp"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:background="@drawable/channel_video_time_style"
+            />
+        <ImageView
+            android:id="@+id/channel_fav_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/channel_video_msg_imageView"
+            android:paddingTop="15dp"
+            android:paddingBottom="22dp"
+            android:paddingRight="12dp"
+            android:src="@mipmap/channel_add_to_fav_msg"/>
+    </RelativeLayout>
+</FrameLayout>

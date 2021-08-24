@@ -107,6 +107,11 @@
             android:label="会话详情" />
         <activity android:name=".ui.conversation.message.search.chatbotsearch.ChatbotSearchActivity"/>
         <activity android:name=".ui.conversation.ChatbotIntroduceActivity"/>
+        <activity android:name=".ui.channel.activity.ChannelChatbotSearchActivity"/>
+        <activity android:name=".ui.channel.activity.ChannelWebViewActivity"/>
+        <activity android:name=".ui.channel.activity.ChannelFavoritedMsgActivity"/>
+        <activity android:name=".ui.channel.activity.ChannelAttentionedChatbotListActivity"/>
+        <activity android:name=".ui.channel.activity.ChannelConversationActivity"/>
         <activity android:name=".ui.conversation.PlayVideoActivity"/>
         <receiver android:name=".receiver.MmsWapPushReceiver"
             android:enabled="false"

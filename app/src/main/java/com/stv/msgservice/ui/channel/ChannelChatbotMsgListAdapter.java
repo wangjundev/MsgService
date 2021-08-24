@@ -13,9 +13,11 @@ import com.stv.msgservice.datamodel.constants.MessageConstants;
 import com.stv.msgservice.datamodel.database.entity.MessageUserInfoEntity;
 import com.stv.msgservice.datamodel.model.Message;
 import com.stv.msgservice.datamodel.model.UserInfo;
+import com.stv.msgservice.ui.channel.viewholder.ChannelImageMessageContentViewHolder;
 import com.stv.msgservice.ui.channel.viewholder.ChannelMsgItemViewHolder;
 import com.stv.msgservice.ui.channel.viewholder.ChannelSingleCardMessageContentViewHolder;
 import com.stv.msgservice.ui.channel.viewholder.ChannelTextMessageContentViewHolder;
+import com.stv.msgservice.ui.channel.viewholder.ChannelVideoMessageContentViewHolder;
 import com.stv.msgservice.ui.conversation.ConversationMessageAdapter;
 import com.stv.msgservice.ui.conversation.message.viewholder.MessageContentViewHolder;
 
@@ -26,11 +28,12 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ChannelChatbotMsgListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
-    private ChannelMainFragment fragment;
+    private Fragment fragment;
 
     public static int MODE_NORMAL = 0;
     public static int MODE_CHECKABLE = 1;
@@ -45,11 +48,13 @@ public class ChannelChatbotMsgListAdapter extends RecyclerView.Adapter<RecyclerV
     private ConversationMessageAdapter.OnMessageCheckListener onMessageCheckListener;
     private ConversationMessageAdapter.OnPortraitLongClickListener onPortraitLongClickListener;
     private ConversationMessageAdapter.OnMessageReceiptClickListener onMessageReceiptClickListener;
+    private MessageUserInfoEntity messageUserInfoEntity;
 
-    public ChannelChatbotMsgListAdapter(ChannelMainFragment fragment) {
+    public ChannelChatbotMsgListAdapter(Fragment fragment) {
         super();
         this.fragment = fragment;
     }
+
 
     public void setMessageList(final List<MessageUserInfoEntity> messageList) {
         messages = messageList;
@@ -390,15 +395,17 @@ public class ChannelChatbotMsgListAdapter extends RecyclerView.Adapter<RecyclerV
 //            case MessageConstants.CONTENT_TYPE_TEXT_WITH_SUGGESTION:
 //                MsgViewHolder = new TextSuggestionMessageContentViewHolder(fragment, this, itemView);
 //                break;
-//            case MessageConstants.CONTENT_TYPE_IMAGE:
-//                MsgViewHolder = new ImageMessageContentViewHolder(fragment, this, itemView);
-//                break;
+            case MessageConstants.CONTENT_TYPE_IMAGE:
+                viewStub.setLayoutResource(R.layout.channel_image_msg_item_view);
+                inflator = viewStub.inflate();
+                MsgViewHolder = new ChannelImageMessageContentViewHolder(fragment, this, itemView, inflator);
+                break;
 //            case MessageConstants.CONTENT_TYPE_IMAGE_WITH_SUGGESTION:
             case MessageConstants.CONTENT_TYPE_SINGLE_CARD_WITH_SUGGESTION:
             case MessageConstants.CONTENT_TYPE_SINGLE_CARD:
                 viewStub.setLayoutResource(R.layout.channel_single_card_msg_item_view);
                 inflator = viewStub.inflate();
-                MsgViewHolder = new ChannelSingleCardMessageContentViewHolder(fragment, this, itemView, inflator);
+                MsgViewHolder = new ChannelSingleCardMessageContentViewHolder(fragment, this, itemView, inflator, messageUserInfoEntity);
                 break;
 //            case MessageConstants.CONTENT_TYPE_AUDIO:
 //                MsgViewHolder = new AudioMessageContentViewHolder(fragment, this, itemView);
@@ -406,9 +413,11 @@ public class ChannelChatbotMsgListAdapter extends RecyclerView.Adapter<RecyclerV
 //            case MessageConstants.CONTENT_TYPE_AUDIO_WITH_SUGGESTION:
 //                MsgViewHolder = new AudioMessageContentViewHolder(fragment, this, itemView);
 //                break;
-//            case MessageConstants.CONTENT_TYPE_VIDEO:
-//                MsgViewHolder = new VideoMessageContentViewHolder(fragment, this, itemView);
-//                break;
+            case MessageConstants.CONTENT_TYPE_VIDEO:
+                viewStub.setLayoutResource(R.layout.channel_video_msg_item_view);
+                inflator = viewStub.inflate();
+                MsgViewHolder = new ChannelVideoMessageContentViewHolder(fragment, this, itemView, inflator);
+                break;
 //            case MessageConstants.CONTENT_TYPE_VIDEO_WITH_SUGGESTION:
 //                MsgViewHolder = new VideoMessageContentViewHolder(fragment, this, itemView);
 //                break;
@@ -672,10 +681,10 @@ public class ChannelChatbotMsgListAdapter extends RecyclerView.Adapter<RecyclerV
         if (getItem(position) == null) {
             return R.layout.conversation_item_loading;
         }
-        MessageUserInfoEntity msg = getItem(position);
+        messageUserInfoEntity = getItem(position);
 //        return msg.getMessageType();
 //        Log.i("Junwang", "getItemViewType direction="+msg.getDirection()+", messageType="+msg.getMessageType());
-        return msg.getDirection() << 24 | msg.getMessageType();
+        return messageUserInfoEntity.getDirection() << 24 | messageUserInfoEntity.getMessageType();
     }
 
     @Override

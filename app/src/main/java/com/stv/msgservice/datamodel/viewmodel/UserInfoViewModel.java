@@ -44,6 +44,10 @@ public class UserInfoViewModel extends AndroidViewModel {
     public LiveData<List<UserInfoEntity>> getLatestUsedChatbotList(){
         return mRepository.getLatestUsedChatbotList();
     }
+
+    public LiveData<List<UserInfoEntity>> getAttentionedChatbotList(){
+        return mRepository.getAttentionedChatbotList();
+    }
 //    public void SearchChatbotList() {
 //        Retrofit retrofit = new Retrofit.Builder()
 //                .baseUrl(MessageConstants.BASE_URL)
@@ -81,6 +85,14 @@ public class UserInfoViewModel extends AndroidViewModel {
 
     public void insertUserInfo(UserInfoEntity userInfo){
         mRepository.insertUserInfo(userInfo);
+    }
+
+    public void updateUserInfo(UserInfoEntity userInfoEntity){
+        mRepository.updateUserInfo(userInfoEntity);
+    }
+
+    public void updateAttentionByChatbotId(String chatbotId, int isAttentioned){
+        mRepository.updateAttentionByChatbotId(chatbotId, isAttentioned);
     }
 
     public static class Factory extends ViewModelProvider.NewInstanceFactory {

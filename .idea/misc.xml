@@ -10,25 +10,57 @@
       <map>
         <entry key="app/src/main/res/drawable/bg_menu.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/border_textview.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/card_message_image_style.xml" value="0.10555555555555556" />
+        <entry key="app/src/main/res/drawable/card_message_style.xml" value="0.10555555555555556" />
+        <entry key="app/src/main/res/drawable/channel_attention_textview_style.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/channel_attentioned_textview_style.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/channel_card_message_style.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/channel_suggestion_background.xml" value="0.10740740740740741" />
+        <entry key="app/src/main/res/drawable/channel_video_image_style.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/channel_video_time_style.xml" value="0.10555555555555556" />
         <entry key="app/src/main/res/drawable/chatbot_introduce_background.xml" value="0.10740740740740741" />
         <entry key="app/src/main/res/drawable/checkbox_style.xml" value="0.10740740740740741" />
+        <entry key="app/src/main/res/drawable/compose_chips_divider_gradient.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/corner_voice_style.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ios_back_drawable.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/listview_background.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/search_view_bg.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/searchview_style.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/selector_common_item.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/shape_progressbar_bg.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_attentioned_chatbot_list_activity.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_attentioned_chatbot_list_fragment.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_attentioned_chatbot_list_item_view.xml" value="0.11413043478260869" />
+        <entry key="app/src/main/res/layout/channel_conversation_activity.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/channel_conversation_fragment.xml" value="0.1" />
         <entry key="app/src/main/res/layout/channel_conversation_item_multi_card_receive.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_favorited_msg_activity.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_favorited_msg_fragment.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_image_msg_item_view.xml" value="0.1" />
         <entry key="app/src/main/res/layout/channel_msg_item_view.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_msg_item_view_in_convs.xml" value="0.10729166666666666" />
         <entry key="app/src/main/res/layout/channel_multi_card_item_view.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_search_chatbot_activity.xml" value="0.10869565217391304" />
+        <entry key="app/src/main/res/layout/channel_search_chatbot_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/channel_single_card_msg_item_view.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_single_card_msg_item_view_in_cons.xml" value="0.16066481994459833" />
         <entry key="app/src/main/res/layout/channel_suggestion_item_view.xml" value="0.1" />
         <entry key="app/src/main/res/layout/channel_text_msg_item_view.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_toolbar.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_video_msg_item_view.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/channel_webview_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/chatbot_introduce_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/conversation_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/conversation_item_single_card_receive.xml" value="0.1" />
         <entry key="app/src/main/res/layout/conversationlist_frament.xml" value="0.1" />
         <entry key="app/src/main/res/layout/conversationlist_item_conversation.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_banner_image.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/location_activity_my_location.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/location_include_toolbar.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/main_activity.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/main_fragment.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/search_bar.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/toolbar.xml" value="0.1" />
         <entry key="app/src/main/res/layout/ysyy_fragment.xml" value="0.1" />
       </map>
     </option>

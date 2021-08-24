@@ -209,7 +209,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
                 if (file.exists()) {
 //                    messageViewModel.sendAudioFile(conversation, Uri.parse(audioFile), duration);
                     if(conversation != null){
-                        ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, audioFile, null, MessageConstants.CONTENT_TYPE_AUDIO,"audio/mp3");
+                        ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, audioFile, null, MessageConstants.CONTENT_TYPE_AUDIO,"audio/mp3");
                     }else if(chatbotId != null){
                         //need to get local phone number
                         ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null, false, audioFile, null, MessageConstants.CONTENT_TYPE_AUDIO, "audio/mp3");
@@ -401,7 +401,7 @@ public class ConversationInputPanel extends FrameLayout implements IEmotionSelec
 //            }
 //        });
         if(conversation != null){
-            ((ConversationActivity)(fragment.getActivity())).saveMsg(fragment.getContext(), content.toString().trim(), conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, null, null, MessageConstants.CONTENT_TYPE_TEXT, null);
+            ((ConversationActivity)(fragment.getActivity())).saveMsg(fragment.getContext(), content.toString().trim(), conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, null, null, MessageConstants.CONTENT_TYPE_TEXT, null);
         }else if(chatbotId != null){
             ((ConversationActivity)(fragment.getActivity())).saveMsg(fragment.getContext(), content.toString().trim(), null, chatbotId, null,false, null, null, MessageConstants.CONTENT_TYPE_TEXT, null);
         }

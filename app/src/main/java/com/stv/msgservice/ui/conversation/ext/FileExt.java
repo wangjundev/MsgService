@@ -85,7 +85,7 @@ public class FileExt extends ConversationExt {
                         thumbPath = imageFileThumb.getPath();
                     }
                     if(conversation != null){
-                        ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, path, thumbPath, MessageConstants.CONTENT_TYPE_IMAGE, "image/"+type.substring(1));
+                        ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, path, thumbPath, MessageConstants.CONTENT_TYPE_IMAGE, "image/"+type.substring(1));
                     }else if(chatbotId != null){
                         ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, path, thumbPath, MessageConstants.CONTENT_TYPE_IMAGE,"image/"+type.substring(1));
                     }
@@ -104,7 +104,7 @@ public class FileExt extends ConversationExt {
 //                    ((ConversationActivity)activity).saveMsg(activity, null, /*conversation.getNormalizedDestination()*/conversation.getSenderAddress(), false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO);
 //                    messageViewModel.sendVideoMsg(conversation, file);
                     if(conversation != null){
-                        ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO, "video/"+type.substring(1));
+                        ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO, "video/"+type.substring(1));
                     }else if(chatbotId != null){
                         ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, path, thumbnail, MessageConstants.CONTENT_TYPE_VIDEO,"video/"+type.substring(1));
                     }
@@ -113,7 +113,7 @@ public class FileExt extends ConversationExt {
 //                    ((ConversationActivity)activity).saveMsg(activity, null, conversation.getSenderAddress(), false, path, null, MessageConstants.CONTENT_TYPE_FILE);
 //                    messageViewModel.sendFileMsg(conversation, file);
                     if(conversation != null){
-                        ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationID(), false, path, null, MessageConstants.CONTENT_TYPE_FILE, "image/"+type.substring(1));
+                        ((ConversationActivity)activity).saveMsg(activity, null, conversation.getDestinationAddress(), conversation.getSenderAddress(), conversation.getConversationUUID(), false, path, null, MessageConstants.CONTENT_TYPE_FILE, "image/"+type.substring(1));
                     }else if(chatbotId != null){
                         ((ConversationActivity)activity).saveMsg(activity, null, null, chatbotId, null,false, path, null, MessageConstants.CONTENT_TYPE_FILE, "image/"+type.substring(1));
                     }

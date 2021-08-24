@@ -10,17 +10,17 @@ import com.lqr.emoji.MoonUtils;
 import com.stv.msgservice.R;
 import com.stv.msgservice.datamodel.database.entity.MessageUserInfoEntity;
 import com.stv.msgservice.ui.WfcWebViewActivity;
-import com.stv.msgservice.ui.channel.ChannelMainFragment;
 import com.stv.msgservice.ui.widget.LinkClickListener;
 import com.stv.msgservice.ui.widget.LinkTextViewMovementMethod;
 
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ChannelTextMessageContentViewHolder  extends ChannelMsgItemViewHolder {
     TextView channelContentTextView;
-    ChannelMainFragment mFragment;
+    Fragment mFragment;
 
-    public ChannelTextMessageContentViewHolder(ChannelMainFragment fragment, RecyclerView.Adapter adapter, View itemView, View viewStubInflator) {
+    public ChannelTextMessageContentViewHolder(Fragment fragment, RecyclerView.Adapter adapter, View itemView, View viewStubInflator) {
         super(fragment, adapter, itemView);
         mFragment = fragment;
         channelContentTextView = viewStubInflator.findViewById(R.id.channelContentTextView);

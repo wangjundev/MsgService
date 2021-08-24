@@ -3,13 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/global_search_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingTop="8dp">
     <RelativeLayout
         android:id="@+id/searchlayout"
         android:layout_width="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_height="40dp"
         android:paddingTop="8dp">
+        <ImageView
+            android:id="@+id/back_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/ic_back"/>
         <TextView
             android:id="@+id/search_cancel_button"
             android:layout_width="wrap_content"
@@ -17,16 +25,19 @@
             android:layout_alignParentRight="true"
             android:gravity="center_vertical"
             android:paddingRight="16dp"
-            android:paddingLeft="16dp"
             android:text="取消"
             android:textColor="@color/black"
             android:textStyle="bold"
-            android:textSize="14sp"/>
+            android:textSize="15sp"/>
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@id/search_cancel_button"
+            android:layout_toRightOf="@id/back_image"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:autofillHints="央视"
             android:background="@drawable/searchview_style"/>
     </RelativeLayout>
     <TextView

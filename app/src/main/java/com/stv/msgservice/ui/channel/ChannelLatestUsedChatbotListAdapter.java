@@ -25,14 +25,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class LatestUsedChatbotListAdapter extends RecyclerView.Adapter<LatestUsedChatbotListAdapter.MemberViewHolder>{
+public class ChannelLatestUsedChatbotListAdapter extends RecyclerView.Adapter<ChannelLatestUsedChatbotListAdapter.MemberViewHolder>{
     private List<UserInfoEntity> members;
 //    private Conversation conversationInfo;
 //    private boolean enableAddMember;
 //    private boolean enableRemoveMember;
     private ConversationMemberAdapter.OnMemberClickListener onMemberClickListener;
 
-//    public LatestUsedChatbotListAdapter(Conversation conversationInfo, boolean enableAddMember, boolean enableRemoveMember) {
+//    public ChannelLatestUsedChatbotListAdapter(Conversation conversationInfo, boolean enableAddMember, boolean enableRemoveMember) {
 //        this.conversationInfo = conversationInfo;
 //        this.enableAddMember = enableAddMember;
 //        this.enableRemoveMember = enableRemoveMember;
@@ -48,14 +48,14 @@ public class LatestUsedChatbotListAdapter extends RecyclerView.Adapter<LatestUse
 
     @NonNull
     @Override
-    public LatestUsedChatbotListAdapter.MemberViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ChannelLatestUsedChatbotListAdapter.MemberViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.conversation_item_member_info, parent, false);
-        return new LatestUsedChatbotListAdapter.MemberViewHolder(view);
+        return new ChannelLatestUsedChatbotListAdapter.MemberViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull LatestUsedChatbotListAdapter.MemberViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ChannelLatestUsedChatbotListAdapter.MemberViewHolder holder, int position) {
         if (position < members.size()) {
             holder.bindUserInfo(members.get(position));
         } /*else {

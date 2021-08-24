@@ -30,6 +30,7 @@
             android:maxLines="1"
             android:text="焦点访谈"
             android:textColor="@color/black1"
+            android:textStyle="bold"
             android:textSize="15sp" />
         <TextView
             android:id="@+id/channel_chatbot_timeTextView"

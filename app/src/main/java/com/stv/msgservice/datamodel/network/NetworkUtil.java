@@ -160,7 +160,7 @@ public class NetworkUtil {
                             ConversationEntity ce = new ConversationEntity();
                             ce.setLastTimestamp(time);
                             ce.setSenderAddress(sender);
-                            ce.setConversationID(chatbotMessageBody.getOutboundIMMessage().getConversationID());
+                            ce.setConversationUUID(chatbotMessageBody.getOutboundIMMessage().getConversationID());
                             if(convId == 0){
                                 convId = mRepository.insertConversation(ce);
                             }
@@ -173,18 +173,21 @@ public class NetworkUtil {
                             me.setRead(1);
                             me.setDomain(domain);
                             me.setSenderAddress(sender);
+                            me.setIsFavorited(0);
+                            me.setFavoritedTimestamp(0);
 
                             String contentType = chatbotMessageBody.getOutboundIMMessage().getContentType();
                             String bodyText = chatbotMessageBody.getOutboundIMMessage().getBodyText();
                             String destination = chatbotMessageBody.getDestinationAddress();
                             Log.i("Junwang", "received xml destination="+destination);
+                            me.setDestinationAddress(destination);
 //                            if(destination != null && destination.startsWith("tel:")){
 //                                ce.setDestinationAddress(destination.substring(4));
 //                            }else {
 //                                ce.setDestinationAddress(destination);
 //                            }
-                            me.setContributionID(chatbotMessageBody.getOutboundIMMessage().getContributionID());
-                            me.setConversationID(chatbotMessageBody.getOutboundIMMessage().getConversationID());
+                            me.setContributionUUID(chatbotMessageBody.getOutboundIMMessage().getContributionID());
+                            me.setConversationUUID(chatbotMessageBody.getOutboundIMMessage().getConversationID());
                             me.setMessageId(chatbotMessageBody.getOutboundIMMessage().getMessageId());
                             LogUtil.i("Junwang", "getMessageBody address="+chatbotMessageBody.getAddress()+", bodyText="+bodyText
                                     +", contentType="+contentType);
@@ -473,6 +476,7 @@ public class NetworkUtil {
                                 userInfoEntity.setMenu(menu);
 //            userInfoEntity.setPortrait("http://sms-agent.oss-cn-hangzhou.aliyuncs.com/sms_agent_temp/51/5d89bdce9bf79.jpg");
                                 userInfoEntity.setPortrait("http://sms-agent.oss-cn-hangzhou.aliyuncs.com/sms_agent_temp/51/xhs.png");
+                                userInfoEntity.setIsAttentioned(0);
                                 mRepository.insertUserInfo(userInfoEntity);
                             }else{
                                 getChatbotInfo(mRepository, context, ce.getSenderAddress());
@@ -586,6 +590,7 @@ public class NetworkUtil {
                                 if(botinfo != null){
                                     Pcc pcc = botinfo.getPcc();
                                     if(pcc != null){
+                                        userInfoEntity.setPccType(pcc.getPcc_type());
                                         OrgDetails orgDetails = pcc.getOrg_details();
                                         if(orgDetails != null){
                                             MediaList mediaList = orgDetails.getMedia_list();
@@ -619,6 +624,7 @@ public class NetworkUtil {
                                             }
 
                                             userInfoEntity.setDescription(orgDetails.getOrg_description());
+                                            userInfoEntity.setIsAttentioned(0);
                                         }
                                     }
                                 }

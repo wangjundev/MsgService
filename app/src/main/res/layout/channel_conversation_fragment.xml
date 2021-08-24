@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.stv.msgservice.ui.widget.InputAwareLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLinearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:orientation="vertical">
+    <!--内容-->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/contentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefreshLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/msgRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <View style="@style/Line" />
+            <FrameLayout
+                android:id="@+id/inputPanelFrameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.stv.msgservice.ui.channel.activity.ChannelConversationInputPanel
+                    android:id="@+id/inputPanel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+                <include layout="@layout/two_button_menu"
+                    android:id="@+id/two_button_menu_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    />
+                <include layout="@layout/three_button_menu"
+                    android:id="@+id/three_button_menu_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    />
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/multiMessageActionContainerLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone" />
+        </LinearLayout>
+    </FrameLayout>
+</com.stv.msgservice.ui.widget.InputAwareLayout>

@@ -53,6 +53,6 @@
             android:paddingTop="15dp"
             android:paddingBottom="22dp"
             android:paddingRight="12dp"
-            android:src="@mipmap/add_to_fav_msg"/>
+            android:src="@mipmap/channel_add_to_fav_msg"/>
     </RelativeLayout>
 </LinearLayout>

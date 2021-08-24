@@ -364,7 +364,7 @@ public class ConversationListViewModel extends AndroidViewModel {
                             ConversationEntity ce = new ConversationEntity();
                             ce.setLastTimestamp(time);
                             ce.setSenderAddress(sender);
-                            ce.setConversationID(chatbotMessageBody.getOutboundIMMessage().getConversationID());
+                            ce.setConversationUUID(chatbotMessageBody.getOutboundIMMessage().getConversationID());
                             if(convId == 0){
                                 convId = insertConversation(ce);
                             }
@@ -377,6 +377,8 @@ public class ConversationListViewModel extends AndroidViewModel {
                             me.setRead(1);
                             me.setDomain(domain);
                             me.setSenderAddress(sender);
+                            me.setIsFavorited(0);
+                            me.setFavoritedTimestamp(0);
 
                             String contentType = chatbotMessageBody.getOutboundIMMessage().getContentType();
                             String bodyText = chatbotMessageBody.getOutboundIMMessage().getBodyText();
@@ -384,11 +386,13 @@ public class ConversationListViewModel extends AndroidViewModel {
                             Log.i("Junwang", "received xml destination="+destination);
                             if(destination != null && destination.startsWith("tel:")){
                                 ce.setDestinationAddress(destination.substring(4));
+                                me.setDestinationAddress(destination.substring(4));
                             }else {
                                 ce.setDestinationAddress(destination);
+                                me.setDestinationAddress(destination);
                             }
-                            me.setContributionID(chatbotMessageBody.getOutboundIMMessage().getContributionID());
-                            me.setConversationID(chatbotMessageBody.getOutboundIMMessage().getConversationID());
+                            me.setContributionUUID(chatbotMessageBody.getOutboundIMMessage().getContributionID());
+                            me.setConversationUUID(chatbotMessageBody.getOutboundIMMessage().getConversationID());
                             me.setMessageId(chatbotMessageBody.getOutboundIMMessage().getMessageId());
                             LogUtil.i("Junwang", "getMessageBody address="+chatbotMessageBody.getAddress()+", bodyText="+bodyText
                                     +", contentType="+contentType);
@@ -1111,7 +1115,7 @@ public class ConversationListViewModel extends AndroidViewModel {
         return null;
     }
 
-    public void saveDraft(Context context, String content, String to, String from, String conversationId, ConversationEntity ce){
+    public void saveDraft(Context context, String content, String to, String from, String conversationUUID, ConversationEntity ce){
         long convId = DataRepository.getInstance(AppDatabase.getInstance(context)).getConversationId(to);
         Log.i("Junwang", "addMessage query conversation Id = "+ convId);
 
@@ -1120,7 +1124,7 @@ public class ConversationListViewModel extends AndroidViewModel {
         ce.setLastTimestamp(time);
         ce.setSenderAddress(to);
         ce.setDestinationAddress(from);
-        ce.setConversationID(conversationId);
+        ce.setConversationUUID(conversationUUID);
 //        ce.setNormalizedDestination(to);
         if(convId == 0){
             convId = insertConversation(ce);
@@ -1174,6 +1178,8 @@ public class ConversationListViewModel extends AndroidViewModel {
         }
         me.setLocationData(locationData);
         me.setSenderAddress(destination);
+        me.setIsFavorited(0);
+        me.setFavoritedTimestamp(0);
         me.setAttachmentPath(null);
         me.setMessageStatus(isReceived ? MessageConstants.BUGLE_STATUS_INCOMING_COMPLETE : MessageConstants.BUGLE_STATUS_OUTGOING_SENDING);
         long messageId = mRepository.insertMessage(me);
@@ -1282,7 +1288,7 @@ public class ConversationListViewModel extends AndroidViewModel {
     }
 
     //发送保存
-    public MessageEntity /*LiveData<MessageEntity>*/ saveMsg(Context context, String content, String to, String from, String conversationId, boolean isReceived, String attachmentpath, String thumbnail, int messageType,  ConversationEntity ce, String attachmentType, boolean isDraft){
+    public MessageEntity /*LiveData<MessageEntity>*/ saveMsg(Context context, String content, String to, String from, String conversationUUID, boolean isReceived, String attachmentpath, String thumbnail, int messageType,  ConversationEntity ce, String attachmentType, boolean isDraft){
         long convId = DataRepository.getInstance(AppDatabase.getInstance(context)).getConversationId(to);
         Log.i("Junwang", "addMessage query conversation Id = "+ convId);
 
@@ -1291,7 +1297,7 @@ public class ConversationListViewModel extends AndroidViewModel {
         ce.setLastTimestamp(time);
         ce.setSenderAddress(to);
         ce.setDestinationAddress(from);
-        ce.setConversationID(conversationId);
+        ce.setConversationUUID(conversationUUID);
 //        ce.setNormalizedDestination(to);
         if(convId == 0){
             convId = insertConversation(ce);
@@ -1301,6 +1307,9 @@ public class ConversationListViewModel extends AndroidViewModel {
         MessageEntity me = new MessageEntity();
         me.setConversationId(convId);
         me.setSenderAddress(to);
+        me.setDestinationAddress(from);
+        me.setIsFavorited(0);
+        me.setFavoritedTimestamp(0);
         if(isReceived){
 //            getJson(content, me);
 //            getXml(content, me, ce);

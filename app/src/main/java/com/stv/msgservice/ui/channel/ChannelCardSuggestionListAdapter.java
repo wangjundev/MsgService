@@ -11,7 +11,7 @@ import com.stv.msgservice.R2;
 import com.stv.msgservice.datamodel.constants.MessageConstants;
 import com.stv.msgservice.datamodel.network.chatbot.SuggestionAction;
 import com.stv.msgservice.datamodel.network.chatbot.SuggestionActionWrapper;
-import com.stv.msgservice.ui.WebViewNewsActivity;
+import com.stv.msgservice.ui.channel.activity.ChannelWebViewActivity;
 import com.stv.msgservice.utils.NativeFunctionUtil;
 
 import androidx.annotation.NonNull;
@@ -24,10 +24,21 @@ import butterknife.OnClick;
 public class ChannelCardSuggestionListAdapter extends RecyclerView.Adapter<ChannelCardSuggestionListAdapter.SuggestionViewHolder>{
     private SuggestionActionWrapper[] suggestions;
     private Fragment fragment;
+//    MessageUserInfoEntity messageUserInfoEntity;
+    private String chatbotPortrait;
+    private String chatbotName;
+    private String chatbotId;
+    private int chatbotIsAttentioned;
 
-    public void setSuggestions(Fragment fragment, SuggestionActionWrapper[] suggestions){
+    public void setSuggestions(Fragment fragment, SuggestionActionWrapper[] suggestions, String chatbotPortrait,
+                               String chatbotName, String chatbotId, int chatbotIsAttentioned){
         this.fragment = fragment;
         this.suggestions = suggestions;
+//        this.messageUserInfoEntity = messageUserInfoEntity;
+        this.chatbotPortrait = chatbotPortrait;
+        this.chatbotName = chatbotName;
+        this.chatbotId = chatbotId;
+        this.chatbotIsAttentioned = chatbotIsAttentioned;
     }
 
     @NonNull
@@ -62,7 +73,10 @@ public class ChannelCardSuggestionListAdapter extends RecyclerView.Adapter<Chann
         private void doSuggestionAction(){
             SuggestionAction sa = suggestion.getAction();
             if ((suggestion != null) && (sa.urlAction != null)) {
-                WebViewNewsActivity.start(fragment.getContext(), sa.urlAction.openUrl.url);
+//                WebViewNewsActivity.start(fragment.getContext(), sa.urlAction.openUrl.url);
+                ChannelWebViewActivity.start(fragment.getContext(), sa.urlAction.openUrl.url,
+                        chatbotPortrait, chatbotName,
+                        chatbotId, chatbotIsAttentioned);
             }else if((sa != null) && (sa.dialerAction != null)){
                 NativeFunctionUtil.callNativeFunction(MessageConstants.NativeActionType.PHONE_CALL, fragment.getContext(),
                         null, null, sa.dialerAction.dialPhoneNumber.phoneNumber);

@@ -133,6 +133,10 @@ public class DataRepository {
         return mDatabase.userInfoDao().getLatestUsedChatbotList();
     }
 
+    public LiveData<List<UserInfoEntity>> getAttentionedChatbotList(){
+        return mDatabase.userInfoDao().getAttentionedChatbotList();
+    }
+
     public int getUnreadCount(long conversationId){
         return mDatabase.messageDao().getUnreadCount(conversationId);
     }
@@ -167,5 +171,21 @@ public class DataRepository {
 
     public LiveData<List<MessageUserInfoEntity>> getAllMessages(){
         return mDatabase.messageDao().getAllMessages();
+    }
+
+    public LiveData<List<MessageUserInfoEntity>> getFavoritedMessages(){
+        return mDatabase.messageDao().getFavoritedMessages();
+    }
+
+    public void updateUserInfo(UserInfoEntity userInfoEntity){
+        mDatabase.userInfoDao().updateUserInfo(userInfoEntity);
+    }
+
+    public void updateAttentionByChatbotId(String chatbotId, int isAttentioned){
+        mDatabase.userInfoDao().updateAttentionByChatbotId(chatbotId, isAttentioned);
+    }
+
+    public void updateMessageFavoriteStatusById(long messageId, int isFavorited, long favoritedTimestamp){
+        mDatabase.messageDao().updateMessageFavoriteStatusById(messageId, isFavorited, favoritedTimestamp);
     }
 }

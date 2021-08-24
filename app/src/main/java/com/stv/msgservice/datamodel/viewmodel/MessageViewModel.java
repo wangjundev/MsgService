@@ -115,6 +115,10 @@ public class MessageViewModel extends AndroidViewModel {
         mRepository.updateMessageSendStatus(me);
     }
 
+    public void updateMessageFavoriteStatusById(long messageId, int isFavorited, long favoritedTimestamp){
+        mRepository.updateMessageFavoriteStatusById(messageId, isFavorited, favoritedTimestamp);
+    }
+
     public LiveData<MessageEntity> getMessage(long messageId){
         return mRepository.getMessage(messageId);
     }
@@ -126,6 +130,10 @@ public class MessageViewModel extends AndroidViewModel {
 
     public LiveData<List<MessageUserInfoEntity>> getAllMessages(){
         return mRepository.getAllMessages();
+    }
+
+    public LiveData<List<MessageUserInfoEntity>> getFavoritedMessages(){
+        return mRepository.getFavoritedMessages();
     }
 
     public List<MessageEntity> searchMessages(long conversationId, String query) {

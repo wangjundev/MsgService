@@ -50,15 +50,15 @@ public class ConversationEntity  implements Conversation, Parcelable {
     @ColumnInfo(name = "destination_address")
     private String destinationAddress;
 
-    @ColumnInfo(name = "conversation_id")
-    private String conversationID;
+    @ColumnInfo(name = "conversation_uuid")
+    private String conversationUUID;
 
-    public String getConversationID() {
-        return conversationID;
+    public String getConversationUUID() {
+        return conversationUUID;
     }
 
-    public void setConversationID(String conversationID) {
-        this.conversationID = conversationID;
+    public void setConversationUUID(String conversationUUID) {
+        this.conversationUUID = conversationUUID;
     }
 
     public String getSenderAddress() {
@@ -190,7 +190,7 @@ public class ConversationEntity  implements Conversation, Parcelable {
         parcel.writeLong(this.topTimestamp);
         parcel.writeString(this.senderAddress);
         parcel.writeString(this.destinationAddress);
-        parcel.writeString(this.conversationID);
+        parcel.writeString(this.conversationUUID);
     }
 
     public ConversationEntity(Parcel parcel) {
@@ -206,7 +206,7 @@ public class ConversationEntity  implements Conversation, Parcelable {
         this.topTimestamp = parcel.readLong();
         this.senderAddress = parcel.readString();
         this.destinationAddress = parcel.readString();
-        this.conversationID = parcel.readString();
+        this.conversationUUID = parcel.readString();
     }
 
     public ConversationEntity() {
